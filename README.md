@@ -26,3 +26,6 @@ once the shell is up and running you can execute some code:
 > python -m gsma.get_data 
 ```
 
+## License
+
+any tools or scripts found within `global-stock-market-analytics` are distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
