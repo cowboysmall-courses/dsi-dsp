@@ -9,8 +9,8 @@ Created on Tue Feb 13 20:54:21 2024
 
 
 # %% 0 -import required libraries
-import numpy as np 
-import pandas as pd 
+# import numpy as np
+import pandas as pd
 import yfinance as yf
 
 
