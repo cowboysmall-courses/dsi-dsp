@@ -14,15 +14,15 @@ Data Science in Practice module
 
 ## Development
 
-The best way to play with these classifiers is to launch a hatch shell:
+The best way to play with this code is to launch a hatch shell:
 
 ```console
 > hatch shell
 ```
 
-once the shell is up and running you can run the examples:
+once the shell is up and running you can execute some code:
 
 ```console
-> python -m examples.glm.glm_banknote
+> python -m gsma.get_data 
 ```
 
