@@ -9,14 +9,11 @@ Created on Tue Feb 13 20:54:21 2024
 
 
 # %% 0 -import required libraries
-import pandas as pd 
-
+import pandas as pd
 
 
 # %% 1 - retrieve a list of indices
 indices = pd.read_html('https://finance.yahoo.com/world-indices/')
-
-
 
 
 # %% 2 - look t the head of the retrieved data
@@ -29,16 +26,13 @@ indices[0].head()
 # 4   ^XAX     NYSE AMEX COMPOSITE INDEX  ...            NaN        NaN
 
 
-
 # %% 3 - look at the number of rows in the retrieved data
 indices[0].shape[0]
 # 36
 
 
-
 # %% 3 - save index information to file
 indices[0].to_csv("../data/raw/indices.csv")
-
 
 
 # %% 4 - print a comma separated list of index names

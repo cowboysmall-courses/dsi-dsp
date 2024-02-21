@@ -9,7 +9,7 @@ Created on Tue Feb 20 22:16:27 2024
 
 
 # %% 0 -import required libraries
-import pandas as pd 
+import pandas as pd
 import yfinance as yf
 import statsmodels.api as sm
 
@@ -216,7 +216,7 @@ sm.stats.diagnostic.lilliefors(data_08['VIX_DAILY_RETURNS'].dropna())
 # %% 10 - merge data, forward-fill missing values, and save relevant data
 data = [data_01, data_02, data_03, data_04, data_05, data_06, data_07, data_08]
 
-merged = reduce(lambda  l, r: pd.merge(l, r, on = ['Date'], how = 'outer'), data)
+merged = reduce(lambda left, right: pd.merge(left, right, on = ['Date'], how = 'outer'), data)
 merged.fillna(method = 'ffill', inplace = True)
 
 merged['MONTH']   = pd.PeriodIndex(merged.index, freq = 'M')
