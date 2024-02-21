@@ -16,5 +16,5 @@ import pandas as pd
 indices = pd.read_html('https://finance.yahoo.com/world-indices/')
 
 
-# %% 3 - save index information to file
+# %% 2 - save index information to file
 indices[0].to_csv("../data/indices.csv")

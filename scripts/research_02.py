@@ -24,6 +24,6 @@ def save_data(index, start_date = '2017-12-1', end_date = '2024-1-31'):
     data.to_csv("../data/raw/{}.csv".format(index))
 
 
-# %% 2 - 
-for index in indices: 
+# %% 2 - retrieve data for indices
+for index in indices:
     save_data(index)

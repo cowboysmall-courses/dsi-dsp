@@ -45,10 +45,10 @@ def check_normality(index, data):
         print('\tKolmogorov-Smirnov Test:         reject null hypothesis - with p-value = {}'.format(result[1]))
     else:
         print('\tKolmogorov-Smirnov Test: fail to reject null hypothesis - with p-value = {}'.format(result[1]))
-        
+
     print()
 
 
-# %% 2 - check normality of data
+# %% 3 - check normality of data
 for index in indices:
     check_normality(index, read_file(index))

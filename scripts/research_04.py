@@ -25,8 +25,13 @@ def read_file(index):
     return data
 
 
-# %% 2 - read data, merge data, and process the data
-merged = reduce(lambda left, right: pd.merge(left, right, left_index = True, right_index = True, how = 'outer'), [read_file(index) for index in indices])
+# %% 2 - function to merge data
+def merge_files(left, right):
+    return pd.merge(left, right, left_index = True, right_index = True, how = 'outer')
+
+
+# %% 3 - read data, merge data, and process the data
+merged = reduce(merge_files, [read_file(index) for index in indices])
 merged.fillna(method = 'ffill', inplace = True)
 
 merged['MONTH']   = pd.PeriodIndex(merged.index, freq = 'M')
