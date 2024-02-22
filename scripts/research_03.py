@@ -4,6 +4,18 @@
 Created on Wed Feb 21 11:42:07 2024
 
 @author: jerry
+
+
+Global market indices of interest:
+
+    NSEI:  Nifty 50 
+    DJI:   Dow Jones Index
+    IXIC:  Nasdaq
+    HSI:   Hang Seng
+    N225:  Nikkei 225
+    GDAXI: Dax
+    VIX:   Volatility Index
+
 """
 
 
@@ -16,7 +28,7 @@ from scipy import stats
 
 
 # %% 0 -list of indices
-indices = ['NSEI', 'GSPC', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 1 - function to read index data
