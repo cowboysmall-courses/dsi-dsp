@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 22 14:44:26 2024
+Created on Wed Feb 21 14:00:17 2024
 
 @author: jerry
 
@@ -20,19 +20,19 @@ Global market indices of interest:
 
 
 
-# %% 0 -import required libraries
+# %% 0 - import required libraries
 import pandas as pd
 
 
-# %% 0 -list of indices
+# %% 0 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 1 - function to read master data
-def read_master_data():
-    data = pd.read_csv("../data/processed/master_data.csv")
+def read_master():
+    data = pd.read_csv("../data/processed/master_data.csv", index_col = 'Date')
 
-    data.set_index('Date', inplace = True)
+    data.index = pd.to_datetime(data.index)
 
     data['MONTH']   = pd.PeriodIndex(data['MONTH'],   freq = 'M')
     data['QUARTER'] = pd.PeriodIndex(data['QUARTER'], freq = 'Q')
@@ -41,8 +41,8 @@ def read_master_data():
     return data
 
 
-# %% 3 - read master data
-data = read_master_data()
+# %% 2 - read master data
+data = read_master()
 
 data.head()
 #                NSEI_OPEN     NSEI_HIGH      NSEI_LOW  ...    MONTH  QUARTER  YEAR
@@ -56,7 +56,7 @@ data.head()
 # [5 rows x 52 columns]
 
 data.info()
-# Index: 1563 entries, 2018-01-02 to 2023-12-29
+# DatetimeIndex: 1563 entries, 2018-01-02 to 2023-12-29
 # Data columns (total 52 columns):
 #  #   Column               Non-Null Count  Dtype
 # ---  ------               --------------  -----
@@ -113,9 +113,9 @@ data.info()
 #  50  QUARTER              1563 non-null   period[Q-DEC]
 #  51  YEAR                 1563 non-null   period[A-DEC]
 # dtypes: float64(49), period[A-DEC](1), period[M](1), period[Q-DEC](1)
-# memory usage: 647.2+ KB
+# memory usage: 647.2 KB
 
-data.sum()
+data.sum(numeric_only = True)
 # NSEI_OPEN              2.227940e+07
 # NSEI_HIGH              2.238517e+07
 # NSEI_LOW               2.213283e+07

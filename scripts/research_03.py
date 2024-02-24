@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Feb 21 11:42:07 2024
+Created on Sat Feb 24 17:09:29 2024
 
 @author: jerry
 
@@ -20,25 +20,25 @@ Global market indices of interest:
 
 
 
-# %% 0 -import required libraries
+# %% 0 - import required libraries
 import pandas as pd
 import statsmodels.api as sm
 
 from scipy import stats
 
 
-# %% 0 -list of indices
+# %% 0 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 1 - function to read index data
 def read_file(index):
-    data = pd.read_csv("../data/raw/{}.csv".format(index))
-    data.set_index('Date', inplace = True)
+    data = pd.read_csv("../data/raw/{}.csv".format(index), index_col = 'Date')
+    data.index = pd.to_datetime(data.index)
     return data
 
 
-# %% 2 - function to retrieve data
+# %% 2 - function to test for normality
 def check_normality(index, data):
     column = '{}_DAILY_RETURNS'.format(index)
 
@@ -61,6 +61,6 @@ def check_normality(index, data):
     print()
 
 
-# %% 3 - check normality of data
+# %% 3 - test for normality of data
 for index in indices:
     check_normality(index, read_file(index))
