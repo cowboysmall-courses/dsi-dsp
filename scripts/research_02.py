@@ -8,7 +8,7 @@ Created on Tue Feb 20 22:16:27 2024
 
 Global market indices of interest:
 
-    NSEI:  Nifty 50 
+    NSEI:  Nifty 50
     DJI:   Dow Jones Index
     IXIC:  Nasdaq
     HSI:   Hang Seng
