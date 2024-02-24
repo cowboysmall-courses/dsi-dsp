@@ -36,6 +36,7 @@ def retrieve_data(index, start_date = '2017-12-1', end_date = '2024-1-31'):
     data = yf.download('^{}'.format(index), start_date, end_date)
     data['Daily Returns'] = data.Close.pct_change() * 100
     data.columns = ['{}_{}'.format(index, '_'.join(c.upper() for c in column.split())) for column in data.columns]
+    return data
 
 
 # %% 1 - function to read index data
