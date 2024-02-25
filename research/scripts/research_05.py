@@ -30,7 +30,7 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 # %% 1 - function to read master data
 def read_master():
-    data = pd.read_csv("../data/processed/master_data.csv", index_col = 'Date')
+    data = pd.read_csv("./data/processed/master_data.csv", index_col = 'Date')
 
     data.index = pd.to_datetime(data.index)
 

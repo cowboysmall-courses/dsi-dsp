@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "global-stock-market-analytics"
+name = "dsi-gsma"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
@@ -39,9 +39,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/cowboysmall-research/global-stock-market-analytics#readme"
-Issues = "https://github.com/cowboysmall-research/global-stock-market-analytics/issues"
-Source = "https://github.com/cowboysmall-research/global-stock-market-analytics"
+Documentation = "https://github.com/cowboysmall-research/dsi-gsma#readme"
+Issues = "https://github.com/cowboysmall-research/dsi-gsma/issues"
+Source = "https://github.com/cowboysmall-research/dsi-gsma"
 
 
 
@@ -180,8 +180,8 @@ omit = [
 ]
 
 [tool.coverage.paths]
-gsma = ["src/gsma", "*/global-stock-market-analytics/src/gsma"]
-tests = ["tests", "*/global-stock-market-analytics/tests"]
+gsma = ["src/gsma", "*/dsi-gsma/src/gsma"]
+tests = ["tests", "*/dsi-gsma/tests"]
 
 [tool.coverage.report]
 exclude_lines = [

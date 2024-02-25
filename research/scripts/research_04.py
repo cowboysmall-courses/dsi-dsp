@@ -30,7 +30,7 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 # %% 1 - function to read index data
 def read_file(index):
-    data = pd.read_csv("../data/raw/{}.csv".format(index), index_col = 'Date')
+    data = pd.read_csv("./data/raw/{}.csv".format(index), index_col = 'Date')
     data.index = pd.to_datetime(data.index)
     return data
 
@@ -49,4 +49,4 @@ def merge_files(files):
 
 
 # %% 3 - read data, merge data, and save the data
-merge_files([read_file(index) for index in indices]).to_csv("../data/processed/master_data.csv")
+merge_files([read_file(index) for index in indices]).to_csv("./data/processed/master_data.csv")

@@ -38,4 +38,4 @@ def retrieve_data(index, start_date = '2017-12-1', end_date = '2024-1-31'):
 
 # %% 2 - retrieve data for indices
 for index in indices:
-    retrieve_data(index).to_csv("../data/raw/{}.csv".format(index))
+    retrieve_data(index).to_csv("./data/raw/{}.csv".format(index))
