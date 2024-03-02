@@ -36,6 +36,7 @@ dependencies = [
   "matplotlib",
   "scikit-learn",
   "yfinance",
+  "arch"
 ]
 
 [project.urls]
