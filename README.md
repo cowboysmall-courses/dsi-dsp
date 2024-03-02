@@ -28,4 +28,4 @@ once the shell is up and running you can execute some code:
 
 ## License
 
-any tools or scripts found within `global-stock-market-analytics` are distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+any tools or scripts found within `dsi-gsma` are distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
