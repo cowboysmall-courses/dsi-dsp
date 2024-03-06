@@ -40,6 +40,7 @@ dependencies = [
   "yfinance",
   "arch",
   "ipykernel",
+  "distfit",
 ]
 
 [project.urls]

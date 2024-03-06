@@ -60,7 +60,7 @@ def scatter_plot(data, column, column_name, index):
 
 def box_plot(data, column, column_name, index):
     plt.clf()
-    sns.boxplot(x = 'Y', y = returns, data = data)
+    sns.boxplot(x = 'Y', y = data[column], data = data)
     plt.title('Box Plot: {}'.format(index))
     plt.xlabel('Year')
     plt.ylabel(column_name)
@@ -87,7 +87,7 @@ def histogram(data, column, column_name, index):
 
 def line_plot(x_vals, data, column, column_name, interval, interval_name, index):
     plt.clf()
-    sns.lineplot(x = x_vals, y = data[close])
+    sns.lineplot(x = x_vals, y = data[column])
     plt.title('Line Plot: {}'.format(index))
     plt.xlabel(interval_name)
     plt.ylabel(column_name)
