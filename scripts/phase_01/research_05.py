@@ -24,4 +24,4 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 - read master data and sum columns
-read_master_file().sum(numeric_only = True)
+read_master_file().iloc[:, :-3].sum(numeric_only = True)

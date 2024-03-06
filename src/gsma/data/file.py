@@ -9,9 +9,9 @@ def read_index_file(name, indicators = False):
     data.index = pd.to_datetime(data.index)
 
     if indicators:
-        data['MONTH']   = pd.PeriodIndex(data.index, freq = 'M')
-        data['QUARTER'] = pd.PeriodIndex(data.index, freq = 'Q')
-        data['YEAR']    = pd.PeriodIndex(data.index, freq = 'Y')
+        data['MONTH']   = data.index.month
+        data['QUARTER'] = data.index.quarter
+        data['YEAR']    = data.index.year
 
     return data
 
@@ -25,10 +25,6 @@ def read_master_file():
     data = pd.read_csv("./data/processed/master_data.csv", index_col = 'Date')
 
     data.index = pd.to_datetime(data.index)
-
-    data['MONTH']   = pd.PeriodIndex(data['MONTH'],   freq = 'M')
-    data['QUARTER'] = pd.PeriodIndex(data['QUARTER'], freq = 'Q')
-    data['YEAR']    = pd.PeriodIndex(data['YEAR'],    freq = 'Y')
 
     return data
 

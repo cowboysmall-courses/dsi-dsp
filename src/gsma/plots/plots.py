@@ -7,10 +7,13 @@ from statsmodels.graphics.tsaplots import plot_acf
 
 
 
-def plot_setup(figsize = (8, 6), style = "ggplot", sns_style = "darkgrid", sns_context = "paper"):
+def plot_setup(figsize = (12, 9), style = "ggplot"):
     plt.figure(figsize = figsize)
+    plt.tight_layout()
     plt.style.use(style)
 
+
+def sns_setup(sns_style = "darkgrid", sns_context = "paper"):
     sns.set_style(sns_style)
     sns.set_context(sns_context)
 
@@ -26,6 +29,15 @@ def scatter_plot(data, column, column_name, index_name):
     plt.close()
 
 
+
+def bar_plot(x_vals, y_vals, column, column_name, interval, interval_name, index_name):
+    plt.clf()
+    sns.barplot(x = x_vals, y = y_vals)
+    plt.title(f"Bar Plot: {index_name}")
+    plt.xlabel(interval_name)
+    plt.ylabel(column_name)
+    plt.savefig(f"./images/indices/barplot/{column}_{interval}.png")
+    plt.close()
 
 
 def histogram(data, column, column_name, index_name):
@@ -57,6 +69,28 @@ def line_plot(x_vals, y_vals, column, column_name, interval, interval_name, inde
     plt.savefig(f"./images/indices/lineplots/{column}_{interval}.png")
     plt.close()
 
+
+def correlation_matrix(data, column, column_name, interval):
+    plt.clf()
+
+    ax = sns.heatmap(data, annot = True)
+    ax.set_xticklabels(
+        ax.get_xticklabels(),
+        rotation = 30,
+        horizontalalignment = "right"
+    )
+
+    plt.title(f"Heat Map: {column_name}")
+    plt.savefig(f"./images/indices/matrices/{column}_{interval}.png")
+    plt.close()
+
+
+def heat_map(data, column, agg, index_name):
+    plt.clf()
+    sns.heatmap(data)
+    plt.title(f"Heat Map: {index_name}")
+    plt.savefig(f"./images/indices/heatmaps/{column}_{agg}.png")
+    plt.close()
 
 
 
