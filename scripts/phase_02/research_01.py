@@ -12,3 +12,4 @@ Global market indices of interest:
     VIX:   Volatility Index
 
 """
+

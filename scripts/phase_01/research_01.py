@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
-Created on Tue Feb 13 20:54:21 2024
-
-@author: jerry
-
 
 Global market indices of interest:
 
@@ -21,12 +16,14 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-import pandas as pd
+from gsma.data.index import retrieve_data
+from gsma.data.file  import save_index_file
 
 
-# %% 1 - retrieve a list of indices
-indices = pd.read_html('https://finance.yahoo.com/world-indices/')
+# %% 1 - list of indices
+indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 2 - save index information to file
-indices[0].to_csv("./data/indices.csv")
+# %% 2 - retrieve data for indices
+for index in indices:
+    save_index_file(retrieve_data(index), index)

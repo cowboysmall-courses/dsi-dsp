@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
-Created on Tue Feb 20 22:16:27 2024
-
-@author: jerry
-
 
 Global market indices of interest:
 
@@ -21,21 +16,24 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-import yfinance as yf
+from gsma.data.file import read_index_file
+from gsma.plots import plots
 
 
 # %% 0 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 1 - function to retrieve data
-def retrieve_data(index, start_date = '2017-12-1', end_date = '2024-1-31'):
-    data = yf.download('^{}'.format(index), start_date, end_date)
-    data['Daily Returns'] = data.Close.pct_change() * 100
-    data.columns = ['{}_{}'.format(index, '_'.join(c.upper() for c in column.split())) for column in data.columns]
-    return data
+# %% 2 -plot daily returns
+plots.plot_setup()
 
-
-# %% 2 - retrieve data for indices
 for index in indices:
-    retrieve_data(index).to_csv("./data/raw/{}.csv".format(index))
+    data     = read_index_file(index, indicators = True)
+    data     = data['2018-01-02':'2023-12-29']
+
+    returns  = f"{index}_DAILY_RETURNS"
+
+    # plots on daily returns
+    plots.qq_plot(data, returns)
+    plots.box_plot(data["YEAR"], data[returns], returns, "Daily Returns", "YEAR", "Years", index)
+    plots.histogram(data, returns, "Daily Returns", index)
