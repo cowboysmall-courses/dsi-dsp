@@ -6,8 +6,10 @@ import statsmodels.api as sm
 from statsmodels.graphics.tsaplots import plot_acf
 
 
+FIG_SIZE = (12, 9)
 
-def plot_setup(figsize = (12, 9), style = "ggplot"):
+
+def plot_setup(figsize = FIG_SIZE, style = "ggplot"):
     plt.figure(figsize = figsize)
     plt.tight_layout()
     plt.style.use(style)
@@ -110,24 +112,27 @@ def heat_map(data, column, agg, index_name, sub_path):
 
 
 
-def qq_plot(data, column, sub_path):
+def qq_plot(data, column, sub_path, figsize = FIG_SIZE):
     plt.clf()
     fig = sm.qqplot(data[column].values, line = '45', fit = True)
+    fig.set_size_inches(figsize)
     fig.savefig(f"./images/{sub_path}/qqplots/{column}.png")
     plt.close()
 
 
-def seasonal_plot(data, column, period, period_name, sub_path):
+def seasonal_plot(data, column, period, period_name, sub_path, figsize = FIG_SIZE):
     plt.clf()
     fig = sm.tsa.seasonal_decompose(data[column].values, period = period).plot()
+    fig.set_size_inches(figsize)
     fig.savefig(f"./images/{sub_path}/seasonal/{column}_{period_name}.png")
     plt.close()
 
 
 
 
-def correlogram(data, column, sub_path):
+def correlogram(data, column, sub_path, figsize = FIG_SIZE):
     plt.clf()
     fig = plot_acf(data[column].values)
+    fig.set_size_inches(figsize)
     fig.savefig(f"./images/{sub_path}/correlogram/{column}.png")
     plt.close()
