@@ -16,14 +16,12 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-from gsma.data.index import retrieve_data
-from gsma.data.file  import save_index_file
+import pandas as pd
 
 
-# %% 1 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+# %% 1 - retrieve a list of indices
+indices = pd.read_html('https://finance.yahoo.com/world-indices/')
 
 
-# %% 2 - retrieve data for indices
-for index in indices:
-    save_index_file(retrieve_data(index), index)
+# %% 2 - save index information to file
+indices[0].to_csv("./data/indices.csv")

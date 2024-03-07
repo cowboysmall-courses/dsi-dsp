@@ -12,16 +12,3 @@ Global market indices of interest:
     VIX:   Volatility Index
 
 """
-
-
-
-# %% 0 - import required libraries
-import pandas as pd
-
-
-# %% 1 - retrieve a list of indices
-indices = pd.read_html('https://finance.yahoo.com/world-indices/')
-
-
-# %% 2 - save index information to file
-indices[0].to_csv("./data/indices.csv")

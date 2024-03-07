@@ -1,3 +1,4 @@
+
 NSEI
 
       count      mean       std       var

@@ -16,13 +16,14 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-from gsma.data.file   import read_index_file, save_master_file
-from gsma.data.master import merge_data
+from gsma.data.file import read_index_file
+from gsma.si.tests  import test_normality
 
 
-# %% 1 - list of indices
+# %% 0 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 2 - read data, merge data, and save the data
-save_master_file(merge_data([read_index_file(index) for index in indices]))
+# %% 3 - test for normality of data
+for index in indices[:-1]:
+    test_normality(read_index_file(index), f"{index}_DAILY_RETURNS", index)

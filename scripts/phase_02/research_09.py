@@ -35,5 +35,5 @@ table1 = master.groupby("YEAR")[["NSEI_OPEN_DIR"]].sum()
 table2 = master.groupby("YEAR")[["NSEI_OPEN_DIR"]].count()
 
 print()
-print((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100)
+print(((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2))
 print()

@@ -16,25 +16,14 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-from gsma.data.file import read_index_file
-from gsma.plots import plots
+from gsma.data.index import retrieve_data
+from gsma.data.file  import save_index_file
 
 
-# %% 0 - list of indices
+# %% 1 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 2 -plot daily returns
-for index in indices[:-1]:
-    data     = read_index_file(index, indicators = True)
-    data     = data['2018-01-02':'2023-12-29']
-
-    returns  = f"{index}_DAILY_RETURNS"
-
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.qq_plot(data, returns, "phase_01")
-
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.histogram(data, returns, "Daily Returns", index, "phase_01")
+# %% 2 - retrieve data for indices
+for index in indices:
+    save_index_file(retrieve_data(index), index)

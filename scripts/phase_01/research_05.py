@@ -16,12 +16,13 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-from gsma.data.file import read_master_file
+from gsma.data.file   import read_index_file, save_master_file
+from gsma.data.master import merge_data
 
 
 # %% 1 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 2 - read master data and sum columns
-read_master_file().iloc[:, :-3].sum(numeric_only = True)
+# %% 2 - read data, merge data, and save the data
+save_master_file(merge_data([read_index_file(index) for index in indices]))
