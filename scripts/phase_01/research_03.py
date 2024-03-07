@@ -25,5 +25,5 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 3 - test for normality of data
-for index in indices:
+for index in indices[:-1]:
     test_normality(read_index_file(index), f"{index}_DAILY_RETURNS", index)

@@ -25,7 +25,7 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 -plot daily returns
-for index in indices:
+for index in indices[:-1]:
     data     = read_index_file(index, indicators = True)
     data     = data['2018-01-02':'2023-12-29']
 
@@ -33,8 +33,8 @@ for index in indices:
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.qq_plot(data, returns)
+    plots.qq_plot(data, returns, "phase_01")
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.histogram(data, returns, "Daily Returns", index)
+    plots.histogram(data, returns, "Daily Returns", index, "phase_01")

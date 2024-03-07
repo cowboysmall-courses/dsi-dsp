@@ -27,7 +27,7 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 1 - 
-for index in indices:
+for index in indices[:-1]:
     data     = read_index_file(index, indicators = True)
     data     = data['2018-01-02':'2022-12-30']
 
@@ -38,8 +38,8 @@ for index in indices:
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.heat_map(table1, returns, "MEAN", index)
+    plots.heat_map(table1, returns, "MEAN", index, "phase_02")
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.heat_map(table2, returns, "MEDIAN", index)
+    plots.heat_map(table2, returns, "MEDIAN", index, "phase_02")

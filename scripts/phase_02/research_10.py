@@ -16,7 +16,10 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-from gsma.data.file import read_index_file
+import numpy as np
+
+
+from gsma.data.file import read_master_file
 from gsma.plots     import plots
 
 
@@ -25,14 +28,12 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 1 - 
-for index in indices[:-1]:
-    data     = read_index_file(index, indicators = True)
-    data     = data['2018-01-02':'2022-12-30']
+master = read_master_file()
+master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
 
-    returns  = f"{index}_DAILY_RETURNS"
-
-    table    = data.groupby("YEAR")[returns].agg(['median'])
+for index in indices:
+    returns = f"{index}_DAILY_RETURNS"
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")
+    plots.box_plot(master["NSEI_OPEN_DIR"], master[returns].shift(), returns, "Daily Returns", "NSEI_OPEN_DIR", "NSEI Open Direction", index, "phase_02")

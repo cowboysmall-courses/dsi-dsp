@@ -25,13 +25,12 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 -plot daily returns
-for index in indices:
-    data     = read_index_file(index, indicators = True)
-    data     = data['2018-01-02':'2022-12-30']
+for index in indices[:-1]:
+    data    = read_index_file(index, indicators = True)
+    data    = data['2018-01-02':'2022-12-30']
 
-    returns  = f"{index}_DAILY_RETURNS"
+    returns = f"{index}_DAILY_RETURNS"
 
     plots.plot_setup()
     plots.sns_setup()
-    plots.box_plot(data["YEAR"], data[returns], returns, "Daily Returns", "YEAR", "Years", index)
-
+    plots.box_plot(data["YEAR"], data[returns], returns, "Daily Returns", "YEAR", "Years", index, "phase_02")

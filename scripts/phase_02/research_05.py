@@ -34,9 +34,9 @@ matrix2 = master['2023-01-02':'2023-12-29'].corr()
 
 plots.plot_setup()
 plots.sns_setup()
-plots.correlation_matrix(matrix1, "DAILY_RETURNS", "Daily Returns", "2018-2022")
+plots.correlation_matrix(matrix1, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
 
 plots.plot_setup()
 plots.sns_setup()
-plots.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023")
+plots.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
 

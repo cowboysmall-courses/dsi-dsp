@@ -1,0 +1,19 @@
+
+       NSEI_DAILY_RETURNS  DJI_DAILY_RETURNS  IXIC_DAILY_RETURNS  HSI_DAILY_RETURNS  N225_DAILY_RETURNS  GDAXI_DAILY_RETURNS
+count          542.000000         542.000000          542.000000         542.000000          542.000000           542.000000
+mean             0.033358           0.033705            0.061950          -0.012615            0.000132             0.011435
+std              0.830382           0.968612            1.153434           1.126131            1.046461             0.935235
+var              0.689535           0.938208            1.330409           1.268172            1.095080             0.874665
+
+       NSEI_DAILY_RETURNS  DJI_DAILY_RETURNS  IXIC_DAILY_RETURNS  HSI_DAILY_RETURNS  N225_DAILY_RETURNS  GDAXI_DAILY_RETURNS
+count          589.000000         589.000000          589.000000         589.000000          589.000000           589.000000
+mean             0.068626           0.042948            0.077150           0.011764            0.016520             0.034896
+std              1.562565           1.656938            1.812437           1.507990            1.417410             1.634397
+var              2.441611           2.745443            3.284927           2.274035            2.009052             2.671252
+
+       NSEI_DAILY_RETURNS  DJI_DAILY_RETURNS  IXIC_DAILY_RETURNS  HSI_DAILY_RETURNS  N225_DAILY_RETURNS  GDAXI_DAILY_RETURNS
+count          172.000000         172.000000          172.000000         172.000000          172.000000           172.000000
+mean             0.086263           0.006420           -0.072523          -0.038072           -0.021285             0.007427
+std              0.969583           1.289194            2.012094           1.993436            1.159202             1.290160
+var              0.940092           1.662021            4.048521           3.973786            1.343750             1.664513
+
