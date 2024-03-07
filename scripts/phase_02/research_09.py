@@ -20,7 +20,6 @@ import numpy as np
 
 
 from gsma.data.file import read_master_file
-from gsma.plots     import plots
 
 
 # %% 0 - list of indices
