@@ -17,7 +17,7 @@ Global market indices of interest:
 
 # %% 0 - import required libraries
 from gsma.data.file import read_index_file
-from gsma.plots     import plots
+from gsma.plots     import plt, sns
 
 
 # %% 0 - list of indices
@@ -33,6 +33,6 @@ for index in indices[:-1]:
 
     table    = data.groupby("YEAR")[returns].agg(['median'])
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")
+    plt.plot_setup()
+    sns.sns_setup()
+    sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")

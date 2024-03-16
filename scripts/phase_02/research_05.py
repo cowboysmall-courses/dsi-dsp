@@ -16,10 +16,8 @@ Global market indices of interest:
 
 
 # %% 0 - import required libraries
-import pandas as pd
-
 from gsma.data.file import read_master_file
-from gsma.plots     import plots
+from gsma.plots import plt, sns
 
 
 # %% 0 - list of indices
@@ -32,11 +30,10 @@ master  = read_master_file()[[f"{index}_DAILY_RETURNS" for index in indices[:-1]
 matrix1 = master['2018-01-02':'2022-12-30'].corr()
 matrix2 = master['2023-01-02':'2023-12-29'].corr()
 
-plots.plot_setup()
-plots.sns_setup()
-plots.correlation_matrix(matrix1, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
+plt.plot_setup()
+sns.sns_setup()
+sns.correlation_matrix(matrix1, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
 
-plots.plot_setup()
-plots.sns_setup()
-plots.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
-
+plt.plot_setup()
+sns.sns_setup()
+sns.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")

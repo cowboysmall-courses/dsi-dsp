@@ -17,7 +17,7 @@ Global market indices of interest:
 
 # %% 0 - import required libraries
 from gsma.data.file import read_index_file
-from gsma.plots     import plots
+from gsma.plots import plt, sns
 
 
 # %% 1 - list of indices
@@ -31,6 +31,6 @@ for index in indices[:-1]:
 
     returns = f"{index}_DAILY_RETURNS"
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.box_plot(data["YEAR"], data[returns], returns, "Daily Returns", "YEAR", "Years", index, "phase_02")
+    plt.plot_setup()
+    sns.sns_setup()
+    sns.box_plot(data["YEAR"], data[returns], returns, "Daily Returns", "YEAR", "Years", index, "phase_02")

@@ -18,7 +18,6 @@ Global market indices of interest:
 # %% 0 - import required libraries
 import numpy as np
 
-
 from gsma.data.file import read_master_file
 
 

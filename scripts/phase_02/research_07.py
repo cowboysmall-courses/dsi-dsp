@@ -41,4 +41,3 @@ print(table2)
 print()
 print(table3)
 print()
-

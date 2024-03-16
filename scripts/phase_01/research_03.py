@@ -17,7 +17,7 @@ Global market indices of interest:
 
 # %% 0 - import required libraries
 from gsma.data.file import read_index_file
-from gsma.plots import plots
+from gsma.plots import plt, sns, sms
 
 
 # %% 0 - list of indices
@@ -31,10 +31,10 @@ for index in indices[:-1]:
 
     returns  = f"{index}_DAILY_RETURNS"
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.qq_plot(data, returns, "phase_01")
+    plt.plot_setup()
+    sns.sns_setup()
+    sms.qq_plot(data, returns, "phase_01")
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.histogram(data, returns, "Daily Returns", index, "phase_01")
+    plt.plot_setup()
+    sns.sns_setup()
+    sns.histogram(data, returns, "Daily Returns", index, "phase_01")

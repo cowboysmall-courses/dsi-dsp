@@ -19,7 +19,7 @@ Global market indices of interest:
 import pandas as pd
 
 from gsma.data.file import read_index_file
-from gsma.plots     import plots
+from gsma.plots     import plt, sns
 
 
 # %% 0 - list of indices
@@ -36,10 +36,10 @@ for index in indices[:-1]:
     table1   = pd.pivot_table(data, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean") 
     table2   = pd.pivot_table(data, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median") 
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.heat_map(table1, returns, "MEAN", index, "phase_02")
+    plt.plot_setup()
+    sns.sns_setup()
+    sns.heat_map(table1, returns, "MEAN", index, "phase_02")
 
-    plots.plot_setup()
-    plots.sns_setup()
-    plots.heat_map(table2, returns, "MEDIAN", index, "phase_02")
+    plt.plot_setup()
+    sns.sns_setup()
+    sns.heat_map(table2, returns, "MEDIAN", index, "phase_02")

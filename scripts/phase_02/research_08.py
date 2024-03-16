@@ -17,7 +17,7 @@ Global market indices of interest:
 
 # %% 0 - import required libraries
 from gsma.data.file import read_master_file
-from gsma.plots     import plots
+from gsma.plots import plt, sns
 
 
 # %% 0 - list of indices
@@ -35,15 +35,14 @@ table1 = data1.agg(['median'])
 table2 = data2.agg(['median'])
 table3 = data3.agg(['median'])
 
-plots.plot_setup()
-plots.sns_setup()
-plots.simple_bar_plot(table1, "DAILY_RETURNS", "Daily Returns", "PRE_COVID", "phase_02")
+plt.plot_setup()
+sns.sns_setup()
+sns.simple_bar_plot(table1, "DAILY_RETURNS", "Daily Returns", "PRE_COVID", "phase_02")
 
-plots.plot_setup()
-plots.sns_setup()
-plots.simple_bar_plot(table2, "DAILY_RETURNS", "Daily Returns", "COVID", "phase_02")
+plt.plot_setup()
+sns.sns_setup()
+sns.simple_bar_plot(table2, "DAILY_RETURNS", "Daily Returns", "COVID", "phase_02")
 
-plots.plot_setup()
-plots.sns_setup()
-plots.simple_bar_plot(table3, "DAILY_RETURNS", "Daily Returns", "POST_COVID", "phase_02")
-
+plt.plot_setup()
+sns.sns_setup()
+sns.simple_bar_plot(table3, "DAILY_RETURNS", "Daily Returns", "POST_COVID", "phase_02")
