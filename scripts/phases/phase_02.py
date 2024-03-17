@@ -60,12 +60,12 @@ for index in indices[:-1]:
     sns.sns_setup()
     sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean") 
+    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table, returns, "MEAN", "YEAR", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median") 
+    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table, returns, "MEDIAN", "YEAR", index, "phase_02")
@@ -91,7 +91,7 @@ master['PANDEMIC'] = np.select(
         master.index <= '2020-01-30',
         ('2020-01-31' <= master.index) & (master.index <= '2022-05-04'),
         '2022-05-05' <= master.index
-    ], 
+    ],
     ['PRE_COVID', 'COVID', 'POST_COVID']
 )
 
@@ -116,12 +116,12 @@ for index in indices[:-1]:
     sns.sns_setup()
     sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "PANDEMIC", "Pandemic", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean") 
+    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table, returns, "MEAN", "PANDEMIC", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median") 
+    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table, returns, "MEDIAN", "PANDEMIC", index, "phase_02")

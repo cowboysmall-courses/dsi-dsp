@@ -34,7 +34,7 @@ master['PANDEMIC'] = np.select(
         master.index <= '2020-01-30',
         ('2020-01-31' <= master.index) & (master.index <= '2022-05-04'),
         '2022-05-05' <= master.index
-    ], 
+    ],
     ['PRE_COVID', 'COVID', 'POST_COVID']
 )
 

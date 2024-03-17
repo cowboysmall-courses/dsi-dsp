@@ -35,7 +35,7 @@ master['PANDEMIC'] = np.select(
         master.index <= '2020-01-30',
         ('2020-01-31' <= master.index) & (master.index <= '2022-05-04'),
         '2022-05-05' <= master.index
-    ], 
+    ],
     ['PRE_COVID', 'COVID', 'POST_COVID']
 )
 
@@ -44,12 +44,12 @@ master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID
 for index in indices[:-1]:
     returns = f"{index}_DAILY_RETURNS"
 
-    table1  = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean", observed = False) 
+    table1  = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean", observed = False)
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table1, returns, "MEAN", "PANDEMIC", index, "phase_02")
 
-    table2  = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median", observed = False) 
+    table2  = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median", observed = False)
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table2, returns, "MEDIAN", "PANDEMIC", index, "phase_02")

@@ -34,12 +34,12 @@ for index in indices[:-1]:
 
     returns = f"{index}_DAILY_RETURNS"
 
-    table1  = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean") 
+    table1  = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table1, returns, "MEAN", "YEAR", index, "phase_02")
 
-    table2  = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median") 
+    table2  = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median")
     plt.plot_setup()
     sns.sns_setup()
     sns.heat_map(table2, returns, "MEDIAN", "YEAR", index, "phase_02")
