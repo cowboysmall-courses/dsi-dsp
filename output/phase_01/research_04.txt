@@ -2,7 +2,7 @@
 	 Index NSEI
 	Column NSEI_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 2.743593253737161e-34
+	        reject null hypothesis: p-value = 2.7438511051235204e-34
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899
 
@@ -10,7 +10,7 @@
 	 Index DJI
 	Column DJI_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 1.1548236514399918e-36
+	        reject null hypothesis: p-value = 1.1550431517393688e-36
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899
 
@@ -18,7 +18,7 @@
 	 Index IXIC
 	Column IXIC_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 2.732241438907868e-25
+	        reject null hypothesis: p-value = 2.732417603237546e-25
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899
 
@@ -26,7 +26,7 @@
 	 Index HSI
 	Column HSI_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 7.557595223594841e-17
+	        reject null hypothesis: p-value = 7.566108735742231e-17
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899
 
@@ -34,7 +34,7 @@
 	 Index N225
 	Column N225_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 8.65255570712721e-18
+	        reject null hypothesis: p-value = 8.657461701768704e-18
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899
 
@@ -42,14 +42,6 @@
 	 Index GDAXI
 	Column GDAXI_DAILY_RETURNS
 	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 6.147803011156481e-31
-	Kolmogorov-Smirnov Test:
-	        reject null hypothesis: p-value = 0.0009999999999998899
-
-
-	 Index VIX
-	Column VIX_DAILY_RETURNS
-	     Shapiro-Wilks Test:
-	        reject null hypothesis: p-value = 6.112061224258144e-37
+	        reject null hypothesis: p-value = 6.1451815287071215e-31
 	Kolmogorov-Smirnov Test:
 	        reject null hypothesis: p-value = 0.0009999999999998899

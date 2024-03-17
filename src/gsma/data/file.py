@@ -19,6 +19,8 @@ def read_index_file(name, indicators = False):
 def save_index_file(data, name):
     data.to_csv(f"./data/raw/{name}.csv")
 
+    return data
+
 
 
 def read_master_file():
@@ -31,3 +33,5 @@ def read_master_file():
 
 def save_master_file(data):
     data.to_csv("./data/processed/master_data.csv")
+
+    return data

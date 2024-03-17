@@ -20,14 +20,6 @@ def bar_plot(x_vals, y_vals, column, column_name, interval, interval_name, index
     plt.close()
 
 
-def simple_bar_plot(data, column, name, interval, sub_path):
-    plt.clf()
-    sns.barplot(data)
-    plt.title(f"Bar Plot: {name}")
-    plt.savefig(f"./images/{sub_path}/barplot/{column}_{interval}.png")
-    plt.close()
-
-
 
 def box_plot(x_vals, y_vals, column, column_name, interval, interval_name, name, sub_path):
     plt.clf()
@@ -35,14 +27,6 @@ def box_plot(x_vals, y_vals, column, column_name, interval, interval_name, name,
     plt.title(f"Box Plot: {name}")
     plt.xlabel(interval_name)
     plt.ylabel(column_name)
-    plt.savefig(f"./images/{sub_path}/boxplot/{column}_{interval}.png")
-    plt.close()
-
-
-def simple_box_plot(data, column, name, interval, sub_path):
-    plt.clf()
-    sns.boxplot(data)
-    plt.title(f"Box Plot: {name}")
     plt.savefig(f"./images/{sub_path}/boxplot/{column}_{interval}.png")
     plt.close()
 
@@ -86,9 +70,9 @@ def correlation_matrix(data, column, column_name, interval, sub_path):
 
 
 
-def heat_map(data, column, agg, index_name, sub_path):
+def heat_map(data, column, agg, interval, index_name, sub_path):
     plt.clf()
     sns.heatmap(data)
     plt.title(f"Heat Map: {index_name}")
-    plt.savefig(f"./images/{sub_path}/heatmaps/{column}_{agg}.png")
+    plt.savefig(f"./images/{sub_path}/heatmaps/{column}_{interval}_{agg}.png")
     plt.close()
