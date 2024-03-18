@@ -32,7 +32,6 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 table1 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].sum()
 table2 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].count()
+table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
 
-print()
-print(((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2))
-print()
+print(f"\n{table}\n")

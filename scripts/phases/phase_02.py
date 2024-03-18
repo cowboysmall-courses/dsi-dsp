@@ -49,7 +49,7 @@ master_5 = master['2018-01-02':'2022-12-30']
 
 for index, column in zip(indices[:-1], columns[:-1]):
     table = master_5.groupby("YEAR")[column].agg(['count', 'mean', 'std', 'var'])
-    print(f"\n{index}\n{table}\n")
+    print(f"\n{index}\n\n{table}\n\n")
 
     plt.plot_setup()
     sns.sns_setup()
@@ -101,7 +101,7 @@ master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID
 
 for index, column in zip(indices[:-1], columns[:-1]):
     table = master.groupby("PANDEMIC")[column].agg(['count', 'mean', 'std', 'var'])
-    print(f"\n{index}\n{table}\n")
+    print(f"\n{index}\n\n{table}\n\n")
 
     plt.plot_setup()
     sns.sns_setup()
@@ -130,10 +130,9 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 table1 = master.groupby("YEAR")[["NSEI_OPEN_DIR"]].sum()
 table2 = master.groupby("YEAR")[["NSEI_OPEN_DIR"]].count()
+table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
 
-print()
-print(((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2))
-print()
+print(f"\n{table}\n")
 
 for index in indices:
     returns = f"{index}_DAILY_RETURNS"
