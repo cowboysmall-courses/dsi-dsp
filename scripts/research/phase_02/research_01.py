@@ -25,11 +25,9 @@ indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 - plot daily returns
-master = read_master_file()
+master = read_master_file()['2018-01-02':'2022-12-30']
 
 for index in indices[:-1]:
-    master  = master['2018-01-02':'2022-12-30']
-
     returns = f"{index}_DAILY_RETURNS"
 
     plt.plot_setup()

@@ -27,7 +27,7 @@ from gsma.plots import plt, sns
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
-# %% 2 - plot daily returns
+# %% 2 -
 master = read_master_file()
 
 master['PANDEMIC'] = np.select(

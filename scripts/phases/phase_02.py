@@ -25,8 +25,10 @@ from gsma.plots import plt, sns
 
 
 
+
 # %% 1 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+
 
 
 
@@ -35,40 +37,39 @@ columns = [f"{index}_DAILY_RETURNS" for index in indices]
 
 
 
+
 # %% 3 - read master data
 master = read_master_file()
 
 
 
+
 # %% 4 - global indices 5 years performance analytics
-for index in indices[:-1]:
-    returns = f"{index}_DAILY_RETURNS"
+master_5 = master['2018-01-02':'2022-12-30']
+
+for index, column in zip(indices[:-1], columns[:-1]):
+    table = master_5.groupby("YEAR")[column].agg(['count', 'mean', 'std', 'var'])
+    print(f"\n{index}\n{table}\n")
 
     plt.plot_setup()
     sns.sns_setup()
-    sns.box_plot(master["YEAR"], master[returns], returns, "Daily Returns", "YEAR", "Years", index, "phase_02")
+    sns.box_plot(master_5["YEAR"], master_5[column], column, "Daily Returns", "YEAR", "Years", index, "phase_02")
 
-    table = master.groupby("YEAR")[returns].agg(['count', 'mean', 'std', 'var'])
-    print()
-    print(index)
-    print()
-    print(table)
-    print()
-
-    table = master.groupby("YEAR")[returns].agg(['median'])
+    table = master_5.groupby("YEAR")[column].agg(['median'])
     plt.plot_setup()
     sns.sns_setup()
-    sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")
+    sns.bar_plot(table.index, table["median"], column, "Median Daily Return", "YEAR", "Year", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean")
+    table = pd.pivot_table(master_5, values = column, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "mean")
     plt.plot_setup()
     sns.sns_setup()
-    sns.heat_map(table, returns, "MEAN", "YEAR", index, "phase_02")
+    sns.heat_map(table, column, "MEAN", "YEAR", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median")
+    table = pd.pivot_table(master_5, values = column, index = ["YEAR"], columns = ["QUARTER"], aggfunc = "median")
     plt.plot_setup()
     sns.sns_setup()
-    sns.heat_map(table, returns, "MEDIAN", "YEAR", index, "phase_02")
+    sns.heat_map(table, column, "MEDIAN", "YEAR", index, "phase_02")
+
 
 
 
@@ -85,6 +86,7 @@ sns.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023", "
 
 
 
+
 # %% 6 - pre-post covid performance analytics
 master['PANDEMIC'] = np.select(
     [
@@ -97,34 +99,29 @@ master['PANDEMIC'] = np.select(
 
 master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID', 'COVID', 'POST_COVID'], ordered = True)
 
-for index in indices[:-1]:
-    returns = f"{index}_DAILY_RETURNS"
+for index, column in zip(indices[:-1], columns[:-1]):
+    table = master.groupby("PANDEMIC")[column].agg(['count', 'mean', 'std', 'var'])
+    print(f"\n{index}\n{table}\n")
 
     plt.plot_setup()
     sns.sns_setup()
-    sns.box_plot(master["PANDEMIC"], master[returns], returns, "Daily Returns", "PANDEMIC", "Pandemic", index, "phase_02")
+    sns.box_plot(master["PANDEMIC"], master[column], column, "Daily Returns", "PANDEMIC", "Pandemic", index, "phase_02")
 
-    table = master.groupby("PANDEMIC")[returns].agg(['count', 'mean', 'std', 'var'])
-    print()
-    print(index)
-    print()
-    print(table)
-    print()
-
-    table = master.groupby("PANDEMIC")[returns].agg(['median'])
+    table = master.groupby("PANDEMIC")[column].agg(['median'])
     plt.plot_setup()
     sns.sns_setup()
-    sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "PANDEMIC", "Pandemic", index, "phase_02")
+    sns.bar_plot(table.index, table["median"], column, "Median Daily Return", "PANDEMIC", "Pandemic", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean")
+    table = pd.pivot_table(master, values = column, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "mean")
     plt.plot_setup()
     sns.sns_setup()
-    sns.heat_map(table, returns, "MEAN", "PANDEMIC", index, "phase_02")
+    sns.heat_map(table, column, "MEAN", "PANDEMIC", index, "phase_02")
 
-    table = pd.pivot_table(master, values = returns, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median")
+    table = pd.pivot_table(master, values = column, index = ["PANDEMIC"], columns = ["QUARTER"], aggfunc = "median")
     plt.plot_setup()
     sns.sns_setup()
-    sns.heat_map(table, returns, "MEDIAN", "PANDEMIC", index, "phase_02")
+    sns.heat_map(table, column, "MEDIAN", "PANDEMIC", index, "phase_02")
+
 
 
 

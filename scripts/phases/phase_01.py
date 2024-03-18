@@ -24,8 +24,10 @@ from gsma.si.tests  import test_normality
 
 
 
+
 # %% 1 - list of indices
 indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+
 
 
 
@@ -34,6 +36,7 @@ datas = [retrieve_data(index) for index in indices]
 
 for index, data in zip(indices, datas):
     test_normality(data, f"{index}_DAILY_RETURNS", index)
+
 
 
 

@@ -41,12 +41,5 @@ master['PANDEMIC'] = np.select(
 master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID', 'COVID', 'POST_COVID'], ordered = True)
 
 for index in indices[:-1]:
-    returns = f"{index}_DAILY_RETURNS"
-
-    table   = master.groupby("PANDEMIC", observed = False)[returns].agg(['count', 'mean', 'std', 'var'])
-
-    print()
-    print(index)
-    print()
-    print(table)
-    print()
+    table   = master.groupby("PANDEMIC", observed = False)[f"{index}_DAILY_RETURNS"].agg(['count', 'mean', 'std', 'var'])
+    print(f"\n{index}\n\n{table}\n\n")
