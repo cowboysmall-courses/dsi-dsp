@@ -15,21 +15,18 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import INDICES, COLUMNS
+
 from gsma.data.file import read_master_file
 from gsma.plots import plt, sns
 
-
-# %% 1 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 - plot daily returns
 master = read_master_file()['2018-01-02':'2022-12-30']
 
-for index in indices[:-1]:
-    returns = f"{index}_DAILY_RETURNS"
-
+for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
     plt.plot_setup()
     sns.sns_setup()
-    sns.box_plot(master["YEAR"], master[returns], returns, "Daily Returns", "YEAR", "Years", index, "phase_02")
+    sns.box_plot(master["YEAR"], master[column], column, "Daily Returns", "YEAR", "Years", index, "phase_02")

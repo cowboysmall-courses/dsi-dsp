@@ -15,15 +15,14 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import INDICES
+
 from gsma.data.index import retrieve_data
-from gsma.data.file  import save_index_file
+from gsma.data.file import save_index_file
 
-
-# %% 1 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
 
 # %% 2 - retrieve data for indices
-for index in indices:
+for index in INDICES:
     save_index_file(retrieve_data(index), index)

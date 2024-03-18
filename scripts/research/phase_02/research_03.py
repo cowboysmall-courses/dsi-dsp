@@ -15,22 +15,19 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import INDICES, COLUMNS
+
 from gsma.data.file import read_master_file
-from gsma.plots     import plt, sns
+from gsma.plots import plt, sns
 
 
-# %% 0 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
-
-# %% 1 - 
+# %% 2 -
 master = read_master_file()['2018-01-02':'2022-12-30']
 
-for index in indices[:-1]:
-    returns = f"{index}_DAILY_RETURNS"
-    table   = master.groupby("YEAR")[returns].agg(['median'])
-
+for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
+    table = master.groupby("YEAR")[column].agg(['median'])
     plt.plot_setup()
     sns.sns_setup()
-    sns.bar_plot(table.index, table["median"], returns, "Median Daily Return", "YEAR", "Year", index, "phase_02")
+    sns.bar_plot(table.index, table["median"], column, "Median Daily Return", "YEAR", "Year", index, "phase_02")

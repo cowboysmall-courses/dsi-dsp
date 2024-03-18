@@ -15,17 +15,16 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import INDICES, COLUMNS
+
 from gsma.data.file import read_master_file
 
 
-# %% 1 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
-
-# %% 2 - 
+# %% 2 -
 master = read_master_file()['2018-01-02':'2022-12-30']
 
-for index in indices[:-1]:
-    table = master.groupby("YEAR")[f"{index}_DAILY_RETURNS"].agg(['count', 'mean', 'std', 'var'])
+for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
+    table = master.groupby("YEAR")[column].agg(['count', 'mean', 'std', 'var'])
     print(f"\n{index}\n\n{table}\n\n")

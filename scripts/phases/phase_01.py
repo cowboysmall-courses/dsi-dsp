@@ -15,30 +15,28 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import INDICES, COLUMNS
+
 from gsma.data.index import retrieve_data
-from gsma.data.file  import save_master_file
+from gsma.data.file import save_master_file
 from gsma.data.master import merge_data
 
-from gsma.si.tests  import test_normality
-
-
-
-
-# %% 1 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+from gsma.si.tests import test_normality
 
 
 
 
 # %% 2 - retrieve data for indices
-datas = [retrieve_data(index) for index in indices]
+data = []
 
-for index, data in zip(indices, datas):
-    test_normality(data, f"{index}_DAILY_RETURNS", index)
+for index, column in zip(INDICES, COLUMNS):
+    retrieved = retrieve_data(index)
+    test_normality(retrieved, column, index)
+    data.append(retrieved)
 
 
 
 
 # %% 3 - merge data
-save_master_file(merge_data(datas))
+save_master_file(merge_data(data))

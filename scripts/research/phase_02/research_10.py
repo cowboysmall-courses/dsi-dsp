@@ -15,17 +15,14 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
 import numpy as np
 
 from gsma.data.file import read_master_file
 
 
-# %% 0 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
-
-# %% 1 - 
+# %% 2 -
 master = read_master_file()
 
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)

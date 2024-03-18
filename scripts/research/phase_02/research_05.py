@@ -15,25 +15,23 @@ Global market indices of interest:
 
 
 
-# %% 0 - import required libraries
+# %% 1 - import required libraries
+from gsma import COLUMNS
+
 from gsma.data.file import read_master_file
 from gsma.plots import plt, sns
 
 
-# %% 0 - list of indices
-indices = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 
+# %% 2 -
+master = read_master_file()[COLUMNS[:-1]]
 
-# %% 1 - 
-master  = read_master_file()[[f"{index}_DAILY_RETURNS" for index in indices[:-1]]]
-
-matrix1 = master['2018-01-02':'2022-12-30'].corr()
-matrix2 = master['2023-01-02':'2023-12-29'].corr()
-
+matrix = master['2018-01-02':'2022-12-30'].corr()
 plt.plot_setup()
 sns.sns_setup()
-sns.correlation_matrix(matrix1, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
+sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
 
+matrix = master['2023-01-02':'2023-12-29'].corr()
 plt.plot_setup()
 sns.sns_setup()
-sns.correlation_matrix(matrix2, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
+sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
