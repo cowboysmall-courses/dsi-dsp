@@ -18,10 +18,7 @@ Global market indices of interest:
 # %% 1 - import required libraries
 import numpy as np
 
-from gsma import INDICES, COLUMNS
-
 from gsma.data.file import read_master_file
-from gsma.plots import plt, sns
 
 
 
@@ -30,7 +27,8 @@ master = read_master_file()
 
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
 
-for index, column in zip(INDICES, COLUMNS):
-    plt.plot_setup()
-    sns.sns_setup()
-    sns.box_plot(master["NSEI_OPEN_DIR"], master[column].shift(), column, "Daily Returns", "NSEI_OPEN_DIR", "NSEI Open Direction", index, "phase_02")
+table1 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].sum()
+table2 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].count()
+table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
+
+print(f"\n{table}\n")

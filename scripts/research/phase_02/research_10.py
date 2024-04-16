@@ -16,7 +16,10 @@ Global market indices of interest:
 
 
 # %% 1 - import required libraries
+import pandas as pd
 import numpy as np
+
+from gsma import INDICES, COLUMNS
 
 from gsma.data.file import read_master_file
 
@@ -25,10 +28,18 @@ from gsma.data.file import read_master_file
 # %% 2 -
 master = read_master_file()
 
-master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
+CONDITIONS = [(master.index <= '2020-01-30'), ('2022-05-05' <= master.index)]
+CHOICES    = ['PRE_COVID', 'POST_COVID']
 
-table1 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].sum()
-table2 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].count()
-table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
+master['PANDEMIC'] = np.select(CONDITIONS, CHOICES, 'COVID')
+master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID', 'COVID', 'POST_COVID'], ordered = True)
 
-print(f"\n{table}\n")
+for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
+    pre_covid  = master.loc[(master['PANDEMIC'] == 'PRE_COVID'),  [column]]
+    post_covid = master.loc[(master['PANDEMIC'] == 'POST_COVID'), [column]]
+
+    mean_pre   = pre_covid.values.mean()
+    post_date  = post_covid.index[post_covid[column].ge(mean_pre)][0].date()
+
+    print(f"{index.rjust(5)} returned to pre-covid levels (mean {mean_pre: 2.4f}) on {post_date}")
+ 

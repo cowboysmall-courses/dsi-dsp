@@ -98,6 +98,15 @@ sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "p
 print("\nPre-Post Covid Performance Analytics\n")
 performance_analytics(master, INDICES[:-1], COLUMNS[:-1], "PANDEMIC", "Pandemic")
 
+for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
+    pre_covid  = master.loc[(master['PANDEMIC'] == 'PRE_COVID'),  [column]]
+    post_covid = master.loc[(master['PANDEMIC'] == 'POST_COVID'), [column]]
+
+    mean_pre   = pre_covid.values.mean()
+    post_date  = post_covid.index[post_covid[column].ge(mean_pre)][0].date()
+
+    print(f"{index.rjust(5)} returned to pre-covid levels (mean {mean_pre: 2.4f}) on {post_date}")
+
 
 
 

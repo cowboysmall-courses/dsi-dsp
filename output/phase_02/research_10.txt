@@ -1,9 +1,7 @@
 
-YEAR
-2018    70.38
-2019    69.23
-2020    70.61
-2021    71.65
-2022    59.23
-2023    67.31
-Name: NSEI_OPEN_DIR, dtype: float64
+ NSEI returned to pre-covid levels (mean  0.0334) on 2022-05-16
+  DJI returned to pre-covid levels (mean  0.0337) on 2022-05-13
+ IXIC returned to pre-covid levels (mean  0.0619) on 2022-05-10
+  HSI returned to pre-covid levels (mean -0.0126) on 2022-05-11
+ N225 returned to pre-covid levels (mean  0.0001) on 2022-05-06
+GDAXI returned to pre-covid levels (mean  0.0114) on 2022-05-10

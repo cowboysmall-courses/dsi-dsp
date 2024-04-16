@@ -1,3 +1,4 @@
+
 NSEI_OPEN              2.227940e+07
 NSEI_HIGH              2.238517e+07
 NSEI_LOW               2.213283e+07
