@@ -1,7 +1,7 @@
 
- NSEI returned to pre-covid levels (mean  0.0334) on 2022-05-16
-  DJI returned to pre-covid levels (mean  0.0337) on 2022-05-13
- IXIC returned to pre-covid levels (mean  0.0619) on 2022-05-10
-  HSI returned to pre-covid levels (mean -0.0126) on 2022-05-11
- N225 returned to pre-covid levels (mean  0.0001) on 2022-05-06
-GDAXI returned to pre-covid levels (mean  0.0114) on 2022-05-10
+ NSEI returned to pre-covid levels (mean  0.0334) on 2022-05-16 after 7 trading day(s)
+  DJI returned to pre-covid levels (mean  0.0337) on 2022-05-13 after 6 trading day(s)
+ IXIC returned to pre-covid levels (mean  0.0619) on 2022-05-10 after 3 trading day(s)
+  HSI returned to pre-covid levels (mean -0.0126) on 2022-05-11 after 4 trading day(s)
+ N225 returned to pre-covid levels (mean  0.0001) on 2022-05-06 after 1 trading day(s)
+GDAXI returned to pre-covid levels (mean  0.0114) on 2022-05-10 after 3 trading day(s)
