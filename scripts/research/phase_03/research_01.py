@@ -342,10 +342,11 @@ table
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}")
+print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 # Sensitivity for cut-off 0.654 is : 82.49
-print(f"Specificity for cut-off {optimal_threshold} is : {specificity}")
+
+specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 # Specificity for cut-off 0.654 is : 60.05
 
 
@@ -407,11 +408,9 @@ table
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}")
+print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 # Sensitivity for cut-off 0.654 is : 77.46
 
-print(f"Specificity for cut-off {optimal_threshold} is : {specificity}")
+specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 # Specificity for cut-off 0.654 is : 56.0
-
