@@ -32,6 +32,22 @@ from gsma.data.file import read_master_file
 # from gsma.plots import plt, sns
 
 
+# %% 2 -
+def calculate_rsi(values, window = 14):
+    delta      = values.diff()
+
+    delta_up   = delta.copy()
+    delta_down = delta.copy()
+
+    delta_up[delta_up < 0] = 0
+    delta_down[delta_down > 0] = 0
+
+    mean_up   = delta_up.rolling(window).mean()
+    mean_down = delta_down.rolling(window).mean().abs()
+
+    return (mean_up / (mean_up + mean_down)) * 100
+
+
 
 # %% 2 -
 master = read_master_file()
@@ -39,10 +55,14 @@ master = read_master_file()
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
 master["NSEI_HL_RATIO"] = (master["NSEI_HIGH"] / master["NSEI_LOW"])
 master["DJI_HL_RATIO"]  = (master["DJI_HIGH"] / master["DJI_LOW"])
+master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
+master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
+
 
 
 # %% 3 -
-data = pd.concat([master["NSEI_OPEN_DIR"], master[COLUMNS].shift(), master["NSEI_HL_RATIO"].shift(), master["DJI_HL_RATIO"].shift()], axis = 1)[1:]
+data = pd.concat([master["NSEI_OPEN_DIR"], master[COLUMNS].shift(), master["NSEI_HL_RATIO"].shift(), master["DJI_HL_RATIO"].shift(), master["NSEI_RSI"].shift(), master["DJI_RSI"].shift()], axis = 1)
+data.dropna(inplace = True)
 data.head()
 
 
@@ -53,7 +73,7 @@ train, test = train_test_split(data, test_size = 0.2)
 
 
 # %% 5 -
-model = logit('NSEI_OPEN_DIR ~ NSEI_DAILY_RETURNS + DJI_DAILY_RETURNS + IXIC_DAILY_RETURNS + HSI_DAILY_RETURNS + N225_DAILY_RETURNS + GDAXI_DAILY_RETURNS + VIX_DAILY_RETURNS + NSEI_HL_RATIO + DJI_HL_RATIO', data = train).fit()
+model = logit('NSEI_OPEN_DIR ~ NSEI_DAILY_RETURNS + DJI_DAILY_RETURNS + IXIC_DAILY_RETURNS + HSI_DAILY_RETURNS + N225_DAILY_RETURNS + GDAXI_DAILY_RETURNS + VIX_DAILY_RETURNS + NSEI_HL_RATIO + DJI_HL_RATIO + NSEI_RSI + DJI_RSI', data = train).fit()
 model.summary()
 # """
 #                            Logit Regression Results                           
