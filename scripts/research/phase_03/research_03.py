@@ -76,7 +76,7 @@ y = data['NSEI_OPEN_DIR']
 # %% 6 -
 model = Logit(y, X).fit()
 # model.pvalues.index
-insignificant = [p[0] for p in zip(model.pvalues.index, model.pvalues) if p[1] > 0.05]
+insignificant = [p for p in zip(model.pvalues.index, model.pvalues) if p[1] > 0.05]
 insignificant
 # model = LogisticRegression().fit(X, y)
 
