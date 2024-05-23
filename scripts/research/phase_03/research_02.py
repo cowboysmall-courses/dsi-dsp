@@ -41,10 +41,12 @@ master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
 master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
 
+EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI"]
+
 
 
 # %% 3 -
-data = pd.concat([master["NSEI_OPEN_DIR"], master[COLUMNS].shift(), master["NSEI_HL_RATIO"].shift(), master["DJI_HL_RATIO"].shift(), master["NSEI_RSI"].shift(), master["DJI_RSI"].shift()], axis = 1)
+data = pd.concat([master["NSEI_OPEN_DIR"].shift(-1), master[COLUMNS + EXTRA_COLS]], axis = 1)
 data.dropna(inplace = True)
 data.head()
 

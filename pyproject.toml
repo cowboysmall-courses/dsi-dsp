@@ -35,12 +35,21 @@ dependencies = [
   "scipy",
   "matplotlib",
   "seaborn",
+
   "scikit-learn",
   "statsmodels",
+
   "yfinance",
+  "ta",
+  "pandas-ta",
+
   "arch",
-  "ipykernel",
   "distfit",
+
+  "ipykernel",
+
+  "pyasyncore",
+  "pyasynchat",
 ]
 
 [project.urls]

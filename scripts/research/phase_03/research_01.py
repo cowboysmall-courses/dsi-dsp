@@ -41,10 +41,24 @@ master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
 master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
 
+EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI"]
+
+
+
+# %% 2 -
+# master[["NSEI_OPEN_DIR"]].to_csv("./data/NSEI_OPEN_DIR_01.csv")
+
+counts = master['NSEI_OPEN_DIR'].value_counts().reset_index()
+counts.columns = ['NSEI_OPEN_DIR', 'Freq']
+print(counts)
+#    NSEI_OPEN_DIR  Freq
+# 0              1  1064
+# 1              0   499
+
 
 
 # %% 3 -
-data = pd.concat([master["NSEI_OPEN_DIR"], master[COLUMNS].shift(), master["NSEI_HL_RATIO"].shift(), master["DJI_HL_RATIO"].shift(), master["NSEI_RSI"].shift(), master["DJI_RSI"].shift()], axis = 1)
+data = pd.concat([master["NSEI_OPEN_DIR"].shift(-1), master[COLUMNS + EXTRA_COLS]], axis = 1)
 data.dropna(inplace = True)
 data.head()
 
@@ -90,6 +104,7 @@ model.summary()
 # N225_DAILY_RETURNS     -0.0926      0.062     -1.497      0.134      -0.214       0.029
 # GDAXI_DAILY_RETURNS     0.0436      0.068      0.639      0.523      -0.090       0.177
 # NSEI_HL_RATIO          -7.3651      9.574     -0.769      0.442     -26.130      11.400
+# DJI_HL_RATIO          -18.3269     10.488     -1.747      0.081     -38.882       2.228
 # NSEI_RSI                0.0018      0.004      0.449      0.653      -0.006       0.009
 # DJI_RSI                -0.0003      0.004     -0.071      0.943      -0.009       0.008
 
