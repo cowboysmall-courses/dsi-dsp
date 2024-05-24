@@ -24,10 +24,9 @@ from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from gsma import COLUMNS
-from gsma.data.file import read_master_file
-from gsma.feature.indicators import calculate_rsi
-from gsma.plots import plt, sns
+from cowboysmall.data.file import read_master_file
+from cowboysmall.feature.indicators import calculate_rsi
+from cowboysmall.plots import plt, sns
 
 
 
@@ -42,6 +41,11 @@ master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
 master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
 
+
+
+# %% 2 -
+INDICES    = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS    = [f"{index}_DAILY_RETURNS" for index in INDICES]
 EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI"]
 
 

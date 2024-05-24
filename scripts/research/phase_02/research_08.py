@@ -19,14 +19,15 @@ Global market indices of interest:
 import pandas as pd
 import numpy as np
 
-from gsma import INDICES, COLUMNS
-
-from gsma.data.file import read_master_file
-from gsma.plots import plt, sns
+from cowboysmall.data.file import read_master_file
+from cowboysmall.plots import plt, sns
 
 
 
 # %% 2 -
+INDICES = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS = [f"{index}_DAILY_RETURNS" for index in INDICES]
+
 master = read_master_file()
 
 CONDITIONS = [(master.index <= '2020-01-30'), ('2022-05-05' <= master.index)]

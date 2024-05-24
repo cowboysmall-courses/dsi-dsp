@@ -18,14 +18,15 @@ Global market indices of interest:
 # %% 1 - import required libraries
 import numpy as np
 
-from gsma import INDICES, COLUMNS
-
-from gsma.data.file import read_master_file
-from gsma.plots import plt, sns
+from cowboysmall.data.file import read_master_file
+from cowboysmall.plots import plt, sns
 
 
 
 # %% 2 -
+INDICES = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS = [f"{index}_DAILY_RETURNS" for index in INDICES]
+
 master = read_master_file()
 
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)

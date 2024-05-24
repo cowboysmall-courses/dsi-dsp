@@ -35,21 +35,18 @@ dependencies = [
   "scipy",
   "matplotlib",
   "seaborn",
-
   "scikit-learn",
   "statsmodels",
-
   "yfinance",
+  "pandas-datareader",
+  "mplfinance",
   "ta",
   "pandas-ta",
-
-  "arch",
-  "distfit",
-
   "ipykernel",
-
   "pyasyncore",
   "pyasynchat",
+    # "spyder-kernels",
+  "spyder-kernels==3.0.0b5",
 ]
 
 [project.urls]
@@ -63,10 +60,10 @@ Source = "https://github.com/cowboysmall-research/dsi-gsma"
 
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/gsma"]
+packages = ["src/cowboysmall"]
 
 [tool.hatch.version]
-path = "src/gsma/__about__.py"
+path = "src/cowboysmall/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -98,7 +95,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/gsma tests}"
+typing = "mypy --install-types --non-interactive {args:src/cowboysmall tests}"
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
@@ -172,7 +169,7 @@ unfixable = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["gsma"]
+known-first-party = ["cowboysmall"]
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -186,15 +183,15 @@ ban-relative-imports = "all"
 
 
 [tool.coverage.run]
-source_pkgs = ["gsma", "tests"]
+source_pkgs = ["cowboysmall", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/gsma/__about__.py",
+  "src/cowboysmall/__about__.py",
 ]
 
 [tool.coverage.paths]
-gsma = ["src/gsma", "*/dsi-gsma/src/gsma"]
+cowboysmall = ["src/cowboysmall", "*/dsi-gsma/src/cowboysmall"]
 tests = ["tests", "*/dsi-gsma/tests"]
 
 [tool.coverage.report]

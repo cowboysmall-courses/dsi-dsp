@@ -19,10 +19,10 @@ Global market indices of interest:
 import pandas as pd
 import numpy as np
 
-from gsma import INDICES, COLUMNS
+from cowboysmall import INDICES, COLUMNS
 
-from gsma.data.file import read_master_file
-from gsma.plots import plt, sns
+from cowboysmall.data.file import read_master_file
+from cowboysmall.plots import plt, sns
 
 
 

@@ -16,13 +16,13 @@ Global market indices of interest:
 
 
 # %% 1 - import required libraries
-from gsma import INDICES, COLUMNS
+from cowboysmall import INDICES, COLUMNS
 
-from gsma.data.index import retrieve_data
-from gsma.data.file import save_master_file
-from gsma.data.master import merge_data
+from cowboysmall.data.index import retrieve_data
+from cowboysmall.data.file import save_master_file
+from cowboysmall.data.master import merge_data
 
-from gsma.si.tests import test_normality
+from cowboysmall.si.tests import test_normality
 
 
 

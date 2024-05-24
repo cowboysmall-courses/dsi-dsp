@@ -1,4 +1,9 @@
 
+
+
+import ta
+
+
 def calculate_rsi(values, window = 14):
     delta_up = values.diff()
     delta_dn = delta_up.copy()

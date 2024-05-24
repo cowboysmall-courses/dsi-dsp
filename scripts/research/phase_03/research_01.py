@@ -18,16 +18,26 @@ Global market indices of interest:
 # %% 1 - import required libraries
 import pandas as pd
 import numpy as np
+import ta
 
 from statsmodels.formula.api import logit
-from sklearn.metrics import classification_report, roc_curve, roc_auc_score
+from statsmodels.api import Logit
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from gsma import COLUMNS
-from gsma.data.file import read_master_file
-from gsma.feature.indicators import calculate_rsi
-from gsma.plots import plt, sns
+from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 
+from cowboysmall.data.file import read_master_file
+from cowboysmall.feature.indicators import calculate_rsi
+from cowboysmall.plots import plt, sns
+
+
+
+# %% 2 -
+INDICES    = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS    = [f"{index}_DAILY_RETURNS" for index in INDICES]
+EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI", "NSEI_ROC", "DJI_ROC"]
+
+ALL_COLS   = COLUMNS + EXTRA_COLS
 
 
 # %% 2 -
@@ -38,10 +48,14 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
 master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 
-master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
-master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
+# master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
+# master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
 
-EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI"]
+master["NSEI_RSI"]      = ta.momentum.rsi(master["NSEI_CLOSE"])
+master["DJI_RSI"]       = ta.momentum.rsi(master["DJI_CLOSE"])
+
+master["NSEI_ROC"]      = ta.momentum.roc(master["NSEI_CLOSE"])
+master["DJI_ROC"]       = ta.momentum.roc(master["DJI_CLOSE"])
 
 
 
@@ -58,40 +72,48 @@ print(counts)
 
 
 # %% 3 -
-data = pd.concat([master["NSEI_OPEN_DIR"].shift(-1), master[COLUMNS + EXTRA_COLS]], axis = 1)
+data = pd.concat([master["NSEI_OPEN_DIR"].shift(-1), master[ALL_COLS]], axis = 1)
 data.dropna(inplace = True)
 data.head()
 
 
 
+# %% 3 -
+X = data[ALL_COLS]
+y = data['NSEI_OPEN_DIR']
+
+
+
 # %% 4 -
-model = logit('NSEI_OPEN_DIR ~ NSEI_DAILY_RETURNS + DJI_DAILY_RETURNS + IXIC_DAILY_RETURNS + HSI_DAILY_RETURNS + N225_DAILY_RETURNS + GDAXI_DAILY_RETURNS + VIX_DAILY_RETURNS + NSEI_HL_RATIO + DJI_HL_RATIO + NSEI_RSI + DJI_RSI', data = data).fit()
+# model = logit('NSEI_OPEN_DIR ~ NSEI_DAILY_RETURNS + DJI_DAILY_RETURNS + IXIC_DAILY_RETURNS + HSI_DAILY_RETURNS + N225_DAILY_RETURNS + GDAXI_DAILY_RETURNS + VIX_DAILY_RETURNS + NSEI_HL_RATIO + DJI_HL_RATIO + NSEI_RSI + DJI_RSI', data = data).fit()
+model = Logit(y, X).fit()
 model.summary()
 # """
 #                            Logit Regression Results                           
 # ==============================================================================
-# Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1548
+# Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1549
 # Model:                          Logit   Df Residuals:                     1536
-# Method:                           MLE   Df Model:                           11
-# Date:                Fri, 19 Apr 2024   Pseudo R-squ.:                  0.1460
-# Time:                        11:59:55   Log-Likelihood:                -829.77
-# converged:                       True   LL-Null:                       -971.63
-# Covariance Type:            nonrobust   LLR p-value:                 2.343e-54
+# Method:                           MLE   Df Model:                           12
+# Date:                Fri, 24 May 2024   Pseudo R-squ.:                  0.1436
+# Time:                        21:17:38   Log-Likelihood:                -833.08
+# converged:                       True   LL-Null:                       -972.76
+# Covariance Type:            nonrobust   LLR p-value:                 9.946e-53
 # =======================================================================================
 #                           coef    std err          z      P>|z|      [0.025      0.975]
 # ---------------------------------------------------------------------------------------
-# Intercept              26.7722     11.188      2.393      0.017       4.843      48.701
-# NSEI_DAILY_RETURNS     -0.2618      0.072     -3.632      0.000      -0.403      -0.121
-# DJI_DAILY_RETURNS       0.1380      0.113      1.219      0.223      -0.084       0.360
-# IXIC_DAILY_RETURNS      0.3996      0.081      4.924      0.000       0.241       0.559
-# HSI_DAILY_RETURNS      -0.0937      0.049     -1.911      0.056      -0.190       0.002
-# N225_DAILY_RETURNS     -0.0926      0.062     -1.497      0.134      -0.214       0.029
-# GDAXI_DAILY_RETURNS     0.0436      0.068      0.639      0.523      -0.090       0.177
-# VIX_DAILY_RETURNS      -0.0450      0.012     -3.710      0.000      -0.069      -0.021
-# NSEI_HL_RATIO          -7.3651      9.574     -0.769      0.442     -26.130      11.400
-# DJI_HL_RATIO          -18.3269     10.488     -1.747      0.081     -38.882       2.228
-# NSEI_RSI                0.0018      0.004      0.449      0.653      -0.006       0.009
-# DJI_RSI                -0.0003      0.004     -0.071      0.943      -0.009       0.008
+# NSEI_DAILY_RETURNS     -0.2679      0.074     -3.626      0.000      -0.413      -0.123
+# DJI_DAILY_RETURNS       0.1440      0.116      1.240      0.215      -0.084       0.372
+# IXIC_DAILY_RETURNS      0.4052      0.081      4.979      0.000       0.246       0.565
+# HSI_DAILY_RETURNS      -0.0946      0.049     -1.929      0.054      -0.191       0.002
+# N225_DAILY_RETURNS     -0.0967      0.062     -1.557      0.119      -0.219       0.025
+# GDAXI_DAILY_RETURNS     0.0428      0.069      0.623      0.533      -0.092       0.177
+# VIX_DAILY_RETURNS      -0.0449      0.012     -3.697      0.000      -0.069      -0.021
+# NSEI_HL_RATIO           2.2713      8.648      0.263      0.793     -14.678      19.221
+# DJI_HL_RATIO           -2.1682      8.591     -0.252      0.801     -19.006      14.670
+# NSEI_RSI                0.0101      0.008      1.197      0.231      -0.006       0.027
+# DJI_RSI                 0.0040      0.009      0.421      0.674      -0.014       0.022
+# NSEI_ROC               -0.0245      0.034     -0.720      0.471      -0.091       0.042
+# DJI_ROC                 0.0102      0.032      0.316      0.752      -0.053       0.074
 # =======================================================================================
 # """
 
@@ -99,21 +121,23 @@ model.summary()
 
 # list of insignificant variables
 # 
-# DJI_DAILY_RETURNS       0.1380      0.113      1.219      0.223      -0.084       0.360
-# HSI_DAILY_RETURNS      -0.0937      0.049     -1.911      0.056      -0.190       0.002
-# N225_DAILY_RETURNS     -0.0926      0.062     -1.497      0.134      -0.214       0.029
-# GDAXI_DAILY_RETURNS     0.0436      0.068      0.639      0.523      -0.090       0.177
-# NSEI_HL_RATIO          -7.3651      9.574     -0.769      0.442     -26.130      11.400
-# DJI_HL_RATIO          -18.3269     10.488     -1.747      0.081     -38.882       2.228
-# NSEI_RSI                0.0018      0.004      0.449      0.653      -0.006       0.009
-# DJI_RSI                -0.0003      0.004     -0.071      0.943      -0.009       0.008
+# DJI_DAILY_RETURNS       0.1440      0.116      1.240      0.215      -0.084       0.372
+# HSI_DAILY_RETURNS      -0.0946      0.049     -1.929      0.054      -0.191       0.002
+# N225_DAILY_RETURNS     -0.0967      0.062     -1.557      0.119      -0.219       0.025
+# GDAXI_DAILY_RETURNS     0.0428      0.069      0.623      0.533      -0.092       0.177
+# NSEI_HL_RATIO           2.2713      8.648      0.263      0.793     -14.678      19.221
+# DJI_HL_RATIO           -2.1682      8.591     -0.252      0.801     -19.006      14.670
+# NSEI_RSI                0.0101      0.008      1.197      0.231      -0.006       0.027
+# DJI_RSI                 0.0040      0.009      0.421      0.674      -0.014       0.022
+# NSEI_ROC               -0.0245      0.034     -0.720      0.471      -0.091       0.042
+# DJI_ROC                 0.0102      0.032      0.316      0.752      -0.053       0.074
 
 
 
 # %% 5 -
 vif_data = pd.DataFrame()
-vif_data["Feature"] = model.model.exog_names[1:]
-vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(1, model.model.exog.shape[1])]
+vif_data["Feature"] = model.model.exog_names
+vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(model.model.exog.shape[1])]
 vif_data
 #                 Feature       VIF
 # 0    NSEI_DAILY_RETURNS  1.427738

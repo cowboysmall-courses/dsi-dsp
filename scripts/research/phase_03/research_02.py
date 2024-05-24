@@ -18,15 +18,15 @@ Global market indices of interest:
 # %% 1 - import required libraries
 import pandas as pd
 import numpy as np
+import ta
 
 from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from gsma import COLUMNS
-from gsma.data.file import read_master_file
-from gsma.model.logit import pruned_logit
-from gsma.feature.indicators import calculate_rsi
-from gsma.plots import plt, sns
+from cowboysmall.data.file import read_master_file
+from cowboysmall.model.logit import pruned_logit
+from cowboysmall.feature.indicators import calculate_rsi
+from cowboysmall.plots import plt, sns
 
 
 
@@ -38,9 +38,20 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
 master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 
-master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
-master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
+# master["NSEI_RSI"]      = calculate_rsi(master["NSEI_CLOSE"])
+# master["DJI_RSI"]       = calculate_rsi(master["DJI_CLOSE"])
 
+master["NSEI_RSI"]      = ta.momentum.rsi(master["NSEI_CLOSE"])
+master["DJI_RSI"]       = ta.momentum.rsi(master["DJI_CLOSE"])
+
+master["NSEI_ROC"]      = ta.momentum.roc(master["NSEI_CLOSE"])
+master["DJI_ROC"]       = ta.momentum.roc(master["DJI_CLOSE"])
+
+
+
+# %% 2 -
+INDICES    = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS    = [f"{index}_DAILY_RETURNS" for index in INDICES]
 EXTRA_COLS = ["NSEI_HL_RATIO", "DJI_HL_RATIO", "NSEI_RSI", "DJI_RSI"]
 
 
