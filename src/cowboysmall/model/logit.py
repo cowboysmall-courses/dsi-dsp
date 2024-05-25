@@ -15,6 +15,12 @@ def pruned_logit(X, y):
         colinear = [val for val in zip(model.model.exog_names, values) if val[1] > 5]
         colinear.sort(key = lambda c: -c[1])
 
+        if insignificant and insignificant[0][0] == "Intercept":
+            insignificant = insignificant[1:]
+
+        if colinear and colinear[0][0] == "Intercept":
+            colinear = colinear[1:]
+
         if insignificant:
             print(f"dropping {insignificant[0][0]}")
             X = X.drop([insignificant[0][0]], axis = 1)

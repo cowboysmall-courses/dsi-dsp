@@ -90,6 +90,11 @@ y = data['NSEI_OPEN_DIR']
 
 
 
+# %% 3 -
+X.insert(loc = 0, column = "Intercept", value = pd.Series([1] * X.shape[0]))
+
+
+
 # %% 4 -
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 1337)
 

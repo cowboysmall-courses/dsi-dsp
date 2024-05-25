@@ -89,6 +89,11 @@ y = data['NSEI_OPEN_DIR']
 
 
 
+# %% 3 -
+X.insert(loc = 0, column = "Intercept", value = 1)
+
+
+
 # %% 4 -
 model, dropped = pruned_logit(X, y)
 model.summary()
@@ -132,9 +137,9 @@ vif_data
 
 
 # %% 6 - ROC Curve
-X['predicted'] = model.predict(X.drop(dropped, axis = 1))
+y_pred = model.predict(X.drop(dropped, axis = 1))
 
-fpr, tpr, thresholds = roc_curve(y, X['predicted'])
+fpr, tpr, thresholds = roc_curve(y, y_pred)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -150,15 +155,15 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 8 - AUC Curve
-auc_roc = roc_auc_score(y, X['predicted'])
+auc_roc = roc_auc_score(y, y_pred)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7475635107577027
 
 
 
 # %% 10 - Classification Report
-X['predicted_class'] = np.where(X['predicted'] <= optimal_threshold,  0, 1)
-print(classification_report(y, X['predicted_class']))
+y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
+print(classification_report(y, y_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.52      0.67      0.59       488
@@ -171,7 +176,7 @@ print(classification_report(y, X['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(X['predicted_class'], y)
+table = pd.crosstab(y_pred_class, y)
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          

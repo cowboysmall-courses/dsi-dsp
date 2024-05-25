@@ -88,6 +88,11 @@ y = data['NSEI_OPEN_DIR']
 
 
 
+# %% 3 -
+X.insert(loc = 0, column = "Intercept", value = 1)
+
+
+
 # %% 4 -
 model = Logit(y, X).fit()
 model.summary()
@@ -235,14 +240,14 @@ plt.roc_curve(fpr, tpr, "01_01", "01 - with all data", "phase_03")
 # %% 8 - find optimal threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.622
+# Best Threshold is : 0.689
 
 
 
 # %% 9 - AUC Curve
 auc_roc = roc_auc_score(y, y_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7663223042509131
+# AUC ROC: 0.7692547860315854
 
 
 
@@ -251,12 +256,12 @@ y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
 print(classification_report(y, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.62      0.58      0.60       488
-#          1.0       0.81      0.83      0.82      1037
+#          0.0       0.54      0.69      0.61       488
+#          1.0       0.83      0.72      0.77      1037
 # 
-#     accuracy                           0.75      1525
-#    macro avg       0.71      0.70      0.71      1525
-# weighted avg       0.75      0.75      0.75      1525
+#     accuracy                           0.71      1525
+#    macro avg       0.69      0.71      0.69      1525
+# weighted avg       0.74      0.71      0.72      1525
 
 
 
