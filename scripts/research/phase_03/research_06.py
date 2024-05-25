@@ -36,7 +36,7 @@ RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
 
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 
-FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "NSEI_RSI"]
+FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI"]
 
 
 # %% 2 -
@@ -115,14 +115,14 @@ plt.roc_curve(fpr, tpr, "06_01", "01 - training data", "phase_03")
 # %% 9 - Optimal Threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.678
+# Best Threshold is : 0.687
 
 
 
 # %% 10 - AUC Curve
 auc_roc = roc_auc_score(y_train, y_predprob[:, 1])
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7493606138107417
+# AUC ROC: 0.7507072583058503
 
 
 
@@ -131,12 +131,12 @@ X_train['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0,
 print(classification_report(y_train, X_train['predicted_class']))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.53      0.66      0.59       391
+#          0.0       0.54      0.67      0.60       391
 #          1.0       0.82      0.73      0.77       829
 # 
 #     accuracy                           0.71      1220
-#    macro avg       0.68      0.69      0.68      1220
-# weighted avg       0.73      0.71      0.71      1220
+#    macro avg       0.68      0.70      0.69      1220
+# weighted avg       0.73      0.71      0.72      1220
 
 
 
@@ -145,8 +145,8 @@ table = pd.crosstab(X_train['predicted_class'], y_train)
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
-# 0                257  224
-# 1                134  605
+# 0                262  224
+# 1                129  605
 
 
 
@@ -157,7 +157,7 @@ print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.63 is : 65.73%
+# Specificity for cut-off 0.63 is : 67.01%
 
 
 
@@ -175,7 +175,7 @@ plt.roc_curve(fpr, tpr, "06_02", "02 - testing data", "phase_03")
 # %% 13 - AUC Curve
 auc_roc = roc_auc_score(y_test, y_predprob[:, 1])
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7592684377478192
+# AUC ROC: 0.7495539254559873
 
 
 
@@ -184,12 +184,12 @@ X_test['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 
 print(classification_report(y_test, X_test['predicted_class']))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.54      0.67      0.60        97
-#          1.0       0.83      0.73      0.78       208
+#          0.0       0.52      0.67      0.59        97
+#          1.0       0.82      0.72      0.77       208
 # 
-#     accuracy                           0.71       305
-#    macro avg       0.68      0.70      0.69       305
-# weighted avg       0.73      0.71      0.72       305
+#     accuracy                           0.70       305
+#    macro avg       0.67      0.69      0.68       305
+# weighted avg       0.73      0.70      0.71       305
 
 
 
@@ -198,15 +198,15 @@ table = pd.crosstab(X_test['predicted_class'], y_test)
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
-# 0                 65   56
-# 1                 32  152
+# 0                 65   59
+# 1                 32  149
 
 
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.63 is : 73.08%
+# Sensitivity for cut-off 0.63 is : 71.63%
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
