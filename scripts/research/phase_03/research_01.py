@@ -72,6 +72,7 @@ print(counts)
 
 # %% 2 -
 print((counts["Freq"][0] / (counts["Freq"][0] + counts["Freq"][1])).round(3))
+# 0.681
 
 
 
@@ -100,42 +101,43 @@ model.summary()
 #                            Logit Regression Results                           
 # ==============================================================================
 # Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1525
-# Model:                          Logit   Df Residuals:                     1498
-# Method:                           MLE   Df Model:                           26
-# Date:                Sat, 25 May 2024   Pseudo R-squ.:                  0.1621
-# Time:                        13:58:22   Log-Likelihood:                -801.00
+# Model:                          Logit   Df Residuals:                     1497
+# Method:                           MLE   Df Model:                           27
+# Date:                Sun, 26 May 2024   Pseudo R-squ.:                  0.1659
+# Time:                        12:22:24   Log-Likelihood:                -797.38
 # converged:                       True   LL-Null:                       -955.98
-# Covariance Type:            nonrobust   LLR p-value:                 2.144e-50
+# Covariance Type:            nonrobust   LLR p-value:                 2.685e-51
 # =======================================================================================
 #                           coef    std err          z      P>|z|      [0.025      0.975]
 # ---------------------------------------------------------------------------------------
-# NSEI_DAILY_RETURNS     -0.1376      0.086     -1.603      0.109      -0.306       0.031
-# DJI_DAILY_RETURNS      -0.0455      0.117     -0.388      0.698      -0.276       0.185
-# IXIC_DAILY_RETURNS      0.4203      0.084      5.027      0.000       0.256       0.584
-# HSI_DAILY_RETURNS      -0.1157      0.050     -2.295      0.022      -0.214      -0.017
-# N225_DAILY_RETURNS     -0.1573      0.065     -2.436      0.015      -0.284      -0.031
-# GDAXI_DAILY_RETURNS     0.0353      0.069      0.510      0.610      -0.101       0.171
-# VIX_DAILY_RETURNS      -0.0392      0.013     -3.091      0.002      -0.064      -0.014
-# NSEI_HL_RATIO          -3.6829      9.467     -0.389      0.697     -22.239      14.873
-# DJI_HL_RATIO            0.6229      9.443      0.066      0.947     -17.885      19.131
-# NSEI_RSI               -0.0307      0.019     -1.622      0.105      -0.068       0.006
-# DJI_RSI                 0.0867      0.020      4.390      0.000       0.048       0.125
-# NSEI_ROC               -0.0712      0.043     -1.652      0.099      -0.156       0.013
-# DJI_ROC                 0.0391      0.041      0.945      0.345      -0.042       0.120
-# NSEI_AWE                0.0004      0.001      0.522      0.602      -0.001       0.002
-# DJI_AWE                -0.0004      0.001     -0.710      0.477      -0.002       0.001
-# NSEI_KAM            -1.754e-05      0.001     -0.026      0.979      -0.001       0.001
-# DJI_KAM                 0.0002      0.000      0.822      0.411      -0.000       0.001
-# NSEI_TSI                0.0264      0.013      2.103      0.035       0.002       0.051
-# DJI_TSI                -0.0554      0.014     -3.844      0.000      -0.084      -0.027
-# NSEI_VPT            -2.867e-06   2.69e-06     -1.067      0.286   -8.13e-06     2.4e-06
-# DJI_VPT              -5.75e-10   2.66e-09     -0.216      0.829   -5.79e-09    4.64e-09
-# NSEI_ULC               -0.0295      0.077     -0.384      0.701      -0.180       0.121
-# DJI_ULC                -0.0942      0.078     -1.213      0.225      -0.246       0.058
-# NSEI_SMA               -0.0044      0.002     -2.320      0.020      -0.008      -0.001
-# DJI_SMA                 0.0021      0.001      2.432      0.015       0.000       0.004
-# NSEI_EMA                0.0043      0.002      2.219      0.026       0.001       0.008
-# DJI_EMA                -0.0022      0.001     -2.476      0.013      -0.004      -0.000
+# Intercept              41.2311     14.601      2.824      0.005      12.615      69.848
+# NSEI_DAILY_RETURNS     -0.1382      0.087     -1.594      0.111      -0.308       0.032
+# DJI_DAILY_RETURNS      -0.0271      0.116     -0.233      0.816      -0.255       0.200
+# IXIC_DAILY_RETURNS      0.4186      0.083      5.014      0.000       0.255       0.582
+# HSI_DAILY_RETURNS      -0.1148      0.050     -2.277      0.023      -0.214      -0.016
+# N225_DAILY_RETURNS     -0.1566      0.064     -2.440      0.015      -0.282      -0.031
+# GDAXI_DAILY_RETURNS     0.0252      0.069      0.363      0.717      -0.111       0.161
+# VIX_DAILY_RETURNS      -0.0342      0.013     -2.676      0.007      -0.059      -0.009
+# NSEI_HL_RATIO         -21.4490     10.676     -2.009      0.045     -42.373      -0.525
+# DJI_HL_RATIO          -22.4774     12.709     -1.769      0.077     -47.388       2.433
+# NSEI_RSI               -0.0339      0.019     -1.793      0.073      -0.071       0.003
+# DJI_RSI                 0.0858      0.020      4.309      0.000       0.047       0.125
+# NSEI_ROC               -0.0763      0.043     -1.765      0.078      -0.161       0.008
+# DJI_ROC                 0.0298      0.042      0.715      0.475      -0.052       0.112
+# NSEI_AWE                0.0004      0.001      0.549      0.583      -0.001       0.002
+# DJI_AWE                -0.0003      0.001     -0.486      0.627      -0.001       0.001
+# NSEI_KAM             7.615e-05      0.001      0.112      0.911      -0.001       0.001
+# DJI_KAM                 0.0003      0.000      0.972      0.331      -0.000       0.001
+# NSEI_TSI                0.0274      0.013      2.190      0.029       0.003       0.052
+# DJI_TSI                -0.0556      0.014     -3.852      0.000      -0.084      -0.027
+# NSEI_VPT            -2.907e-06    2.7e-06     -1.077      0.282    -8.2e-06    2.38e-06
+# DJI_VPT             -2.313e-09   2.75e-09     -0.840      0.401   -7.71e-09    3.09e-09
+# NSEI_ULC                0.0104      0.078      0.133      0.894      -0.143       0.163
+# DJI_ULC                -0.0452      0.080     -0.564      0.573      -0.202       0.112
+# NSEI_SMA               -0.0039      0.002     -2.067      0.039      -0.008      -0.000
+# DJI_SMA                 0.0024      0.001      2.724      0.006       0.001       0.004
+# NSEI_EMA                0.0037      0.002      1.905      0.057      -0.000       0.008
+# DJI_EMA                -0.0026      0.001     -2.782      0.005      -0.004      -0.001
 # =======================================================================================
 # """
 
@@ -143,83 +145,81 @@ model.summary()
 
 # list of insignificant variables
 # 
-# NSEI_DAILY_RETURNS     -0.1376      0.086     -1.603      0.109      -0.306       0.031
-# DJI_DAILY_RETURNS      -0.0455      0.117     -0.388      0.698      -0.276       0.185
-# GDAXI_DAILY_RETURNS     0.0353      0.069      0.510      0.610      -0.101       0.171
-# NSEI_HL_RATIO          -3.6829      9.467     -0.389      0.697     -22.239      14.873
-# DJI_HL_RATIO            0.6229      9.443      0.066      0.947     -17.885      19.131
-# NSEI_RSI               -0.0307      0.019     -1.622      0.105      -0.068       0.006
-# NSEI_ROC               -0.0712      0.043     -1.652      0.099      -0.156       0.013
-# DJI_ROC                 0.0391      0.041      0.945      0.345      -0.042       0.120
-# NSEI_AWE                0.0004      0.001      0.522      0.602      -0.001       0.002
-# DJI_AWE                -0.0004      0.001     -0.710      0.477      -0.002       0.001
-# NSEI_KAM            -1.754e-05      0.001     -0.026      0.979      -0.001       0.001
-# DJI_KAM                 0.0002      0.000      0.822      0.411      -0.000       0.001
-# NSEI_VPT            -2.867e-06   2.69e-06     -1.067      0.286   -8.13e-06     2.4e-06
-# DJI_VPT              -5.75e-10   2.66e-09     -0.216      0.829   -5.79e-09    4.64e-09
-# NSEI_ULC               -0.0295      0.077     -0.384      0.701      -0.180       0.121
-# DJI_ULC                -0.0942      0.078     -1.213      0.225      -0.246       0.058
+# NSEI_DAILY_RETURNS     -0.1382      0.087     -1.594      0.111      -0.308       0.032
+# DJI_DAILY_RETURNS      -0.0271      0.116     -0.233      0.816      -0.255       0.200
+# GDAXI_DAILY_RETURNS     0.0252      0.069      0.363      0.717      -0.111       0.161
+# DJI_HL_RATIO          -22.4774     12.709     -1.769      0.077     -47.388       2.433
+# NSEI_RSI               -0.0339      0.019     -1.793      0.073      -0.071       0.003
+# NSEI_ROC               -0.0763      0.043     -1.765      0.078      -0.161       0.008
+# DJI_ROC                 0.0298      0.042      0.715      0.475      -0.052       0.112
+# NSEI_AWE                0.0004      0.001      0.549      0.583      -0.001       0.002
+# DJI_AWE                -0.0003      0.001     -0.486      0.627      -0.001       0.001
+# NSEI_KAM             7.615e-05      0.001      0.112      0.911      -0.001       0.001
+# DJI_KAM                 0.0003      0.000      0.972      0.331      -0.000       0.001
+# NSEI_VPT            -2.907e-06    2.7e-06     -1.077      0.282    -8.2e-06    2.38e-06
+# DJI_VPT             -2.313e-09   2.75e-09     -0.840      0.401   -7.71e-09    3.09e-09
+# NSEI_ULC                0.0104      0.078      0.133      0.894      -0.143       0.163
+# DJI_ULC                -0.0452      0.080     -0.564      0.573      -0.202       0.112
+# NSEI_EMA                0.0037      0.002      1.905      0.057      -0.000       0.008
+
 
 
 
 # %% 5 -
 vif_data = pd.DataFrame()
-vif_data["Feature"] = model.model.exog_names
-vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(model.model.exog.shape[1])]
+vif_data["Feature"] = model.model.exog_names[1:]
+vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(1, model.model.exog.shape[1])]
 vif_data
-#                 Feature            VIF
-# 0    NSEI_DAILY_RETURNS       2.053221
-# 1     DJI_DAILY_RETURNS       4.600217
-# 2    IXIC_DAILY_RETURNS       4.040925
-# 3     HSI_DAILY_RETURNS       1.376547
-# 4    N225_DAILY_RETURNS       1.430670
-# 5   GDAXI_DAILY_RETURNS       1.887660
-# 6     VIX_DAILY_RETURNS       2.280270
-# 7         NSEI_HL_RATIO   19468.409450
-# 8          DJI_HL_RATIO   19233.465757
-# 9              NSEI_RSI     272.948531
-# 10              DJI_RSI     282.060710
-# 11             NSEI_ROC       7.833744
-# 12              DJI_ROC       6.984218
-# 13             NSEI_AWE      32.997542
-# 14              DJI_AWE      34.244026
-# 15             NSEI_KAM   26598.408682
-# 16              DJI_KAM   21000.271095
-# 17             NSEI_TSI      25.035203
-# 18              DJI_TSI      20.579202
-# 19             NSEI_VPT      36.843303
-# 20              DJI_VPT      12.795937
-# 21             NSEI_ULC      17.076637
-# 22              DJI_ULC      19.522275
-# 23             NSEI_SMA  200757.401758
-# 24              DJI_SMA  171444.903163
-# 25             NSEI_EMA  212525.885857
-# 26              DJI_EMA  189079.030611
+#                 Feature           VIF
+# 0    NSEI_DAILY_RETURNS      2.054876
+# 1     DJI_DAILY_RETURNS      4.695492
+# 2    IXIC_DAILY_RETURNS      4.033191
+# 3     HSI_DAILY_RETURNS      1.376423
+# 4    N225_DAILY_RETURNS      1.435879
+# 5   GDAXI_DAILY_RETURNS      1.912839
+# 6     VIX_DAILY_RETURNS      2.375511
+# 7         NSEI_HL_RATIO      2.452368
+# 8          DJI_HL_RATIO      3.008081
+# 9              NSEI_RSI     15.093909
+# 10              DJI_RSI     12.430268
+# 11             NSEI_ROC      7.646693
+# 12              DJI_ROC      6.981107
+# 13             NSEI_AWE     31.548467
+# 14              DJI_AWE     33.399217
+# 15             NSEI_KAM   1424.310763
+# 16              DJI_KAM    384.514456
+# 17             NSEI_TSI     21.138834
+# 18              DJI_TSI     18.274111
+# 19             NSEI_VPT     19.319901
+# 20              DJI_VPT      2.993374
+# 21             NSEI_ULC     10.145682
+# 22              DJI_ULC     11.565404
+# 23             NSEI_SMA  10639.108241
+# 24              DJI_SMA   3240.412536
+# 25             NSEI_EMA  11260.305603
+# 26              DJI_EMA   3564.987671
 
 
 
 # list of colinear variables
 # 
-# 7         NSEI_HL_RATIO   19468.409450
-# 8          DJI_HL_RATIO   19233.465757
-# 9              NSEI_RSI     272.948531
-# 10              DJI_RSI     282.060710
-# 11             NSEI_ROC       7.833744
-# 12              DJI_ROC       6.984218
-# 13             NSEI_AWE      32.997542
-# 14              DJI_AWE      34.244026
-# 15             NSEI_KAM   26598.408682
-# 16              DJI_KAM   21000.271095
-# 17             NSEI_TSI      25.035203
-# 18              DJI_TSI      20.579202
-# 19             NSEI_VPT      36.843303
-# 20              DJI_VPT      12.795937
-# 21             NSEI_ULC      17.076637
-# 22              DJI_ULC      19.522275
-# 23             NSEI_SMA  200757.401758
-# 24              DJI_SMA  171444.903163
-# 25             NSEI_EMA  212525.885857
-# 26              DJI_EMA  189079.030611
+# 9              NSEI_RSI     15.093909
+# 10              DJI_RSI     12.430268
+# 11             NSEI_ROC      7.646693
+# 12              DJI_ROC      6.981107
+# 13             NSEI_AWE     31.548467
+# 14              DJI_AWE     33.399217
+# 15             NSEI_KAM   1424.310763
+# 16              DJI_KAM    384.514456
+# 17             NSEI_TSI     21.138834
+# 18              DJI_TSI     18.274111
+# 19             NSEI_VPT     19.319901
+# 21             NSEI_ULC     10.145682
+# 22              DJI_ULC     11.565404
+# 23             NSEI_SMA  10639.108241
+# 24              DJI_SMA   3240.412536
+# 25             NSEI_EMA  11260.305603
+# 26              DJI_EMA   3564.987671
 
 
 
@@ -270,16 +270,16 @@ table = pd.crosstab(y_pred_class, y)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0              283  177
-# 1              205  860
+# 0              339  287
+# 1              149  750
 
 
 
 # %% 12 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.622 is : 82.93%
+# Sensitivity for cut-off 0.689 is : 72.32%
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.622 is : 57.99%
+# Specificity for cut-off 0.689 is : 69.47%

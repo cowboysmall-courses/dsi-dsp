@@ -91,7 +91,7 @@ y = data['NSEI_OPEN_DIR']
 
 
 # %% 3 -
-X.insert(loc = 0, column = "Intercept", value = pd.Series([1] * X.shape[0]))
+X.insert(loc = 0, column = "Intercept", value = 1)
 
 
 
@@ -107,20 +107,22 @@ model.summary()
 #                            Logit Regression Results                           
 # ==============================================================================
 # Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1220
-# Model:                          Logit   Df Residuals:                     1215
-# Method:                           MLE   Df Model:                            4
-# Date:                Sat, 25 May 2024   Pseudo R-squ.:                  0.1262
-# Time:                        16:44:35   Log-Likelihood:                -668.64
+# Model:                          Logit   Df Residuals:                     1213
+# Method:                           MLE   Df Model:                            6
+# Date:                Sun, 26 May 2024   Pseudo R-squ.:                  0.1375
+# Time:                        13:13:53   Log-Likelihood:                -660.02
 # converged:                       True   LL-Null:                       -765.23
-# Covariance Type:            nonrobust   LLR p-value:                 1.095e-40
+# Covariance Type:            nonrobust   LLR p-value:                 1.141e-42
 # ======================================================================================
 #                          coef    std err          z      P>|z|      [0.025      0.975]
 # --------------------------------------------------------------------------------------
-# IXIC_DAILY_RETURNS     0.4791      0.073      6.574      0.000       0.336       0.622
-# HSI_DAILY_RETURNS     -0.1378      0.052     -2.631      0.009      -0.240      -0.035
-# N225_DAILY_RETURNS    -0.1429      0.065     -2.209      0.027      -0.270      -0.016
-# VIX_DAILY_RETURNS     -0.0485      0.013     -3.803      0.000      -0.073      -0.024
-# NSEI_RSI               0.0147      0.001     12.256      0.000       0.012       0.017
+# Intercept             -1.4041      0.656     -2.139      0.032      -2.690      -0.118
+# IXIC_DAILY_RETURNS     0.4552      0.075      6.093      0.000       0.309       0.602
+# HSI_DAILY_RETURNS     -0.1395      0.053     -2.632      0.008      -0.243      -0.036
+# N225_DAILY_RETURNS    -0.1960      0.068     -2.897      0.004      -0.329      -0.063
+# VIX_DAILY_RETURNS     -0.0397      0.013     -3.054      0.002      -0.065      -0.014
+# DJI_RSI                0.0447      0.013      3.415      0.001       0.019       0.070
+# DJI_TSI               -0.0205      0.008     -2.660      0.008      -0.036      -0.005
 # ======================================================================================
 # """
 
@@ -128,22 +130,23 @@ model.summary()
 
 # %% 10 -
 vif_data = pd.DataFrame()
-vif_data["Feature"] = model.model.exog_names
-vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(model.model.exog.shape[1])]
+vif_data["Feature"] = model.model.exog_names[1:]
+vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(1, model.model.exog.shape[1])]
 vif_data
 #               Feature       VIF
-# 0  IXIC_DAILY_RETURNS  2.015598
-# 1   HSI_DAILY_RETURNS  1.242026
-# 2  N225_DAILY_RETURNS  1.260440
-# 3   VIX_DAILY_RETURNS  1.917015
-# 4            NSEI_RSI  1.013337
+# 0  IXIC_DAILY_RETURNS  2.073867
+# 1   HSI_DAILY_RETURNS  1.244922
+# 2  N225_DAILY_RETURNS  1.353286
+# 3   VIX_DAILY_RETURNS  1.994009
+# 4             DJI_RSI  4.850250
+# 5             DJI_TSI  4.379409
 
 
 
 # %% 8 - ROC Curve
-X_train['predicted'] = model.predict(X_train.drop(dropped, axis = 1))
+y_pred = model.predict(X_train.drop(dropped, axis = 1))
 
-fpr, tpr, thresholds = roc_curve(y_train, X_train['predicted'])
+fpr, tpr, thresholds = roc_curve(y_train, y_pred)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -154,56 +157,56 @@ plt.roc_curve(fpr, tpr, "04_01", "01 - training data", "phase_03")
 # %% 9 - Optimal Threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.649
+# Best Threshold is : 0.684
 
 
 
 # %% 10 - AUC Curve
-auc_roc = roc_auc_score(y_train, X_train['predicted'])
+auc_roc = roc_auc_score(y_train, y_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.748043277729616
+# AUC ROC: 0.7529115595469844
 
 
 
 # %% 11 - Classification Report
-X_train['predicted_class'] = np.where(X_train['predicted'] <= optimal_threshold,  0, 1)
-print(classification_report(y_train, X_train['predicted_class']))
+y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
+print(classification_report(y_train, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.57      0.61      0.59       391
-#          1.0       0.81      0.78      0.80       829
+#          0.0       0.53      0.68      0.60       391
+#          1.0       0.83      0.72      0.77       829
 # 
-#     accuracy                           0.73      1220
-#    macro avg       0.69      0.70      0.69      1220
-# weighted avg       0.73      0.73      0.73      1220
+#     accuracy                           0.70      1220
+#    macro avg       0.68      0.70      0.68      1220
+# weighted avg       0.73      0.70      0.71      1220
 
 
 
 # %% 11 - Confusion Matrix
-table = pd.crosstab(X_train['predicted_class'], y_train)
+table = pd.crosstab(y_pred_class, y_train)
 table
-# NSEI_OPEN_DIR    0.0  1.0
-# predicted_class          
-# 0                237  179
-# 1                154  650
+# NSEI_OPEN_DIR  0.0  1.0
+# row_0                  
+# 0              265  234
+# 1              126  595
 
 
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.686 is : 78.41%
+# Sensitivity for cut-off 0.684 is : 71.77%
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.686 is : 60.61%
+# Specificity for cut-off 0.684 is : 67.77%
 
 
 
 # %% 12 - ROC Curve
-X_test['predicted'] = model.predict(X_test.drop(dropped, axis = 1))
+y_test_pred = model.predict(X_test.drop(dropped, axis = 1))
 
-fpr, tpr, thresholds = roc_curve(y_test, X_test['predicted'])
+fpr, tpr, thresholds = roc_curve(y_test, y_test_pred)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -212,41 +215,41 @@ plt.roc_curve(fpr, tpr, "04_02", "02 - test data", "phase_03")
 
 
 # %% 13 - AUC Curve
-auc_roc = roc_auc_score(y_test, X_test['predicted'])
+auc_roc = roc_auc_score(y_test, y_test_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7566415543219667
+# AUC ROC: 0.7520816812053925
 
 
 
 # %% 14 - Classification Report
-X_test['predicted_class'] = np.where(X_test['predicted'] <= optimal_threshold,  0, 1)
-print(classification_report(y_test, X_test['predicted_class']))
+y_test_pred_class = np.where(y_test_pred <= optimal_threshold,  0, 1)
+print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.60      0.61      0.60        97
-#          1.0       0.82      0.81      0.81       208
+#          0.0       0.53      0.65      0.58        97
+#          1.0       0.82      0.73      0.77       208
 # 
-#     accuracy                           0.74       305
-#    macro avg       0.71      0.71      0.71       305
-# weighted avg       0.75      0.74      0.74       305
+#     accuracy                           0.70       305
+#    macro avg       0.67      0.69      0.67       305
+# weighted avg       0.72      0.70      0.71       305
 
 
 
 # %% 11 - Confusion Matrix
-table = pd.crosstab(X_test['predicted_class'], y_test)
+table = pd.crosstab(y_test_pred_class, y_test)
 table
-# NSEI_OPEN_DIR    0.0  1.0
-# predicted_class          
-# 0                 59   40
-# 1                 38  168
+# NSEI_OPEN_DIR  0.0  1.0
+# row_0                  
+# 0               63   57
+# 1               34  151
 
 
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.686 is : 80.77%
+# Sensitivity for cut-off 0.684 is : 72.6%
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.686 is : 60.82%
+# Specificity for cut-off 0.684 is : 64.95%
