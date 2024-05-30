@@ -37,6 +37,7 @@ dependencies = [
   "seaborn",
   "scikit-learn",
   "statsmodels",
+  "imbalanced-learn",
   "yfinance",
   "pandas-datareader",
   "mplfinance",

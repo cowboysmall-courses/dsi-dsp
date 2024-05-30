@@ -3,10 +3,10 @@ from statsmodels.api import Logit
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
-def pruned_logit(X, y):
+def pruned_logit(X, y, verbose = True):
     dropped = []
     while True:
-        model = Logit(y, X).fit()
+        model = Logit(y, X).fit(disp = 0)
 
         insignificant = [p for p in zip(model.pvalues.index[1:], model.pvalues[1:]) if p[1] > 0.05]
         insignificant.sort(key = lambda p: -p[1])
@@ -16,12 +16,14 @@ def pruned_logit(X, y):
         colinear.sort(key = lambda c: -c[1])
 
         if insignificant:
-            print(f"dropping {insignificant[0][0]} with p-value {insignificant[0][1]}")
+            if verbose:
+                print(f"dropping {insignificant[0][0]} with p-value {insignificant[0][1]}")
             X = X.drop([insignificant[0][0]], axis = 1)
             dropped.append(insignificant[0][0])
 
         elif colinear:
-            print(f"dropping {colinear[0][0]} with vif {colinear[0][1]}")
+            if verbose:
+                print(f"dropping {colinear[0][0]} with vif {colinear[0][1]}")
             X = X.drop([colinear[0][0]], axis = 1)
             dropped.append(colinear[0][0])
 

@@ -19,7 +19,9 @@ Global market indices of interest:
 import pandas as pd
 import numpy as np
 
-from sklearn.linear_model import LogisticRegression
+from statsmodels.formula.api import logit
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
 from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 
@@ -35,8 +37,6 @@ COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
 RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
 
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
-
-FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
 
 
 # %% 2 -
@@ -84,31 +84,62 @@ data.head()
 
 
 
-# %% 3 -
-X = data.loc[:, FEATURES]
-y = data.loc[:, "NSEI_OPEN_DIR"]
-
-
-
 # %% 4 -
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 1337)
+train, test = train_test_split(data, test_size = 0.2, random_state = 1337)
 
 
 
 # %% 5 -
-model = LogisticRegression(max_iter = 1000)
-model.fit(X_train, y_train)
+model = logit('NSEI_OPEN_DIR ~ IXIC_DAILY_RETURNS + HSI_DAILY_RETURNS + N225_DAILY_RETURNS + VIX_DAILY_RETURNS + DJI_RSI + DJI_TSI', data = train).fit()
+model.summary()
+# """
+#                            Logit Regression Results                           
+# ==============================================================================
+# Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1220
+# Model:                          Logit   Df Residuals:                     1213
+# Method:                           MLE   Df Model:                            6
+# Date:                Sun, 26 May 2024   Pseudo R-squ.:                  0.1375
+# Time:                        13:22:08   Log-Likelihood:                -660.02
+# converged:                       True   LL-Null:                       -765.23
+# Covariance Type:            nonrobust   LLR p-value:                 1.141e-42
+# ======================================================================================
+#                          coef    std err          z      P>|z|      [0.025      0.975]
+# --------------------------------------------------------------------------------------
+# Intercept             -1.4041      0.656     -2.139      0.032      -2.690      -0.118
+# IXIC_DAILY_RETURNS     0.4552      0.075      6.093      0.000       0.309       0.602
+# HSI_DAILY_RETURNS     -0.1395      0.053     -2.632      0.008      -0.243      -0.036
+# N225_DAILY_RETURNS    -0.1960      0.068     -2.897      0.004      -0.329      -0.063
+# VIX_DAILY_RETURNS     -0.0397      0.013     -3.054      0.002      -0.065      -0.014
+# DJI_RSI                0.0447      0.013      3.415      0.001       0.019       0.070
+# DJI_TSI               -0.0205      0.008     -2.660      0.008      -0.036      -0.005
+# ======================================================================================
+# """
 
 
 
-# %% 8 - 
-y_predprob = model.predict_proba(X_train)
+# %% 6 -
+vif_data = pd.DataFrame()
+vif_data["Feature"] = model.model.exog_names[1:]
+vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(1, model.model.exog.shape[1])]
+vif_data
+#               Feature       VIF
+# 0  IXIC_DAILY_RETURNS  2.073867
+# 1   HSI_DAILY_RETURNS  1.244922
+# 2  N225_DAILY_RETURNS  1.353286
+# 3   VIX_DAILY_RETURNS  1.994009
+# 4             DJI_RSI  4.850250
+# 5             DJI_TSI  4.379409
 
-fpr, tpr, thresholds = roc_curve(y_train, y_predprob[:, 1])
+
+
+# %% 8 - ROC Curve
+train['predicted'] = model.predict(train)
+
+fpr, tpr, thresholds = roc_curve(train['NSEI_OPEN_DIR'], train['predicted'])
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "06_01", "01 - training data", "phase_03")
+plt.roc_curve(fpr, tpr, "05_01", "01 - training data", "phase_03")
 
 
 
@@ -120,40 +151,40 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 10 - AUC Curve
-auc_roc = roc_auc_score(y_train, y_predprob[:, 1])
+auc_roc = roc_auc_score(train['NSEI_OPEN_DIR'], train['predicted'])
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7530102826256637
+# AUC ROC: 0.7529115595469844
 
 
 
 # %% 11 - Classification Report
-X_train['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_train, X_train['predicted_class']))
+train['predicted_class'] = np.where(train['predicted'] <= optimal_threshold,  0, 1)
+print(classification_report(train['NSEI_OPEN_DIR'], train['predicted_class']))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.68      0.60       391
 #          1.0       0.83      0.72      0.77       829
 # 
-#     accuracy                           0.71      1220
+#     accuracy                           0.70      1220
 #    macro avg       0.68      0.70      0.68      1220
-# weighted avg       0.73      0.71      0.71      1220
+# weighted avg       0.73      0.70      0.71      1220
 
 
 
 # %% 11 - 
-table = pd.crosstab(X_train['predicted_class'], y_train)
+table = pd.crosstab(train['predicted_class'], train['NSEI_OPEN_DIR'])
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
-# 0                265  233
-# 1                126  596
+# 0                265  234
+# 1                126  595
 
 
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.684 is : 71.89%
+# Sensitivity for cut-off 0.684 is : 71.77%
 
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
@@ -162,26 +193,26 @@ print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 
 
 # %% 12 - ROC Curve
-y_predprob = model.predict_proba(X_test)
+test['predicted'] = model.predict(test)
 
-fpr, tpr, thresholds = roc_curve(y_test, y_predprob[:, 1])
+fpr, tpr, thresholds = roc_curve(test['NSEI_OPEN_DIR'], test['predicted'])
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "06_02", "02 - testing data", "phase_03")
+plt.roc_curve(fpr, tpr, "05_02", "02 - testing data", "phase_03")
 
 
 
 # %% 13 - AUC Curve
-auc_roc = roc_auc_score(y_test, y_predprob[:, 1])
+auc_roc = roc_auc_score(test['NSEI_OPEN_DIR'], test['predicted'])
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7521808088818398
+# AUC ROC: 0.7520816812053925
 
 
 
 # %% 14 - Classification Report
-X_test['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_test, X_test['predicted_class']))
+test['predicted_class'] = np.where(test['predicted'] <= optimal_threshold,  0, 1)
+print(classification_report(test['NSEI_OPEN_DIR'], test['predicted_class']))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.65      0.58        97
@@ -194,7 +225,7 @@ print(classification_report(y_test, X_test['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(X_test['predicted_class'], y_test)
+table = pd.crosstab(test['predicted_class'], test['NSEI_OPEN_DIR'])
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
