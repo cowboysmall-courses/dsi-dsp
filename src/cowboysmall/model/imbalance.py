@@ -6,9 +6,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 
 
-def imbalance_remedy_evaluation(remedy, model, X, y):
-    X_os, y_os = remedy.fit_resample(X, y)
-    X_train, X_test, y_train, y_test = train_test_split(X_os, y_os, test_size = 0.2, random_state = 1337)
+def imbalance_remedy_evaluation(remedy, model, X, y, seed = 1337):
+    if remedy:
+        X, y = remedy.fit_resample(X, y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = seed)
 
     model.fit(X_train, y_train)
     y_pred = model.predict_proba(X_test)

@@ -20,12 +20,13 @@ import pandas as pd
 import numpy as np
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, roc_curve, roc_auc_score
-from sklearn.model_selection import train_test_split
+
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler
 
 from cowboysmall.data.file import read_master_file
 from cowboysmall.feature.indicators import get_indicators, INDICATORS
-from cowboysmall.plots import plt, sns
+from cowboysmall.model.imbalance import imbalance_remedy_evaluation
 
 
 
@@ -37,6 +38,7 @@ RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 
 FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
+
 
 
 # %% 2 -
@@ -57,7 +59,6 @@ master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 
 # %% 2 -
 master = get_indicators(master)
-
 
 
 
@@ -89,125 +90,133 @@ X = data.loc[:, FEATURES]
 y = data.loc[:, "NSEI_OPEN_DIR"]
 
 
+# %% 3 -
+results = imbalance_remedy_evaluation(None, LogisticRegression(max_iter = 1000, class_weight = "balanced"), X, y)
 
-# %% 4 -
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 1337)
+print()
+print(' LogisticRegression - class_weight: balanced')
+print()
+print(f'     AUC ROC: {results['AUC']:.3f}')
+print()
+print(f'   Threshold: {results['THRESHOLD']}')
+print()
+print(f'    Accuracy: {results['ACCURACY']:.3f}')
+print(f" Sensitivity: {results['SENSITIVITY']:.3f}%")
+print(f" Specificity: {results['SPECIFICITY']:.3f}%")
+print()
 
-
-
-# %% 5 -
-model = LogisticRegression(max_iter = 1000)
-model.fit(X_train, y_train)
-
-
-
-# %% 8 - 
-y_predprob = model.predict_proba(X_train)
-
-fpr, tpr, thresholds = roc_curve(y_train, y_predprob[:, 1])
-
-plt.plot_setup()
-sns.sns_setup()
-plt.roc_curve(fpr, tpr, "06_01", "01 - training data", "phase_03")
-
-
-
-# %% 9 - Optimal Threshold
-optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
-print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.684
-
-
-
-# %% 10 - AUC Curve
-auc_roc = roc_auc_score(y_train, y_predprob[:, 1])
-print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7530102826256637
-
-
-
-# %% 11 - Classification Report
-X_train['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_train, X_train['predicted_class']))
-#               precision    recall  f1-score   support
+#  LogisticRegression - class_weight: balanced
 # 
-#          0.0       0.53      0.68      0.60       391
-#          1.0       0.83      0.72      0.77       829
+#      AUC ROC: 0.749
 # 
-#     accuracy                           0.71      1220
-#    macro avg       0.68      0.70      0.68      1220
-# weighted avg       0.73      0.71      0.71      1220
-
-
-
-# %% 11 - 
-table = pd.crosstab(X_train['predicted_class'], y_train)
-table
-# NSEI_OPEN_DIR    0.0  1.0
-# predicted_class          
-# 0                265  233
-# 1                126  596
-
-
-
-# %% 11 - 
-sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.684 is : 71.89%
-
-specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.684 is : 67.77%
-
-
-
-# %% 12 - ROC Curve
-y_predprob = model.predict_proba(X_test)
-
-fpr, tpr, thresholds = roc_curve(y_test, y_predprob[:, 1])
-
-plt.plot_setup()
-sns.sns_setup()
-plt.roc_curve(fpr, tpr, "06_02", "02 - testing data", "phase_03")
-
-
-
-# %% 13 - AUC Curve
-auc_roc = roc_auc_score(y_test, y_predprob[:, 1])
-print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7521808088818398
-
-
-
-# %% 14 - Classification Report
-X_test['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_test, X_test['predicted_class']))
-#               precision    recall  f1-score   support
+#    Threshold: 0.403
 # 
-#          0.0       0.53      0.65      0.58        97
-#          1.0       0.82      0.73      0.77       208
+#     Accuracy: 0.780
+#  Sensitivity: 87.980%
+#  Specificity: 56.700%
+
+
+# %% 3 -
+results = imbalance_remedy_evaluation(RandomUnderSampler(random_state = 0), LogisticRegression(max_iter = 1000), X, y)
+
+print()
+print(' RandomUnderSampler')
+print()
+print(f'     AUC ROC: {results['AUC']:.3f}')
+print()
+print(f'   Threshold: {results['THRESHOLD']}')
+print()
+print(f'    Accuracy: {results['ACCURACY']:.3f}')
+print(f" Sensitivity: {results['SENSITIVITY']:.3f}%")
+print(f" Specificity: {results['SPECIFICITY']:.3f}%")
+print()
+
+#  RandomUnderSampler
 # 
-#     accuracy                           0.70       305
-#    macro avg       0.67      0.69      0.67       305
-# weighted avg       0.72      0.70      0.71       305
+#      AUC ROC: 0.742
+# 
+#    Threshold: 0.461
+# 
+#     Accuracy: 0.689
+#  Sensitivity: 81.610%
+#  Specificity: 58.720%
 
 
 
-# %% 11 - 
-table = pd.crosstab(X_test['predicted_class'], y_test)
-table
-# NSEI_OPEN_DIR    0.0  1.0
-# predicted_class          
-# 0                 63   57
-# 1                 34  151
+# %% 3 -
+results = imbalance_remedy_evaluation(RandomOverSampler(random_state = 0), LogisticRegression(max_iter = 1000), X, y)
+
+print()
+print(' RandomOverSampler')
+print()
+print(f'     AUC ROC: {results['AUC']:.3f}')
+print()
+print(f'   Threshold: {results['THRESHOLD']}')
+print()
+print(f'    Accuracy: {results['ACCURACY']:.3f}')
+print(f" Sensitivity: {results['SENSITIVITY']:.3f}%")
+print(f" Specificity: {results['SPECIFICITY']:.3f}%")
+print()
+
+#  RandomOverSampler
+# 
+#      AUC ROC: 0.719
+# 
+#    Threshold: 0.419
+# 
+#     Accuracy: 0.680
+#  Sensitivity: 82.690%
+#  Specificity: 53.140%
 
 
+# %% 3 -
+results = imbalance_remedy_evaluation(SMOTE(random_state = 0), LogisticRegression(max_iter = 1000), X, y)
 
-# %% 11 - 
-sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.684 is : 72.6%
+print()
+print(' SMOTE')
+print()
+print(f'     AUC ROC: {results['AUC']:.3f}')
+print()
+print(f'   Threshold: {results['THRESHOLD']}')
+print()
+print(f'    Accuracy: {results['ACCURACY']:.3f}')
+print(f" Sensitivity: {results['SENSITIVITY']:.3f}%")
+print(f" Specificity: {results['SPECIFICITY']:.3f}%")
+print()
 
-specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Specificity for cut-off 0.684 is : 64.95%
+#  SMOTE
+# 
+#      AUC ROC: 0.721
+# 
+#    Threshold: 0.396
+# 
+#     Accuracy: 0.684
+#  Sensitivity: 85.100%
+#  Specificity: 51.690%
+
+
+# %% 3 -
+results = imbalance_remedy_evaluation(ADASYN(random_state = 0), LogisticRegression(max_iter = 1000), X, y)
+
+print()
+print(' ADASYN')
+print()
+print(f'     AUC ROC: {results['AUC']:.3f}')
+print()
+print(f'   Threshold: {results['THRESHOLD']}')
+print()
+print(f'    Accuracy: {results['ACCURACY']:.3f}')
+print(f" Sensitivity: {results['SENSITIVITY']:.3f}%")
+print(f" Specificity: {results['SPECIFICITY']:.3f}%")
+print()
+
+
+#  ADASYN
+# 
+#      AUC ROC: 0.729
+# 
+#    Threshold: 0.503
+# 
+#     Accuracy: 0.663
+#  Sensitivity: 62.790%
+#  Specificity: 69.860%
