@@ -75,8 +75,8 @@ data.head()
 
 
 # %% 3 -
-X = data[FEATURES]
-y = data["NSEI_OPEN_DIR"]
+X = data[ALL_COLS]
+y = data['NSEI_OPEN_DIR']
 
 
 
@@ -86,7 +86,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # %% 1 -
-model = LogisticRegression(max_iter = 1000, random_state = 1337)
+model = DecisionTreeClassifier(criterion = "entropy", min_samples_split = int(len(X_train) * 0.1), random_state = 1337)
 model.fit(X_train, y_train)
 
 
@@ -101,21 +101,21 @@ fpr, tpr, thresholds = roc_curve(y_test, y_pred[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "01_01", "Logistic Regression", "phase_04")
+plt.roc_curve(fpr, tpr, "03_01", "Decision Tree", "phase_04")
 
 
 
 # %% 7 - find optimal threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.593
+# Best Threshold is : 0.543
 
 
 
 # %% 8 - AUC Curve
 auc_roc = roc_auc_score(y_test, y_pred[:, 1])
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7521808088818398
+# AUC ROC: 0.7073998810467883
 
 
 
@@ -124,12 +124,12 @@ y_pred_class = np.where(y_pred[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.67      0.57      0.61        97
-#          1.0       0.81      0.87      0.84       208
+#          0.0       0.59      0.49      0.54        97
+#          1.0       0.78      0.84      0.81       208
 # 
-#     accuracy                           0.77       305
-#    macro avg       0.74      0.72      0.73       305
-# weighted avg       0.77      0.77      0.77       305
+#     accuracy                           0.73       305
+#    macro avg       0.69      0.67      0.67       305
+# weighted avg       0.72      0.73      0.72       305
 
 
 
@@ -138,8 +138,8 @@ table = pd.crosstab(y_pred_class, y_test)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0               55   27
-# 1               42  181
+# 0               48   33
+# 1               49  175
 
 
 
@@ -149,5 +149,5 @@ specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) *
 
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Sensitivity for cut-off 0.593 is : 87.02%
-# Specificity for cut-off 0.593 is : 56.7%
+# Sensitivity for cut-off 0.543 is : 84.13%
+# Specificity for cut-off 0.543 is : 49.48%
