@@ -35,14 +35,20 @@ dependencies = [
   "scipy",
   "matplotlib",
   "seaborn",
-  "scikit-learn",
+
   "statsmodels",
+  "scikit-learn",
   "imbalanced-learn",
+  "torch",
+  "torchvision",
+  "torchaudio",
+
   "yfinance",
   "pandas-datareader",
   "mplfinance",
   "ta",
   "pandas-ta",
+
   "ipykernel",
   "pyasyncore",
   "pyasynchat",
@@ -71,6 +77,12 @@ dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
 ]
+
+# [tool.hatch.envs.default.env-vars]
+# PIP_INDEX_URL = "https://download.pytorch.org/whl/cpu"
+# PIP_INDEX_URL = "https://download.pytorch.org/whl/cu118"
+# PIP_INDEX_URL = "https://download.pytorch.org/whl/rocm6.0"
+
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
