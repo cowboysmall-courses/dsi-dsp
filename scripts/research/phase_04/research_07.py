@@ -33,6 +33,12 @@ from cowboysmall.plots import plt, sns
 
 
 
+# %% 1 -
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(device)
+
+
+
 # %% 2 -
 INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
 COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
@@ -50,21 +56,26 @@ class MLP(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(MLP, self).__init__()
 
-        self.input  = nn.Linear(input_dim, 16)
+
+        self.input  = nn.Linear(input_dim, 64)
         self.act_in = nn.ReLU()
 
-        self.hidden1 = nn.Linear(16, 16)
+        self.hidden1 = nn.Linear(64, 64)
         self.act1 = nn.ReLU()
-        self.hidden2 = nn.Linear(16, 16)
+        self.hidden2 = nn.Linear(64, 64)
         self.act2 = nn.ReLU()
-        self.hidden3 = nn.Linear(16, 16)
+        self.hidden3 = nn.Linear(64, 64)
         self.act3 = nn.ReLU()
-        self.hidden4 = nn.Linear(16, 16)
+        self.hidden4 = nn.Linear(64, 64)
         self.act4 = nn.ReLU()
-        self.hidden5 = nn.Linear(16, 16)
+        self.hidden5 = nn.Linear(64, 64)
         self.act5 = nn.ReLU()
+        self.hidden6 = nn.Linear(64, 64)
+        self.act6 = nn.ReLU()
+        self.hidden7 = nn.Linear(64, 64)
+        self.act7 = nn.ReLU()
 
-        self.output  = nn.Linear(16, output_dim)
+        self.output  = nn.Linear(64, output_dim)
         self.act_out = nn.Sigmoid()
 
     def forward(self, x):
@@ -75,6 +86,8 @@ class MLP(nn.Module):
         x = self.act3(self.hidden3(x))
         x = self.act4(self.hidden4(x))
         x = self.act5(self.hidden5(x))
+        x = self.act6(self.hidden6(x))
+        x = self.act7(self.hidden7(x))
 
         return self.act_out(self.output(x))
 
@@ -116,7 +129,6 @@ y = data['NSEI_OPEN_DIR'].values[:, None]
 
 
 
-
 # %% 4 -
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 1337)
 
@@ -126,6 +138,11 @@ X_train = torch.from_numpy(X_train).type(torch.Tensor)
 X_test  = torch.from_numpy(X_test).type(torch.Tensor)
 y_train = torch.from_numpy(y_train).type(torch.Tensor)
 
+if torch.cuda.is_available():
+    X_train = X_train.cuda()
+    X_test  = X_test.cuda()
+    y_train = y_train.cuda()
+
 
 
 # %% 1 -
@@ -133,8 +150,10 @@ input_dim  = X.shape[1]
 output_dim = 1
 
 model     = MLP(input_dim, output_dim)
+model     = model.to(device)
+
 criterion = nn.MSELoss()
-optimiser = torch.optim.Adam(model.parameters(), lr = 0.01)
+optimiser = torch.optim.Adam(model.parameters(), lr = 0.001)
 
 
 
@@ -198,11 +217,11 @@ y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.66      0.56      0.60        97
-#          1.0       0.81      0.87      0.84       208
+#          0.0       0.68      0.54      0.60        97
+#          1.0       0.80      0.88      0.84       208
 # 
 #     accuracy                           0.77       305
-#    macro avg       0.73      0.71      0.72       305
+#    macro avg       0.74      0.71      0.72       305
 # weighted avg       0.76      0.77      0.76       305
 
 
@@ -210,10 +229,10 @@ print(classification_report(y_test, y_pred_class))
 # %% 11 - 
 table = pd.crosstab(y_pred_class[:, 0], y_test[:, 0])
 print(table)
-# NSEI_OPEN_DIR  0.0  1.0
-# row_0                  
-# 0               54   28
-# 1               43  180
+# col_0  0.0  1.0
+# row_0          
+# 0       52   25
+# 1       45  183
 
 
 

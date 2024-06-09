@@ -78,6 +78,7 @@ dependencies = [
   "pytest",
 ]
 
+
 # [tool.hatch.envs.default.env-vars]
 # PIP_INDEX_URL = "https://download.pytorch.org/whl/cpu"
 # PIP_INDEX_URL = "https://download.pytorch.org/whl/cu118"
