@@ -26,16 +26,13 @@ from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 
 
@@ -50,12 +47,7 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
 
 
@@ -183,11 +175,11 @@ table
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.684 is : 71.77%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
+# Sensitivity for cut-off 0.684 is : 71.77%
 # Specificity for cut-off 0.684 is : 67.77%
 
 
@@ -236,9 +228,9 @@ table
 
 # %% 11 - 
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
-# Sensitivity for cut-off 0.684 is : 72.6%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
+# Sensitivity for cut-off 0.684 is : 72.6%
 # Specificity for cut-off 0.684 is : 64.95%

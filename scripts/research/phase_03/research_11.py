@@ -27,17 +27,14 @@ from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.model.logit import pruned_logit
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.model.logit import prune
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 
 
@@ -52,14 +49,8 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
-
 
 
 
@@ -107,26 +98,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # %% 5 -
-model, dropped = pruned_logit(X_train, y_train)
-# dropping DJI_AWE with p-value 0.9508950238176997
-# dropping NSEI_KAM with p-value 0.9092895302946098
-# dropping GDAXI_DAILY_RETURNS with p-value 0.9086505313792627
-# dropping NSEI_VPT with p-value 0.8381519905776433
-# dropping DJI_KAM with p-value 0.8310405408192362
-# dropping NSEI_AWE with p-value 0.7994181747246288
-# dropping DJI_DAILY_RETURNS with p-value 0.7103674440670062
-# dropping DJI_ULC with p-value 0.45932472376766087
-# dropping NSEI_ULC with p-value 0.6088740491222955
-# dropping N225_DAILY_RETURNS with p-value 0.2961948000860465
-# dropping DJI_ROC with p-value 0.2666053030395842
-# dropping NSEI_ROC with p-value 0.37321356589805954
-# dropping NSEI_EMA with p-value 0.11390774785109663
-# dropping DJI_VPT with p-value 0.08170541426719269
-# dropping DJI_HL_RATIO with p-value 0.16695089866822344
-# dropping NSEI_SMA with p-value 0.12110210204699845
-# dropping NSEI_RSI with p-value 0.06299735530932622
-# dropping DJI_SMA with vif 1582.7040130235273
-# dropping DJI_EMA with p-value 0.0638474632480096
+model, dropped = prune(X_train, y_train)
+# dropping GDAXI_DAILY_RETURNS with p-value 0.9198621766026388
+# dropping DJI_DAILY_RETURNS with p-value 0.5734200176155207
+# dropping N225_DAILY_RETURNS with p-value 0.3958236575009091
+# dropping DJI_HL_RATIO with p-value 0.19603934069916862
+# dropping NSEI_RSI with vif 7.551439713484811
 # dropping NSEI_TSI with p-value 0.0559010907046787
 # dropping DJI_TSI with p-value 0.05370899161923685
 # dropping DJI_RSI with p-value 0.08817670282144818
@@ -141,8 +118,8 @@ model.summary()
 # Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                  780
 # Model:                          Logit   Df Residuals:                      774
 # Method:                           MLE   Df Model:                            5
-# Date:                Fri, 31 May 2024   Pseudo R-squ.:                  0.1552
-# Time:                        21:19:37   Log-Likelihood:                -456.48
+# Date:                Mon, 10 Jun 2024   Pseudo R-squ.:                  0.1552
+# Time:                        23:53:04   Log-Likelihood:                -456.48
 # converged:                       True   LL-Null:                       -540.34
 # Covariance Type:            nonrobust   LLR p-value:                 2.226e-34
 # ======================================================================================
@@ -224,11 +201,11 @@ table
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity: {sensitivity}%")
-# Sensitivity: 74.31%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity: {sensitivity}%")
 print(f"Specificity: {specificity}%")
+# Sensitivity: 74.31%
 # Specificity: 66.49%
 
 
@@ -277,9 +254,9 @@ table
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity: {sensitivity}%")
-# Sensitivity: 66.67%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity: {sensitivity}%")
 print(f"Specificity: {specificity}%")
+# Sensitivity: 66.67%
 # Specificity: 67.89%

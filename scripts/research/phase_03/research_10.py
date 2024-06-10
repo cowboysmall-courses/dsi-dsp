@@ -27,17 +27,14 @@ from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import RandomOverSampler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.model.logit import pruned_logit
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.model.logit import prune
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 
 
@@ -52,12 +49,7 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
 
 
@@ -107,28 +99,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # %% 5 -
-model, dropped = pruned_logit(X_train, y_train)
-# dropping DJI_VPT with p-value 0.9927247573053275
-# dropping NSEI_ULC with p-value 0.9834423168085367
-# dropping GDAXI_DAILY_RETURNS with p-value 0.9055089083716026
-# dropping NSEI_AWE with p-value 0.8327754530751741
-# dropping DJI_ULC with p-value 0.6445575704291319
-# dropping DJI_DAILY_RETURNS with p-value 0.5671020701222045
-# dropping DJI_AWE with p-value 0.4957507357257642
-# dropping NSEI_RSI with p-value 0.4288381836417712
-# dropping NSEI_EMA with p-value 0.3669734738564341
-# dropping DJI_ROC with p-value 0.27366010854256273
-# dropping NSEI_ROC with p-value 0.461113004372243
-# dropping NSEI_HL_RATIO with p-value 0.2648241873157965
-# dropping NSEI_VPT with p-value 0.20559770889982631
-# dropping NSEI_KAM with p-value 0.15936659283928178
-# dropping DJI_SMA with p-value 0.10600879459458454
-# dropping DJI_EMA with p-value 0.10493567101610185
-# dropping DJI_KAM with p-value 0.09378003244146865
-# dropping DJI_RSI with vif 5.013790481111531
-# dropping DJI_TSI with p-value 0.0939226246333018
-# dropping NSEI_TSI with p-value 0.20572130483023332
-# dropping NSEI_SMA with p-value 0.07426761248215988
+model, dropped = prune(X_train, y_train)
+# dropping NSEI_RSI with p-value 0.9812360918367136
+# dropping NSEI_HL_RATIO with p-value 0.9555690785367489
+# dropping GDAXI_DAILY_RETURNS with p-value 0.7309944978936169
+# dropping DJI_DAILY_RETURNS with p-value 0.7987178548468027
+# dropping NSEI_TSI with p-value 0.10327168907758438
 
 
 
@@ -138,22 +114,24 @@ model.summary()
 #                            Logit Regression Results                           
 # ==============================================================================
 # Dep. Variable:          NSEI_OPEN_DIR   No. Observations:                 1659
-# Model:                          Logit   Df Residuals:                     1652
-# Method:                           MLE   Df Model:                            6
-# Date:                Fri, 31 May 2024   Pseudo R-squ.:                  0.1610
-# Time:                        21:09:52   Log-Likelihood:                -964.82
+# Model:                          Logit   Df Residuals:                     1650
+# Method:                           MLE   Df Model:                            8
+# Date:                Mon, 10 Jun 2024   Pseudo R-squ.:                  0.1644
+# Time:                        23:47:27   Log-Likelihood:                -960.84
 # converged:                       True   LL-Null:                       -1149.9
-# Covariance Type:            nonrobust   LLR p-value:                 7.019e-77
+# Covariance Type:            nonrobust   LLR p-value:                 8.662e-77
 # ======================================================================================
 #                          coef    std err          z      P>|z|      [0.025      0.975]
 # --------------------------------------------------------------------------------------
-# Intercept             25.7098      7.995      3.216      0.001      10.040      41.379
-# NSEI_DAILY_RETURNS    -0.1882      0.061     -3.082      0.002      -0.308      -0.069
-# IXIC_DAILY_RETURNS     0.4732      0.061      7.748      0.000       0.353       0.593
-# HSI_DAILY_RETURNS     -0.1008      0.045     -2.259      0.024      -0.188      -0.013
-# N225_DAILY_RETURNS    -0.1242      0.055     -2.255      0.024      -0.232      -0.016
-# VIX_DAILY_RETURNS     -0.0628      0.011     -5.558      0.000      -0.085      -0.041
-# DJI_HL_RATIO         -25.2887      7.905     -3.199      0.001     -40.782      -9.795
+# Intercept             22.7498      9.372      2.427      0.015       4.380      41.119
+# NSEI_DAILY_RETURNS    -0.2038      0.062     -3.299      0.001      -0.325      -0.083
+# IXIC_DAILY_RETURNS     0.4445      0.062      7.156      0.000       0.323       0.566
+# HSI_DAILY_RETURNS     -0.1012      0.045     -2.255      0.024      -0.189      -0.013
+# N225_DAILY_RETURNS    -0.1594      0.057     -2.804      0.005      -0.271      -0.048
+# VIX_DAILY_RETURNS     -0.0585      0.011     -5.113      0.000      -0.081      -0.036
+# DJI_HL_RATIO         -23.8037      9.133     -2.606      0.009     -41.703      -5.904
+# DJI_RSI                0.0295      0.011      2.688      0.007       0.008       0.051
+# DJI_TSI               -0.0172      0.006     -2.712      0.007      -0.030      -0.005
 # ======================================================================================
 # """
 
@@ -165,12 +143,14 @@ vif_data["Feature"] = model.model.exog_names[1:]
 vif_data["VIF"]     = [variance_inflation_factor(model.model.exog, i) for i in range(1, model.model.exog.shape[1])]
 vif_data
 #               Feature       VIF
-# 0  NSEI_DAILY_RETURNS  1.215590
-# 1  IXIC_DAILY_RETURNS  2.138505
-# 2   HSI_DAILY_RETURNS  1.295138
-# 3  N225_DAILY_RETURNS  1.267026
-# 4   VIX_DAILY_RETURNS  2.124434
-# 5        DJI_HL_RATIO  1.093974
+# 0  NSEI_DAILY_RETURNS  1.221564
+# 1  IXIC_DAILY_RETURNS  2.199315
+# 2   HSI_DAILY_RETURNS  1.295595
+# 3  N225_DAILY_RETURNS  1.327927
+# 4   VIX_DAILY_RETURNS  2.240810
+# 5        DJI_HL_RATIO  1.444492
+# 6             DJI_RSI  4.957651
+# 7             DJI_TSI  4.422130
 
 
 
@@ -188,14 +168,14 @@ plt.roc_curve(fpr, tpr, "10_01", "01 - training data", "phase_03")
 # %% 9 - Optimal Threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold: {optimal_threshold}')
-# Best Threshold: 0.505
+# Best Threshold: 0.488
 
 
 
 # %% 10 - AUC Curve
 auc_roc = roc_auc_score(y_train, y_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.767804147833796
+# AUC ROC: 0.7699332916709055
 
 
 
@@ -204,8 +184,8 @@ y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
 print(classification_report(y_train, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.75      0.66      0.70       830
-#          1.0       0.69      0.77      0.73       829
+#          0.0       0.75      0.64      0.69       830
+#          1.0       0.69      0.79      0.74       829
 # 
 #     accuracy                           0.72      1659
 #    macro avg       0.72      0.72      0.72      1659
@@ -218,19 +198,19 @@ table = pd.crosstab(y_pred_class, y_train)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0              548  187
-# 1              282  642
+# 0              533  173
+# 1              297  656
 
 
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity: {sensitivity}%")
-# Sensitivity: 77.44%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity: {sensitivity}%")
 print(f"Specificity: {specificity}%")
-# Specificity: 66.02%
+# Sensitivity: 79.13%
+# Specificity: 64.22%
 
 
 
@@ -248,7 +228,7 @@ plt.roc_curve(fpr, tpr, "10_02", "02 - test data", "phase_03")
 # %% 13 - AUC Curve
 auc_roc = roc_auc_score(y_test, y_test_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7234299516908211
+# AUC ROC: 0.7293989223337048
 
 
 
@@ -257,12 +237,12 @@ y_test_pred_class = np.where(y_test_pred <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.66      0.64      0.65       207
-#          1.0       0.65      0.67      0.66       208
+#          0.0       0.68      0.62      0.65       207
+#          1.0       0.65      0.71      0.68       208
 # 
-#     accuracy                           0.65       415
-#    macro avg       0.65      0.65      0.65       415
-# weighted avg       0.65      0.65      0.65       415
+#     accuracy                           0.67       415
+#    macro avg       0.67      0.67      0.67       415
+# weighted avg       0.67      0.67      0.67       415
 
 
 
@@ -271,16 +251,16 @@ table = pd.crosstab(y_test_pred_class, y_test)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0              132   69
-# 1               75  139
+# 0              129   60
+# 1               78  148
 
 
 
 # %% 11 - Sensitivity / Specificity
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-print(f"Sensitivity: {sensitivity}%")
-# Sensitivity: 66.83%
-
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity: {sensitivity}%")
 print(f"Specificity: {specificity}%")
-# Specificity: 63.77%
+# Sensitivity: 71.15%
+# Specificity: 62.32%

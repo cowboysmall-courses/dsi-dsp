@@ -20,13 +20,11 @@ import numpy as np
 
 from cowboysmall.data.file import read_master_file
 from cowboysmall.plots import plt, sns
+from cowboysmall.feature import INDICES, COLUMNS
 
 
 
 # %% 2 -
-INDICES = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS = [f"{index}_DAILY_RETURNS" for index in INDICES]
-
 master = read_master_file()
 
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)

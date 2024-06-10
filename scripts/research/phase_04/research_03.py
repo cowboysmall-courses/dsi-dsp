@@ -30,7 +30,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import MinMaxScaler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 
 
@@ -43,12 +44,7 @@ from cowboysmall.plots import plt, sns
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
-
 FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
 
 
@@ -64,12 +60,7 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
 
 
@@ -189,7 +180,7 @@ plt.roc_curve(test_fpr, test_tpr, "03_02", "Decision Tree (Test Data)", "phase_0
 # %% 8 - AUC Curve
 test_auc_roc = roc_auc_score(y_test, y_test_pred[:, 1])
 print(f"AUC ROC (Test Data): {test_auc_roc}")
-# AUC ROC (Test Data): 0.5664155432196669
+# AUC ROC (Test Data): 0.6327319587628866
 
 
 
@@ -236,4 +227,4 @@ print(f"Specificity for cut-off {optimal_threshold}: {test_specificity}%")
 print(f"AUC ROC (Train Data): {train_auc_roc}")
 print(f"AUC ROC  (Test Data): {test_auc_roc}")
 # AUC ROC (Train Data): 1.0
-# AUC ROC  (Test Data): 0.5664155432196669
+# AUC ROC  (Test Data): 0.6327319587628866

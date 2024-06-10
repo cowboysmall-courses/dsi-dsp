@@ -8,7 +8,7 @@ RATIOS = [
 
 
 INDICATORS = [
-    "NSEI_RSI", "DJI_RSI", "NSEI_ROC", "DJI_ROC", "NSEI_TSI", "DJI_TSI"
+    "NSEI_RSI", "DJI_RSI", "NSEI_TSI", "DJI_TSI"
 ]
 
 
@@ -20,14 +20,13 @@ ALL_INDICATORS = [
 
 
 def get_ratios(data):
+    data["NSEI_HL_RATIO"] = data["NSEI_HIGH"] / data["NSEI_LOW"]
+    data["DJI_HL_RATIO"]  = data["DJI_HIGH"] / data["DJI_LOW"]
 
     return data
 
 
 def get_indicators(data):
-    data["NSEI_ROC"] = ta.momentum.roc(data["NSEI_CLOSE"])
-    data["DJI_ROC"]  = ta.momentum.roc(data["DJI_CLOSE"])
-
     data["NSEI_RSI"] = ta.momentum.rsi(data["NSEI_CLOSE"])
     data["DJI_RSI"]  = ta.momentum.rsi(data["DJI_CLOSE"])
 

@@ -18,13 +18,11 @@ Global market indices of interest:
 # %% 1 - import required libraries
 from cowboysmall.data.file import read_index_file
 from cowboysmall.plots import plt, sns, sms
+from cowboysmall.feature import INDICES, COLUMNS
 
 
 
 # %% 2 - plot daily returns
-INDICES = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS = [f"{index}_DAILY_RETURNS" for index in INDICES]
-
 for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
     data = read_index_file(index, indicators = True)['2018-01-02':'2023-12-29']
 

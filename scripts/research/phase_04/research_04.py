@@ -30,7 +30,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import MinMaxScaler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 
 
@@ -43,12 +44,7 @@ from cowboysmall.plots import plt, sns
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
-
 FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
 
 
@@ -64,12 +60,7 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
 
 
@@ -122,7 +113,7 @@ plt.roc_curve(train_fpr, train_tpr, "04_01", "Random Forest (Train Data)", "phas
 # %% 7 - find optimal threshold
 optimal_threshold = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
 print(f"Optimal Threshold: {optimal_threshold}")
-# Optimal Threshold: 0.65
+# Optimal Threshold: 0.62
 
 
 
@@ -192,7 +183,7 @@ plt.roc_curve(test_fpr, test_tpr, "04_02", "Random Forest (Test Data)", "phase_0
 # %% 8 - AUC Curve
 test_auc_roc = roc_auc_score(y_test, y_test_pred[:, 1])
 print(f"AUC ROC (Test Data): {test_auc_roc}")
-# AUC ROC (Test Data): 0.7666038858049167
+# AUC ROC (Test Data): 0.7643487311657415
 
 
 
@@ -201,12 +192,12 @@ y_test_pred_class = np.where(y_test_pred[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.55      0.71      0.62        97
-#          1.0       0.84      0.73      0.78       208
+#          0.0       0.56      0.63      0.59        97
+#          1.0       0.82      0.77      0.79       208
 # 
 #     accuracy                           0.72       305
-#    macro avg       0.70      0.72      0.70       305
-# weighted avg       0.75      0.72      0.73       305
+#    macro avg       0.69      0.70      0.69       305
+# weighted avg       0.73      0.72      0.73       305
 
 
 
@@ -215,8 +206,8 @@ table = pd.crosstab(y_test_pred_class, y_test)
 print(table)
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0               69   56
-# 1               28  152
+# 0               61   48
+# 1               36  160
 
 
 
@@ -226,8 +217,8 @@ test_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0
 
 print(f"Sensitivity for cut-off {optimal_threshold}: {test_sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold}: {test_specificity}%")
-# Sensitivity for cut-off 0.65: 73.08%
-# Specificity for cut-off 0.65: 71.13%
+# Sensitivity for cut-off 0.62: 76.92%
+# Specificity for cut-off 0.62: 62.89%
 
 
 
@@ -242,4 +233,4 @@ print(f"Specificity for cut-off {optimal_threshold}: {test_specificity}%")
 print(f"AUC ROC (Train Data): {train_auc_roc}")
 print(f"AUC ROC  (Test Data): {test_auc_roc}")
 # AUC ROC (Train Data): 1.0
-# AUC ROC  (Test Data): 0.7666038858049167
+# AUC ROC  (Test Data): 0.7643487311657415
