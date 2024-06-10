@@ -30,6 +30,7 @@ import torch.nn as nn
 from cowboysmall.data.file import read_master_file
 from cowboysmall.feature.indicators import get_indicators, INDICATORS
 from cowboysmall.plots import plt, sns
+from cowboysmall.model.training import train
 
 
 
@@ -153,26 +154,12 @@ model     = MLP(input_dim, output_dim)
 model     = model.to(device)
 
 criterion = nn.MSELoss()
-optimiser = torch.optim.Adam(model.parameters(), lr = 0.001)
+optimiser = torch.optim.Adam(model.parameters(), lr = 0.0001)
 
 
 
 # %% 1 -
-epochs = 500
-losses = []
-
-for epoch in range(epochs):
-    out  = model(X_train)
-    loss = criterion(out, y_train)
-
-    losses.append(loss.item())
-
-    optimiser.zero_grad()
-    loss.backward()
-    optimiser.step()
-
-    if epoch % 10 == 9:
-        print(f"Epoch {epoch + 1:>3} - MSE: {loss.item()}")
+losses = train(X_train, y_train, model, criterion, optimiser)
 
 
 
@@ -201,14 +188,14 @@ plt.roc_curve(fpr, tpr, "07_01", "Neural Network", "phase_04")
 # %% 7 - find optimal threshold
 optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.606
+# Best Threshold is : 0.5429999828338623
 
 
 
 # %% 8 - AUC Curve
 auc_roc = roc_auc_score(y_test, y_pred)
 print(f'AUC ROC: {auc_roc}')
-# AUC ROC: 0.7532216494845361
+# AUC ROC: 0.7608049167327517
 
 
 
@@ -217,12 +204,12 @@ y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.68      0.54      0.60        97
-#          1.0       0.80      0.88      0.84       208
+#          0.0       0.69      0.55      0.61        97
+#          1.0       0.81      0.88      0.84       208
 # 
-#     accuracy                           0.77       305
-#    macro avg       0.74      0.71      0.72       305
-# weighted avg       0.76      0.77      0.76       305
+#     accuracy                           0.78       305
+#    macro avg       0.75      0.72      0.73       305
+# weighted avg       0.77      0.78      0.77       305
 
 
 
@@ -231,8 +218,8 @@ table = pd.crosstab(y_pred_class[:, 0], y_test[:, 0])
 print(table)
 # col_0  0.0  1.0
 # row_0          
-# 0       52   25
-# 1       45  183
+# 0       53   24
+# 1       44  184
 
 
 
@@ -242,5 +229,5 @@ specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) *
 
 print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
-# Sensitivity for cut-off 0.606 is : 86.54%
-# Specificity for cut-off 0.606 is : 55.67%
+# Sensitivity for cut-off 0.5429999828338623 is : 88.46%
+# Specificity for cut-off 0.5429999828338623 is : 54.64%

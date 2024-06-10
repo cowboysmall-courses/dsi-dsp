@@ -2,19 +2,47 @@
 import ta
 
 
+RATIOS = [
+    "NSEI_HL_RATIO", "DJI_HL_RATIO"
+]
+
+
 INDICATORS = [
+    "NSEI_RSI", "DJI_RSI", "NSEI_ROC", "DJI_ROC", "NSEI_TSI", "DJI_TSI"
+]
+
+
+ALL_INDICATORS = [
     "NSEI_RSI", "DJI_RSI", "NSEI_ROC", "DJI_ROC", "NSEI_AWE", "DJI_AWE", 
     "NSEI_KAM", "DJI_KAM", "NSEI_TSI", "DJI_TSI", "NSEI_VPT", "DJI_VPT", 
     "NSEI_ULC", "DJI_ULC", "NSEI_SMA", "DJI_SMA", "NSEI_EMA", "DJI_EMA"
 ]
 
 
+def get_ratios(data):
+
+    return data
+
+
 def get_indicators(data):
+    data["NSEI_ROC"] = ta.momentum.roc(data["NSEI_CLOSE"])
+    data["DJI_ROC"]  = ta.momentum.roc(data["DJI_CLOSE"])
+
     data["NSEI_RSI"] = ta.momentum.rsi(data["NSEI_CLOSE"])
     data["DJI_RSI"]  = ta.momentum.rsi(data["DJI_CLOSE"])
 
+    data["NSEI_TSI"] = ta.momentum.tsi(data["NSEI_CLOSE"])
+    data["DJI_TSI"]  = ta.momentum.tsi(data["DJI_CLOSE"])
+
+    return data
+
+
+def get_indicators(data):
     data["NSEI_ROC"] = ta.momentum.roc(data["NSEI_CLOSE"])
     data["DJI_ROC"]  = ta.momentum.roc(data["DJI_CLOSE"])
+
+    data["NSEI_RSI"] = ta.momentum.rsi(data["NSEI_CLOSE"])
+    data["DJI_RSI"]  = ta.momentum.rsi(data["DJI_CLOSE"])
 
     data["NSEI_AWE"] = ta.momentum.awesome_oscillator(data["NSEI_HIGH"], data["NSEI_LOW"])
     data["DJI_AWE"]  = ta.momentum.awesome_oscillator(data["DJI_HIGH"], data["NSEI_LOW"])
