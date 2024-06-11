@@ -556,9 +556,9 @@ vif_data
 
 
 # %% 8 - ROC Curve
-X_train_pred = model.predict(X_train)
+y_train_pred_prob = model.predict(X_train)
 
-fpr, tpr, thresholds = roc_curve(y_train, X_train_pred)
+fpr, tpr, thresholds = roc_curve(y_train, y_train_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -574,15 +574,15 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 10 - AUC Curve
-auc_roc = roc_auc_score(y_train, X_train_pred)
+auc_roc = roc_auc_score(y_train, y_train_pred_prob)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7529115595469844
 
 
 
 # %% 11 - Classification Report
-X_train_pred_class = np.where(X_train_pred <= optimal_threshold,  0, 1)
-print(classification_report(y_train, X_train_pred_class))
+y_train_pred_class = np.where(y_train_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(y_train, y_train_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.68      0.60       391
@@ -595,7 +595,7 @@ print(classification_report(y_train, X_train_pred_class))
 
 
 # %% 11 - 
-table = pd.crosstab(X_train_pred_class, y_train)
+table = pd.crosstab(y_train_pred_class, y_train)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
@@ -621,9 +621,9 @@ X_test = X_test.drop(X_dropped, axis = 1)
 
 
 # %% 12 - ROC Curve
-X_test_pred= model.predict(X_test)
+y_test_pred_prob = model.predict(X_test)
 
-fpr, tpr, thresholds = roc_curve(y_test, X_test_pred)
+fpr, tpr, thresholds = roc_curve(y_test, y_test_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -632,15 +632,15 @@ plt.roc_curve(fpr, tpr, "02_02", "02 - testing data", "phase_03")
 
 
 # %% 13 - AUC Curve
-auc_roc = roc_auc_score(y_test, X_test_pred)
+auc_roc = roc_auc_score(y_test, y_test_pred_prob)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7520816812053925
 
 
 
 # %% 14 - Classification Report
-X_test_pred_class = np.where(X_test_pred <= optimal_threshold,  0, 1)
-print(classification_report(y_test, X_test_pred_class))
+y_test_pred_class = np.where(y_test_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 
 #          0.0       0.53      0.65      0.58        97
@@ -653,7 +653,7 @@ print(classification_report(y_test, X_test_pred_class))
 
 
 # %% 11 - 
-table = pd.crosstab(X_test_pred_class, y_test)
+table = pd.crosstab(y_test_pred_class, y_test)
 table
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  

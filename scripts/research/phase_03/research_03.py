@@ -127,9 +127,9 @@ vif_data
 
 
 # %% 6 - ROC Curve
-y_pred = model.predict(X.drop(dropped, axis = 1))
+y_pred_prob = model.predict(X.drop(dropped, axis = 1))
 
-fpr, tpr, thresholds = roc_curve(y, y_pred)
+fpr, tpr, thresholds = roc_curve(y, y_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -145,14 +145,14 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 8 - AUC Curve
-auc_roc = roc_auc_score(y, y_pred)
+auc_roc = roc_auc_score(y, y_pred_prob)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7558896643849693
 
 
 
 # %% 10 - Classification Report
-y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
+y_pred_class = np.where(y_pred_prob <= optimal_threshold,  0, 1)
 print(classification_report(y, y_pred_class))
 #               precision    recall  f1-score   support
 # 

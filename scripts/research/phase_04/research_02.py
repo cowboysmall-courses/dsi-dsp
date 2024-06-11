@@ -97,12 +97,12 @@ model.fit(X_train, y_train)
 
 
 # %% 6 - ROC Curve
-y_train_pred = model.predict_proba(X_train)
+y_train_pred_prob = model.predict_proba(X_train)
 
 
 
 # %% 6 -
-train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred[:, 1])
+train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
@@ -118,14 +118,14 @@ print(f"Optimal Threshold: {optimal_threshold}")
 
 
 # %% 8 - AUC Curve
-train_auc_roc = roc_auc_score(y_train, y_train_pred[:, 1])
+train_auc_roc = roc_auc_score(y_train, y_train_pred_prob[:, 1])
 print(f"AUC ROC (Train Data): {train_auc_roc}")
 # AUC ROC (Train Data): 0.7182566738343735
 
 
 
 # %% 10 - Classification Report
-y_train_pred_class = np.where(y_train_pred[:, 1] <= optimal_threshold,  0, 1)
+y_train_pred_class = np.where(y_train_pred_prob[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_train, y_train_pred_class))
 #               precision    recall  f1-score   support
 # 
@@ -167,12 +167,12 @@ print(f"Specificity for cut-off {optimal_threshold}: {train_specificity}%")
 
 
 # %% 6 - ROC Curve
-y_test_pred = model.predict_proba(X_test)
+y_test_pred_prob = model.predict_proba(X_test)
 
 
 
 # %% 6 -
-test_fpr, test_tpr, test_thresholds = roc_curve(y_test, y_test_pred[:, 1])
+test_fpr, test_tpr, test_thresholds = roc_curve(y_test, y_test_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
@@ -181,14 +181,14 @@ plt.roc_curve(test_fpr, test_tpr, "02_02", "Naive Bayes (Test Data)", "phase_04"
 
 
 # %% 8 - AUC Curve
-test_auc_roc = roc_auc_score(y_test, y_test_pred[:, 1])
+test_auc_roc = roc_auc_score(y_test, y_test_pred_prob[:, 1])
 print(f"AUC ROC (Test Data): {test_auc_roc}")
 # AUC ROC (Test Data): 0.6915642347343379
 
 
 
 # %% 10 - Classification Report
-y_test_pred_class = np.where(y_test_pred[:, 1] <= optimal_threshold,  0, 1)
+y_test_pred_class = np.where(y_test_pred_prob[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 

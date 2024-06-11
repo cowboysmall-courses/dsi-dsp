@@ -52,7 +52,6 @@ master = get_indicators(master)
 
 
 
-
 # %% 2 -
 counts = master['NSEI_OPEN_DIR'].value_counts().reset_index()
 counts.columns = ['NSEI_OPEN_DIR', 'Freq']
@@ -94,9 +93,9 @@ model.fit(X_train, y_train)
 
 
 # %% 8 - 
-y_predprob = model.predict_proba(X_train)
+y_pred_prob = model.predict_proba(X_train)
 
-fpr, tpr, thresholds = roc_curve(y_train, y_predprob[:, 1])
+fpr, tpr, thresholds = roc_curve(y_train, y_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
@@ -112,15 +111,15 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 10 - AUC Curve
-auc_roc = roc_auc_score(y_train, y_predprob[:, 1])
+auc_roc = roc_auc_score(y_train, y_pred_prob[:, 1])
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7530102826256637
 
 
 
 # %% 11 - Classification Report
-X_train['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_train, X_train['predicted_class']))
+y_pred_class = np.where(y_pred_prob[:, 1] <= optimal_threshold,  0, 1)
+print(classification_report(y_train, y_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.68      0.60       391
@@ -133,7 +132,7 @@ print(classification_report(y_train, X_train['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(X_train['predicted_class'], y_train)
+table = pd.crosstab(y_pred_class, y_train)
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
@@ -154,9 +153,9 @@ print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 
 
 # %% 12 - ROC Curve
-y_predprob = model.predict_proba(X_test)
+y_pred_prob = model.predict_proba(X_test)
 
-fpr, tpr, thresholds = roc_curve(y_test, y_predprob[:, 1])
+fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
@@ -165,15 +164,15 @@ plt.roc_curve(fpr, tpr, "06_02", "02 - testing data", "phase_03")
 
 
 # %% 13 - AUC Curve
-auc_roc = roc_auc_score(y_test, y_predprob[:, 1])
+auc_roc = roc_auc_score(y_test, y_pred_prob[:, 1])
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7521808088818398
 
 
 
 # %% 14 - Classification Report
-X_test['predicted_class'] = np.where(y_predprob[:, 1] <= optimal_threshold,  0, 1)
-print(classification_report(y_test, X_test['predicted_class']))
+y_pred_class = np.where(y_pred_prob[:, 1] <= optimal_threshold,  0, 1)
+print(classification_report(y_test, y_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.65      0.58        97
@@ -186,7 +185,7 @@ print(classification_report(y_test, X_test['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(X_test['predicted_class'], y_test)
+table = pd.crosstab(y_pred_class, y_test)
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          

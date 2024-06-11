@@ -125,9 +125,9 @@ vif_data
 
 
 # %% 8 - ROC Curve
-train['predicted'] = model.predict(train)
+y_pred_prob = model.predict(train)
 
-fpr, tpr, thresholds = roc_curve(train['NSEI_OPEN_DIR'], train['predicted'])
+fpr, tpr, thresholds = roc_curve(train['NSEI_OPEN_DIR'], y_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -143,15 +143,15 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 10 - AUC Curve
-auc_roc = roc_auc_score(train['NSEI_OPEN_DIR'], train['predicted'])
+auc_roc = roc_auc_score(train['NSEI_OPEN_DIR'], y_pred_prob)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7529115595469844
 
 
 
 # %% 11 - Classification Report
-train['predicted_class'] = np.where(train['predicted'] <= optimal_threshold,  0, 1)
-print(classification_report(train['NSEI_OPEN_DIR'], train['predicted_class']))
+y_pred_class = np.where(y_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(train['NSEI_OPEN_DIR'], y_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.68      0.60       391
@@ -164,7 +164,7 @@ print(classification_report(train['NSEI_OPEN_DIR'], train['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(train['predicted_class'], train['NSEI_OPEN_DIR'])
+table = pd.crosstab(y_pred_class, train['NSEI_OPEN_DIR'])
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
@@ -185,9 +185,9 @@ print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 
 
 # %% 12 - ROC Curve
-test['predicted'] = model.predict(test)
+y_pred_prob = model.predict(test)
 
-fpr, tpr, thresholds = roc_curve(test['NSEI_OPEN_DIR'], test['predicted'])
+fpr, tpr, thresholds = roc_curve(test['NSEI_OPEN_DIR'], y_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
@@ -196,15 +196,15 @@ plt.roc_curve(fpr, tpr, "05_02", "02 - testing data", "phase_03")
 
 
 # %% 13 - AUC Curve
-auc_roc = roc_auc_score(test['NSEI_OPEN_DIR'], test['predicted'])
+auc_roc = roc_auc_score(test['NSEI_OPEN_DIR'], y_pred_prob)
 print(f'AUC ROC: {auc_roc}')
 # AUC ROC: 0.7520816812053925
 
 
 
 # %% 14 - Classification Report
-test['predicted_class'] = np.where(test['predicted'] <= optimal_threshold,  0, 1)
-print(classification_report(test['NSEI_OPEN_DIR'], test['predicted_class']))
+y_pred_class = np.where(y_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(test['NSEI_OPEN_DIR'], y_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.53      0.65      0.58        97
@@ -217,7 +217,7 @@ print(classification_report(test['NSEI_OPEN_DIR'], test['predicted_class']))
 
 
 # %% 11 - 
-table = pd.crosstab(test['predicted_class'], test['NSEI_OPEN_DIR'])
+table = pd.crosstab(y_pred_class, test['NSEI_OPEN_DIR'])
 table
 # NSEI_OPEN_DIR    0.0  1.0
 # predicted_class          
