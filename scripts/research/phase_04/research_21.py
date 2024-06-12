@@ -42,10 +42,6 @@ print(device)
 
 
 # %% 2 -
-# INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-# COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-# RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
-
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
 FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
 
@@ -56,7 +52,6 @@ class MLP(nn.Module):
 
     def __init__(self, input_dim, output_dim):
         super(MLP, self).__init__()
-
 
         self.input  = nn.Linear(input_dim, 64)
         self.act_in = nn.ReLU()
@@ -105,12 +100,6 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-# master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-# master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
-
-
-
-# %% 2 -
 master = get_ratios(master)
 master = get_indicators(master)
 
@@ -126,7 +115,7 @@ data.head()
 # %% 3 -
 scaler = MinMaxScaler(feature_range = (0, 1))
 
-X = scaler.fit_transform(data[ALL_COLS].values) 
+X = scaler.fit_transform(data[ALL_COLS].values)
 y = data['NSEI_OPEN_DIR'].values[:, None]
 
 
@@ -187,31 +176,31 @@ y_train_pred_prob = model(X_train).detach().cpu().numpy()
 
 
 # %% 6 - ROC Curve
-train_fpr, train_tpr, train_thresholds = roc_curve(y_test, y_pred)
+train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "07_01", "Neural Network", "phase_04")
+plt.roc_curve(train_fpr, train_tpr, "21_01", "Neural Network", "phase_04")
 
 
 
 # %% 7 - find optimal threshold
-optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
+optimal_threshold = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
 print(f'Best Threshold is : {optimal_threshold}')
 # Best Threshold is : 0.5429999828338623
 
 
 
 # %% 8 - AUC Curve
-train_auc_roc = roc_auc_score(y_test, y_pred)
+train_auc_roc = roc_auc_score(y_train, y_train_pred_prob)
 print(f'AUC ROC: {train_auc_roc}')
 # AUC ROC: 0.7608049167327517
 
 
 
 # %% 10 - Classification Report
-y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
-print(classification_report(y_test, y_pred_class))
+y_train_pred_class = np.where(y_train_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(y_train, y_train_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.69      0.55      0.61        97
@@ -224,7 +213,7 @@ print(classification_report(y_test, y_pred_class))
 
 
 # %% 11 - 
-table = pd.crosstab(y_pred_class[:, 0], y_test[:, 0])
+table = pd.crosstab(y_train_pred_class[:, 0], y_train[:, 0])
 print(table)
 # col_0  0.0  1.0
 # row_0          
@@ -254,36 +243,29 @@ print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
 
 
 # %% 1 -
-y_pred = model(X_test).detach().cpu().numpy()
+y_test_pred_prob = model(X_test).detach().cpu().numpy()
 
 
 
 # %% 6 - ROC Curve
-fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+test_fpr, test_tpr, test_thresholds = roc_curve(y_test, y_test_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "07_01", "Neural Network", "phase_04")
-
-
-
-# %% 7 - find optimal threshold
-optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
-print(f'Best Threshold is : {optimal_threshold}')
-# Best Threshold is : 0.5429999828338623
+plt.roc_curve(test_fpr, test_tpr, "21_02", "Neural Network", "phase_04")
 
 
 
 # %% 8 - AUC Curve
-train_auc_roc = roc_auc_score(y_test, y_pred)
-print(f'AUC ROC: {train_auc_roc}')
+test_auc_roc = roc_auc_score(y_test, y_test_pred_prob)
+print(f'AUC ROC: {test_auc_roc}')
 # AUC ROC: 0.7608049167327517
 
 
 
 # %% 10 - Classification Report
-y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
-print(classification_report(y_test, y_pred_class))
+y_test_pred_class = np.where(y_test_pred_prob <= optimal_threshold,  0, 1)
+print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 
 #          0.0       0.69      0.55      0.61        97
@@ -296,7 +278,7 @@ print(classification_report(y_test, y_pred_class))
 
 
 # %% 11 - 
-table = pd.crosstab(y_pred_class[:, 0], y_test[:, 0])
+table = pd.crosstab(y_test_pred_class[:, 0], y_test[:, 0])
 print(table)
 # col_0  0.0  1.0
 # row_0          
