@@ -28,7 +28,8 @@ import torch
 import torch.nn as nn
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature.indicators import get_indicators, INDICATORS
+from cowboysmall.feature import COLUMNS
+from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
 from cowboysmall.plots import plt, sns
 from cowboysmall.model.training import train
 
@@ -41,12 +42,11 @@ print(device)
 
 
 # %% 2 -
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
-RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
+# INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+# COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
+# RATIOS   = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
 
 ALL_COLS = COLUMNS + RATIOS + INDICATORS
-
 FEATURES = ["IXIC_DAILY_RETURNS", "HSI_DAILY_RETURNS", "N225_DAILY_RETURNS", "VIX_DAILY_RETURNS", "DJI_RSI", "DJI_TSI"]
 
 
@@ -105,12 +105,13 @@ master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].sh
 
 
 # %% 2 -
-master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
-master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
+# master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
+# master["DJI_HL_RATIO"]  = master["DJI_HIGH"] / master["DJI_LOW"]
 
 
 
 # %% 2 -
+master = get_ratios(master)
 master = get_indicators(master)
 
 
@@ -171,6 +172,87 @@ plot.show()
 
 
 
+
+
+
+
+
+
+
+
+
+# %% 1 -
+y_train_pred_prob = model(X_train).detach().cpu().numpy()
+
+
+
+# %% 6 - ROC Curve
+train_fpr, train_tpr, train_thresholds = roc_curve(y_test, y_pred)
+
+plt.plot_setup()
+sns.sns_setup()
+plt.roc_curve(fpr, tpr, "07_01", "Neural Network", "phase_04")
+
+
+
+# %% 7 - find optimal threshold
+optimal_threshold = round(thresholds[np.argmax(tpr - fpr)], 3)
+print(f'Best Threshold is : {optimal_threshold}')
+# Best Threshold is : 0.5429999828338623
+
+
+
+# %% 8 - AUC Curve
+train_auc_roc = roc_auc_score(y_test, y_pred)
+print(f'AUC ROC: {train_auc_roc}')
+# AUC ROC: 0.7608049167327517
+
+
+
+# %% 10 - Classification Report
+y_pred_class = np.where(y_pred <= optimal_threshold,  0, 1)
+print(classification_report(y_test, y_pred_class))
+#               precision    recall  f1-score   support
+# 
+#          0.0       0.69      0.55      0.61        97
+#          1.0       0.81      0.88      0.84       208
+# 
+#     accuracy                           0.78       305
+#    macro avg       0.75      0.72      0.73       305
+# weighted avg       0.77      0.78      0.77       305
+
+
+
+# %% 11 - 
+table = pd.crosstab(y_pred_class[:, 0], y_test[:, 0])
+print(table)
+# col_0  0.0  1.0
+# row_0          
+# 0       53   24
+# 1       44  184
+
+
+
+# %% 12 - 
+sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
+specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
+
+print(f"Sensitivity for cut-off {optimal_threshold} is : {sensitivity}%")
+print(f"Specificity for cut-off {optimal_threshold} is : {specificity}%")
+# Sensitivity for cut-off 0.5429999828338623 is : 88.46%
+# Specificity for cut-off 0.5429999828338623 is : 54.64%
+
+
+
+
+
+
+
+
+
+
+
+
 # %% 1 -
 y_pred = model(X_test).detach().cpu().numpy()
 
@@ -193,8 +275,8 @@ print(f'Best Threshold is : {optimal_threshold}')
 
 
 # %% 8 - AUC Curve
-auc_roc = roc_auc_score(y_test, y_pred)
-print(f'AUC ROC: {auc_roc}')
+train_auc_roc = roc_auc_score(y_test, y_pred)
+print(f'AUC ROC: {train_auc_roc}')
 # AUC ROC: 0.7608049167327517
 
 
