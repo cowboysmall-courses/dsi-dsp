@@ -12,3 +12,18 @@ Global market indices of interest:
     VIX:   Volatility Index
 
 """
+
+
+
+# %% 1 - import required libraries
+import nltk
+
+nltk.download()
+# nltk.download('all')
+# nltk.download('vader_lexicon')
+
+
+
+# %% 1 - 
+
+

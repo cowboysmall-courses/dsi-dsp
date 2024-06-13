@@ -43,6 +43,9 @@ dependencies = [
   # "torchvision",
   # "torchaudio",
 
+  "nltk",
+  "wordcloud",
+
   "yfinance",
   "pandas-datareader",
   "mplfinance",
