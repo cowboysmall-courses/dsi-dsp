@@ -39,9 +39,9 @@ dependencies = [
   "statsmodels",
   "scikit-learn",
   "imbalanced-learn",
-  "torch",
-  "torchvision",
-  "torchaudio",
+  # "torch",
+  # "torchvision",
+  # "torchaudio",
 
   "yfinance",
   "pandas-datareader",
