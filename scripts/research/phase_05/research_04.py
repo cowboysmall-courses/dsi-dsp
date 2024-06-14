@@ -82,10 +82,10 @@ data["Sentiment_Scores"] = data["Cleaned_Tweets"].apply(lambda x: sia.polarity_s
 
 
 # %% 1 - 
-data["Positive_Score"] = data["Sentiment_Scores"].apply(lambda x: x["pos"])
-data["Negative_Score"] = data["Sentiment_Scores"].apply(lambda x: x["neg"])
-data["Neutral_Score"]  = data["Sentiment_Scores"].apply(lambda x: x["neu"])
-data["Compound_Score"] = data["Sentiment_Scores"].apply(lambda x: x["compound"])
+data["Positive_Score"] = data["Sentiment_Scores"].apply(lambda x:  x["pos"])
+data["Negative_Score"] = data["Sentiment_Scores"].apply(lambda x: -x["neg"])
+data["Neutral_Score"]  = data["Sentiment_Scores"].apply(lambda x:  x["neu"])
+data["Compound_Score"] = data["Sentiment_Scores"].apply(lambda x:  x["compound"])
 
 
 
@@ -93,11 +93,11 @@ data["Compound_Score"] = data["Sentiment_Scores"].apply(lambda x: x["compound"])
 scores = data[["Positive_Score", "Negative_Score", "Neutral_Score", "Compound_Score"]]
 scores.head()
 #    Positive_Score  Negative_Score  Neutral_Score  Compound_Score
-# 0           0.492           0.000          0.508          0.4404
-# 1           0.077           0.149          0.774         -0.3400
-# 2           0.155           0.000          0.845          0.2960
-# 3           0.100           0.198          0.702         -0.3935
-# 4           0.262           0.000          0.738          0.5994
+# 0           0.492          -0.000          0.508          0.4404
+# 1           0.077          -0.149          0.774         -0.3400
+# 2           0.155          -0.000          0.845          0.2960
+# 3           0.100          -0.198          0.702         -0.3935
+# 4           0.262          -0.000          0.738          0.5994
 
 
 
@@ -105,13 +105,13 @@ scores.head()
 scores.describe()
 #        Positive_Score  Negative_Score  Neutral_Score  Compound_Score
 # count      245.000000      245.000000     245.000000      245.000000
-# mean         0.121494        0.029559       0.848963        0.172913
+# mean         0.121494       -0.029559       0.848963        0.172913
 # std          0.154320        0.073763       0.165248        0.343955
-# min          0.000000        0.000000       0.213000       -0.807400
+# min          0.000000       -0.405000       0.213000       -0.807400
 # 25%          0.000000        0.000000       0.734000        0.000000
 # 50%          0.055000        0.000000       0.868000        0.000000
 # 75%          0.208000        0.000000       1.000000        0.440400
-# max          0.787000        0.405000       1.000000        0.928700
+# max          0.787000       -0.000000       1.000000        0.928700
 
 
 
@@ -127,5 +127,4 @@ plt.title("Box Plot - Scores")
 plt.xlabel("Type")
 plt.ylabel("Score")
 
-plt.legend()
 plt.show()

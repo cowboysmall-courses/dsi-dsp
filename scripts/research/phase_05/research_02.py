@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import nltk
+# nltk.download('all', quiet = True)
 
 from string import punctuation, digits
 

@@ -19,12 +19,13 @@ Global market indices of interest:
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from string import punctuation, digits
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from wordcloud import WordCloud
 
-from string import punctuation, digits
 
 
 # %% 1 - import data and check the head
