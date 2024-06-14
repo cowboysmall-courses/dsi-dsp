@@ -17,11 +17,12 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-
-import nltk
+import matplotlib.pyplot as plt
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+
+from wordcloud import WordCloud
 
 from string import punctuation, digits
 
@@ -45,7 +46,7 @@ data.head()
 
 
 # %% 1 - 
-stop_words    = set(stopwords.words('english'))
+stop_words    = set(stopwords.words('english')) | set(["nifty", "banknifty", "niftybank", "stockmarketindia"])
 remove_punc   = str.maketrans('', '', punctuation)
 remove_digits = str.maketrans('', '', digits)
 
@@ -58,10 +59,10 @@ def preprocess_tweet(tweet):
 # %% 1 - 
 data["Cleaned_Tweets"] = data["Tweets"].apply(preprocess_tweet)
 data["Cleaned_Tweets"].head()
-# 0           banknifty ce looks good target nifty nifty
-# 1    market banknifty optionstrading optionbuying t...
+# 0                                 ce looks good target
+# 1    market optionstrading optionbuying trading buy...
 # 2    penny stock madhucon projects ltd cmp followht...
-# 3    nifty healthy uptrend since beginning year did...
+# 3    healthy uptrend since beginning year didnt bre...
 # 4    gravita livetrading stockstowatch stocksinfocu...
 # Name: Cleaned_Tweets, dtype: object
 
@@ -73,37 +74,16 @@ tweet_words = data["Cleaned_Tweets"].str.cat(sep = " ")
 
 
 # %% 1 - 
-freq_dist    = nltk.FreqDist(tweet_words.split())
-freq_dist_df = pd.DataFrame(freq_dist.most_common(30), columns=["Words", "Frequency"])
-freq_dist_df.head(30)
-#                Words  Frequency
-# 0              nifty        399
-# 1          banknifty        104
-# 2        stockmarket         71
-# 3          niftybank         45
-# 4   stockmarketindia         44
-# 5             sensex         43
-# 6             stocks         38
-# 7     optionstrading         36
-# 8                bse         34
-# 9     breakoutstocks         31
-# 10           trading         30
-# 11            market         29
-# 12             india         26
-# 13               ipm         25
-# 14              good         24
-# 15               nse         24
-# 16            growth         24
-# 17          nseindia         23
-# 18               may         23
-# 19   pharmaceuticals         23
-# 20      indianpharma         23
-# 21       stockstobuy         22
-# 22       sharemarket         21
-# 23      stockmarkets         20
-# 24               amp         19
-# 25            points         19
-# 26     stocksinfocus         19
-# 27              time         19
-# 28              bank         18
-# 29             today         18
+wordcloud = WordCloud(background_color = "white", collocations = False).generate(tweet_words)
+
+
+
+# %% 1 - 
+plt.figure(figsize = (16, 10))
+
+plt.imshow(wordcloud, interpolation = "bilinear")
+
+plt.axis("off")
+plt.tight_layout(pad = 0)
+
+plt.show()

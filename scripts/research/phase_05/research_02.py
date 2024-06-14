@@ -17,13 +17,16 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import nltk
+
+from string import punctuation, digits
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-from string import punctuation, digits
 
 
 # %% 1 - import data and check the head
@@ -75,35 +78,19 @@ tweet_words = data["Cleaned_Tweets"].str.cat(sep = " ")
 # %% 1 - 
 freq_dist    = nltk.FreqDist(tweet_words.split())
 freq_dist_df = pd.DataFrame(freq_dist.most_common(30), columns=["Words", "Frequency"])
-freq_dist_df.head(30)
-#                Words  Frequency
-# 0              nifty        399
-# 1          banknifty        104
-# 2        stockmarket         71
-# 3          niftybank         45
-# 4   stockmarketindia         44
-# 5             sensex         43
-# 6             stocks         38
-# 7     optionstrading         36
-# 8                bse         34
-# 9     breakoutstocks         31
-# 10           trading         30
-# 11            market         29
-# 12             india         26
-# 13               ipm         25
-# 14              good         24
-# 15               nse         24
-# 16            growth         24
-# 17          nseindia         23
-# 18               may         23
-# 19   pharmaceuticals         23
-# 20      indianpharma         23
-# 21       stockstobuy         22
-# 22       sharemarket         21
-# 23      stockmarkets         20
-# 24               amp         19
-# 25            points         19
-# 26     stocksinfocus         19
-# 27              time         19
-# 28              bank         18
-# 29             today         18
+
+
+
+# %% 1 - 
+sns.set_style("darkgrid")
+sns.set_context("paper")
+
+plt.figure(figsize = (12, 9))
+
+plt.barh(freq_dist_df["Words"], freq_dist_df["Frequency"], align = 'center')
+
+plt.title('Words by Frequency')
+plt.xlabel('Frequency')
+plt.ylabel('Words')
+
+plt.show()
