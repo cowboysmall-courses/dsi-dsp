@@ -29,7 +29,7 @@ from nltk.tokenize import word_tokenize
 
 
 # %% 1 - import data and check the head
-with open("./data/raw/Tweets 12-6-24.txt") as file:
+with open("./data/tweets/Tweets 12-6-24.txt") as file:
     tweets = [line.rstrip() for line in file]
 
 

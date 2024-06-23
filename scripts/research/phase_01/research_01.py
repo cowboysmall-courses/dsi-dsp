@@ -24,4 +24,4 @@ indices = pd.read_html('https://finance.yahoo.com/world-indices/')
 
 
 # %% 2 - save index information to file
-indices[0].to_csv("./data/indices.csv")
+indices[0].to_csv("./data/indices/indices.csv")

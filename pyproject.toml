@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "dsi-gsma"
+name = "dsi-dsp"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
@@ -60,9 +60,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/cowboysmall-research/dsi-gsma#readme"
-Issues = "https://github.com/cowboysmall-research/dsi-gsma/issues"
-Source = "https://github.com/cowboysmall-research/dsi-gsma"
+Documentation = "https://github.com/cowboysmall-research/dsi-dsp#readme"
+Issues = "https://github.com/cowboysmall-research/dsi-dsp/issues"
+Source = "https://github.com/cowboysmall-research/dsi-dsp"
 
 
 
@@ -208,8 +208,8 @@ omit = [
 ]
 
 [tool.coverage.paths]
-cowboysmall = ["src/cowboysmall", "*/dsi-gsma/src/cowboysmall"]
-tests = ["tests", "*/dsi-gsma/tests"]
+cowboysmall = ["src/cowboysmall", "*/dsi-dsp/src/cowboysmall"]
+tests = ["tests", "*/dsi-dsp/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
