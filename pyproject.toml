@@ -53,10 +53,12 @@ dependencies = [
   "pandas-ta",
 
   "ipykernel",
-  "pyasyncore",
-  "pyasynchat",
+  "jupyter",
     # "spyder-kernels",
   "spyder-kernels==3.0.0b5",
+
+  "pyasyncore",
+  "pyasynchat",
 ]
 
 [project.urls]
