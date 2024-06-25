@@ -36,7 +36,7 @@ def get_indicators(data):
     return data
 
 
-def get_indicators(data):
+def get_all_indicators(data):
     data["NSEI_ROC"] = ta.momentum.roc(data["NSEI_CLOSE"])
     data["DJI_ROC"]  = ta.momentum.roc(data["DJI_CLOSE"])
 
