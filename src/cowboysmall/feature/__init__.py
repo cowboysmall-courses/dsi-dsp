@@ -1,3 +1,12 @@
 
-INDICES  = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
-COLUMNS  = [f"{index}_DAILY_RETURNS" for index in INDICES]
+INDICES    = ['NSEI', 'DJI', 'IXIC', 'HSI', 'N225', 'GDAXI', 'VIX']
+COLUMNS    = [f"{index}_DAILY_RETURNS" for index in INDICES]
+
+RATIOS     = ["NSEI_HL_RATIO", "DJI_HL_RATIO"]
+INDICATORS = ["NSEI_RSI", "DJI_RSI", "NSEI_TSI", "DJI_TSI"]
+
+ALL_INDICATORS = [
+    "NSEI_RSI", "DJI_RSI", "NSEI_ROC", "DJI_ROC", "NSEI_AWE", "DJI_AWE",
+    "NSEI_KAM", "DJI_KAM", "NSEI_TSI", "DJI_TSI", "NSEI_VPT", "DJI_VPT",
+    "NSEI_ULC", "DJI_ULC", "NSEI_SMA", "DJI_SMA", "NSEI_EMA", "DJI_EMA"
+]
