@@ -19,11 +19,16 @@ Global market indices of interest:
 import pandas as pd
 import numpy as np
 
-from cowboysmall import INDICES, COLUMNS
+from cowboysmall.feature import INDICES, COLUMNS
 
 from cowboysmall.data.file import read_master_file
 from cowboysmall.plots import plt, sns
 
+
+
+# %% 1 -
+plt.plot_setup()
+sns.sns_setup()
 
 
 
@@ -50,24 +55,12 @@ def performance_analytics(data, indices, columns, groupBy, groupByName):
     for index, column in zip(indices, columns):
         table = data.groupby(groupBy, observed = False)[column].agg(['count', 'mean', 'std', 'var'])
         print(f"\n{index}\n\n{table}\n\n")
-
-        plt.plot_setup()
-        sns.sns_setup()
         sns.box_plot(data[groupBy], data[column], column, "Daily Returns", groupBy, groupByName, index, "phase_02")
-
         table = data.groupby(groupBy, observed = False)[column].agg(['median'])
-        plt.plot_setup()
-        sns.sns_setup()
         sns.bar_plot(table.index, table["median"], column, "Median Daily Return", groupBy, groupByName, index, "phase_02")
-
         table = pd.pivot_table(data, values = column, index = [groupBy], columns = ["QUARTER"], aggfunc = "mean", observed = False)
-        plt.plot_setup()
-        sns.sns_setup()
         sns.heat_map(table, column, "MEAN", groupBy, index, "phase_02")
-
         table = pd.pivot_table(data, values = column, index = [groupBy], columns = ["QUARTER"], aggfunc = "median", observed = False)
-        plt.plot_setup()
-        sns.sns_setup()
         sns.heat_map(table, column, "MEDIAN", groupBy, index, "phase_02")
 
 
@@ -82,13 +75,9 @@ performance_analytics(master['2018-01-02':'2022-12-30'], INDICES[:-1], COLUMNS[:
 
 # %% 6 - global indices correlation analysis
 matrix = master[COLUMNS]['2018-01-02':'2022-12-30'].corr()
-plt.plot_setup()
-sns.sns_setup()
 sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
 
 matrix = master[COLUMNS]['2023-01-02':'2023-12-29'].corr()
-plt.plot_setup()
-sns.sns_setup()
 sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
 
 
@@ -120,6 +109,4 @@ print("\nNifty Fifty Daily Movement\n")
 print(f"\n{table}\n")
 
 for index, column in zip(INDICES, COLUMNS):
-    plt.plot_setup()
-    sns.sns_setup()
     sns.box_plot(master["NSEI_OPEN_DIR"], master[column].shift(), column, "Daily Returns", "NSEI_OPEN_DIR", "NSEI Open Direction", index, "phase_02")

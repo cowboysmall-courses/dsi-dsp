@@ -98,7 +98,7 @@ model = GridSearchCV(model_mlp, params)
 model.fit(scaler.fit_transform(X_train), y_train)
 
 print(model.best_estimator_)
-# MLPClassifier(alpha=0.001, max_iter=1000, random_state=1337)
+# MLPClassifier(alpha = 0.001, max_iter = 1000, random_state = 1337)
 
 
 

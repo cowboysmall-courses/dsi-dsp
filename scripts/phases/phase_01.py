@@ -16,7 +16,7 @@ Global market indices of interest:
 
 
 # %% 1 - import required libraries
-from cowboysmall import INDICES, COLUMNS
+from cowboysmall.feature import INDICES, COLUMNS
 
 from cowboysmall.data.index import retrieve_data
 from cowboysmall.data.file import save_master_file
