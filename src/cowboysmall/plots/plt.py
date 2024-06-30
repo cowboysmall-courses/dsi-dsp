@@ -34,7 +34,7 @@ def roc_curve(fpr, tpr, description):
 
 
 
-def horizontal_bar_plot(x_vals, y_vals, x_label, y_label, description):
+def barh_plot(x_vals, y_vals, x_label, y_label, description):
     plt.barh(x_vals, y_vals, align = 'center')
     plt.title(f"Horizontal Bar Plot: {description}")
     plt.xlabel(x_label)

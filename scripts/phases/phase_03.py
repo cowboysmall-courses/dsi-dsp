@@ -43,11 +43,20 @@ data = read_master_file()
 data = get_ratios(data)
 data = get_indicators(data)
 
+
+
+# %% 1 -
 data["NSEI_OPEN_DIR"] = np.where(data["NSEI_OPEN"] > data["NSEI_CLOSE"].shift(), 1, 0)
 
+
+
+# %% 1 -
 data = pd.concat([data["NSEI_OPEN_DIR"].shift(-1), data[ALL_COLS]], axis = 1)
 data = data.dropna()
 
+
+
+# %% 1 -
 X = data[ALL_COLS]
 y = data['NSEI_OPEN_DIR']
 

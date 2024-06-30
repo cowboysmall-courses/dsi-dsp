@@ -88,4 +88,4 @@ freq_dist_df = pd.DataFrame(freq_dist.most_common(30), columns=["Words", "Freque
 
 
 # %% 1 - 
-plt.horizontal_bar_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
+plt.barh_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")

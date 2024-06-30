@@ -128,7 +128,7 @@ freq_dist_df.head(30)
 
 
 # %% 1 - 
-plt.horizontal_bar_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
+plt.barh_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
 
 # plt.figure(figsize = (12, 9))
 

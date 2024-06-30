@@ -56,17 +56,17 @@ data = get_indicators(data)
 
 # %% 1 -
 data["NSEI_OPEN_DIR"] = np.where(data["NSEI_OPEN"] > data["NSEI_CLOSE"].shift(), 1, 0)
-data["NSEI_OPEN_DIR"] = np.where(data["NSEI_OPEN"] > data["NSEI_CLOSE"].shift(), 1, 0)
+# data["NSEI_OPEN_DIR"] = np.where(data["NSEI_OPEN"] > data["NSEI_CLOSE"].shift(), 1, 0)
 
 
-# %% 3 -
+# %% 1 -
 data = pd.concat([data["NSEI_OPEN_DIR"].shift(-1), data[ALL_COLS]], axis = 1)
 data = data.dropna()
 
 
 
 
-# %% 3 -
+# %% 1 -
 X = data[FEATURES]
 y = data["NSEI_OPEN_DIR"]
 
@@ -84,36 +84,36 @@ def model_metrics(X_train, X_test, y_train, y_test, model, description):
     y_train_pred_prob = model.predict_proba(X_train)
     train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob[:, 1])
 
-    optimal_threshold = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
-
-    plt.roc_curve(train_fpr, train_tpr, f"{description} - Train Data")
-    train_auc_roc = round(roc_auc_score(y_train, y_train_pred_prob[:, 1]), 3)
-
-    y_train_pred_class = np.where(y_train_pred_prob[:, 1] <= optimal_threshold,  0, 1)
-    print(classification_report(y_train, y_train_pred_class))
-
-    table = pd.crosstab(y_train_pred_class, y_train)
-    print(f"\n{table}\n")
-    train_sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-    train_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-
-
     y_test_pred_prob = model.predict_proba(X_test)
     test_fpr, test_tpr, _ = roc_curve(y_test, y_test_pred_prob[:, 1])
 
-    plt.roc_curve(test_fpr, test_tpr, f"{description} - Test Data")
-    test_auc_roc = round(roc_auc_score(y_test, y_test_pred_prob[:, 1]), 3)
+    optimal_threshold  = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
 
+    train_auc_roc      = round(roc_auc_score(y_train, y_train_pred_prob[:, 1]), 3)
+    y_train_pred_class = np.where(y_train_pred_prob[:, 1] <= optimal_threshold,  0, 1)
+    train_table        = pd.crosstab(y_train_pred_class, y_train)
+    train_sensitivity  = round((train_table.iloc[1, 1] / (train_table.iloc[0, 1] + train_table.iloc[1, 1])) * 100, 2)
+    train_specificity  = round((train_table.iloc[0, 0] / (train_table.iloc[0, 0] + train_table.iloc[1, 0])) * 100, 2)
+
+    test_auc_roc      = round(roc_auc_score(y_test, y_test_pred_prob[:, 1]), 3)
     y_test_pred_class = np.where(y_test_pred_prob[:, 1] <= optimal_threshold,  0, 1)
-    print(classification_report(y_test, y_test_pred_class))
+    test_table        = pd.crosstab(y_test_pred_class, y_test)
+    test_sensitivity  = round((test_table.iloc[1, 1] / (test_table.iloc[0, 1] + test_table.iloc[1, 1])) * 100, 2)
+    test_specificity  = round((test_table.iloc[0, 0] / (test_table.iloc[0, 0] + test_table.iloc[1, 0])) * 100, 2)
 
-    table = pd.crosstab(y_test_pred_class, y_test)
-    print(f"\n{table}\n")
-    test_sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
-    test_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-
+    plt.roc_curve(train_fpr, train_tpr, f"{description} - Train Data")
+    plt.roc_curve(test_fpr, test_tpr, f"{description} - Test Data")
 
     print()
+
+    print(classification_report(y_train, y_train_pred_class))
+    print(f"\nTrain Data - Confusion Matrix:\n{train_table}\n")
+
+    print(classification_report(y_test, y_test_pred_class))
+    print(f"\n Test Data - Confusion Matrix:\n{test_table}\n")
+
+    print()
+
     print(f"Train Data - Sensitivity for cut-off {optimal_threshold}: {train_sensitivity}%")
     print(f" Test Data - Sensitivity for cut-off {optimal_threshold}: {test_sensitivity}%\n")
 

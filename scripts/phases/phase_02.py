@@ -37,6 +37,10 @@ master = read_master_file()
 
 
 
+# %% 3 -
+master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
+
+
 
 # %% 3 - prepare master data
 CONDITIONS = [(master.index <= '2020-01-30'), ('2022-05-05' <= master.index)]
@@ -44,9 +48,6 @@ CHOICES    = ['PRE_COVID', 'POST_COVID']
 
 master['PANDEMIC'] = np.select(CONDITIONS, CHOICES, 'COVID')
 master['PANDEMIC'] = pd.Categorical(master['PANDEMIC'], categories = ['PRE_COVID', 'COVID', 'POST_COVID'], ordered = True)
-
-master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
-
 
 
 
