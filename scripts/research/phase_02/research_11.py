@@ -25,6 +25,9 @@ from cowboysmall.data.file import read_master_file
 # %% 2 -
 master = read_master_file()
 
+
+
+# %% 3 -
 master["NSEI_OPEN_DIR"] = np.where(master["NSEI_OPEN"] > master["NSEI_CLOSE"].shift(), 1, 0)
 
 table1 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].sum()

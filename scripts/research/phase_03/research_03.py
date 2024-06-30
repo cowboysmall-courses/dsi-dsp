@@ -25,8 +25,8 @@ from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 
 from cowboysmall.data.file import read_master_file
 from cowboysmall.model.logit import prune
-from cowboysmall.feature import COLUMNS
-from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
+from cowboysmall.feature import COLUMNS, INDICATORS, RATIOS
+from cowboysmall.feature.indicators import get_indicators, get_ratios
 from cowboysmall.plots import plt, sns
 
 
@@ -133,7 +133,7 @@ fpr, tpr, thresholds = roc_curve(y, y_pred_prob)
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(fpr, tpr, "03_01", "01 - with all data", "phase_03")
+plt.roc_curve(fpr, tpr, "Logistic Model")
 
 
 

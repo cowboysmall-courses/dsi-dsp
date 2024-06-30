@@ -30,8 +30,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import MinMaxScaler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature import COLUMNS
-from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
+from cowboysmall.feature import COLUMNS, INDICATORS, RATIOS
+from cowboysmall.feature.indicators import get_indicators, get_ratios
 from cowboysmall.plots import plt, sns
 
 
@@ -106,7 +106,7 @@ train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob[:,
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(train_fpr, train_tpr, "04_01", "Random Forest (Train Data)", "phase_04")
+plt.roc_curve(train_fpr, train_tpr, "Random Forest (Train Data)")
 
 
 
@@ -176,7 +176,7 @@ test_fpr, test_tpr, test_thresholds = roc_curve(y_test, y_test_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(test_fpr, test_tpr, "04_02", "Random Forest (Test Data)", "phase_04")
+plt.roc_curve(test_fpr, test_tpr, "Random Forest (Test Data)")
 
 
 

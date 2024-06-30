@@ -23,13 +23,10 @@ from cowboysmall.feature import INDICES, COLUMNS
 
 
 # %% 2 - plot daily returns
+plt.plot_setup()
+sns.sns_setup()
+
 for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
     data = read_index_file(index, indicators = True)['2018-01-02':'2023-12-29']
-
-    plt.plot_setup()
-    sns.sns_setup()
-    sms.qq_plot(data, column, "phase_01")
-
-    plt.plot_setup()
-    sns.sns_setup()
-    sns.histogram(data, column, "Daily Returns", index, "phase_01")
+    sms.qq_plot(data[column].values)
+    sns.histogram(data[column].values, "Daily Returns", 'Frequency', index)

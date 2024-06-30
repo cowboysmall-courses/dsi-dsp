@@ -25,12 +25,13 @@ from cowboysmall.feature import COLUMNS
 # %% 2 -
 master = read_master_file()[COLUMNS[:-1]]
 
-matrix = master['2018-01-02':'2022-12-30'].corr()
+
+# %% 2 -
 plt.plot_setup()
 sns.sns_setup()
-sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
+
+matrix = master['2018-01-02':'2022-12-30'].corr()
+sns.correlation_matrix(matrix, "Daily Returns - 2018-2022")
 
 matrix = master['2023-01-02':'2023-12-29'].corr()
-plt.plot_setup()
-sns.sns_setup()
-sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
+sns.correlation_matrix(matrix, "Daily Returns - 2023-2023")

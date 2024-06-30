@@ -17,7 +17,7 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from string import punctuation, digits
 
@@ -25,6 +25,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from wordcloud import WordCloud
+
+from cowboysmall.plots import plt
 
 
 
@@ -47,7 +49,7 @@ data.head()
 
 
 # %% 1 - 
-stop_words    = set(stopwords.words('english')) | set(["nifty", "banknifty", "niftybank", "stockmarketindia"])
+stop_words    = set(stopwords.words('english')) | set(["nifty", "banknifty", "niftybank", "stockmarketindia", "stockmarket"])
 remove_punc   = str.maketrans('', '', punctuation)
 remove_digits = str.maketrans('', '', digits)
 
@@ -80,11 +82,13 @@ wordcloud = WordCloud(background_color = "white", collocations = False).generate
 
 
 # %% 1 - 
-plt.figure(figsize = (16, 10))
+plt.image_plot(wordcloud)
 
-plt.imshow(wordcloud, interpolation = "bilinear")
+# plt.figure(figsize = (16, 10))
 
-plt.axis("off")
-plt.tight_layout(pad = 0)
+# plt.imshow(wordcloud, interpolation = "bilinear")
 
-plt.show()
+# plt.axis("off")
+# plt.tight_layout(pad = 0)
+
+# plt.show()

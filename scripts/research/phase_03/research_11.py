@@ -25,8 +25,8 @@ from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
 from imblearn.under_sampling import RandomUnderSampler
 
 from cowboysmall.data.file import read_master_file
-from cowboysmall.feature import COLUMNS
-from cowboysmall.feature.indicators import get_indicators, get_ratios, INDICATORS, RATIOS
+from cowboysmall.feature import COLUMNS, INDICATORS, RATIOS
+from cowboysmall.feature.indicators import get_indicators, get_ratios
 from cowboysmall.model.imbalance import imbalance_remedy_evaluation
 
 
