@@ -19,7 +19,6 @@ Global market indices of interest:
 import pandas as pd
 
 import nltk
-# nltk.download('all', quiet = True)
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize

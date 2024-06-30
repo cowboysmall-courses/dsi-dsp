@@ -17,8 +17,6 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
 
 from string import punctuation, digits
 
@@ -27,6 +25,12 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from cowboysmall.plots import plt, sns
+
+
+
+# %% 1 - 
+plt.plot_setup()
+sns.sns_setup()
 
 
 
@@ -118,22 +122,4 @@ scores.describe()
 
 
 # %% 1 - 
-plt.plot_setup()
-sns.sns_setup()
-
 sns.box_plot_values(scores, "Type", "Score", "Scores")
-
-# sns.set_style("darkgrid")
-# sns.set_context("paper")
-
-# plt.figure(figsize = (8, 6))
-
-# sns.boxplot(data = scores)
-
-# plt.title("Box Plot - Scores")
-# plt.xlabel("Type")
-# plt.ylabel("Score")
-
-# plt.show()
-
-# %%

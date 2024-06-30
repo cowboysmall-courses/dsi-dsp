@@ -74,5 +74,3 @@ def prune_colinear(X, y, verbose = True):
 
         else:
             return model, dropped
-
-

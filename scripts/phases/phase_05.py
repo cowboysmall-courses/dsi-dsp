@@ -17,8 +17,8 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 
 import nltk
 # nltk.download('all', quiet = True)
@@ -31,15 +31,15 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 from wordcloud import WordCloud
 
-# from cowboysmall.plots import plt, sns
+from cowboysmall.plots import plt, sns
 
 
 
 # %% 1 -
-# plt.plot_setup()
-# sns.sns_setup()
-sns.set_style("darkgrid")
-sns.set_context("paper")
+plt.plot_setup()
+sns.sns_setup()
+# sns.set_style("darkgrid")
+# sns.set_context("paper")
 
 
 
@@ -128,15 +128,17 @@ freq_dist_df.head(30)
 
 
 # %% 1 - 
-plt.figure(figsize = (12, 9))
+plt.horizontal_bar_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
 
-plt.barh(freq_dist_df["Words"], freq_dist_df["Frequency"], align = 'center')
+# plt.figure(figsize = (12, 9))
 
-plt.title('Words by Frequency')
-plt.xlabel('Frequency')
-plt.ylabel('Words')
+# plt.barh(freq_dist_df["Words"], freq_dist_df["Frequency"], align = 'center')
 
-plt.show()
+# plt.title('Words by Frequency')
+# plt.xlabel('Frequency')
+# plt.ylabel('Words')
+
+# plt.show()
 
 
 
@@ -146,14 +148,16 @@ wordcloud = WordCloud(background_color = "white", collocations = False).generate
 
 
 # %% 1 - 
-plt.figure(figsize = (16, 10))
+plt.image_plot(wordcloud)
 
-plt.imshow(wordcloud, interpolation = "bilinear")
+# plt.figure(figsize = (16, 10))
 
-plt.axis("off")
-plt.tight_layout(pad = 0)
+# plt.imshow(wordcloud, interpolation = "bilinear")
 
-plt.show()
+# plt.axis("off")
+# plt.tight_layout(pad = 0)
+
+# plt.show()
 
 
 
@@ -199,12 +203,14 @@ scores.describe()
 
 
 # %% 1 - 
-plt.figure(figsize = (8, 6))
+sns.box_plot_values(scores, "Type", "Score", "Scores")
 
-sns.boxplot(data = scores)
+# plt.figure(figsize = (8, 6))
 
-plt.title("Box Plot - Scores")
-plt.xlabel("Type")
-plt.ylabel("Score")
+# sns.boxplot(data = scores)
 
-plt.show()
+# plt.title("Box Plot - Scores")
+# plt.xlabel("Type")
+# plt.ylabel("Score")
+
+# plt.show()

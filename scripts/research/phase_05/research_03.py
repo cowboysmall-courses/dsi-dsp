@@ -17,7 +17,6 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-# import matplotlib.pyplot as plt
 
 from string import punctuation, digits
 
@@ -26,7 +25,13 @@ from nltk.tokenize import word_tokenize
 
 from wordcloud import WordCloud
 
-from cowboysmall.plots import plt
+from cowboysmall.plots import plt, sns
+
+
+
+# %% 1 - 
+plt.plot_setup()
+sns.sns_setup()
 
 
 
@@ -83,12 +88,3 @@ wordcloud = WordCloud(background_color = "white", collocations = False).generate
 
 # %% 1 - 
 plt.image_plot(wordcloud)
-
-# plt.figure(figsize = (16, 10))
-
-# plt.imshow(wordcloud, interpolation = "bilinear")
-
-# plt.axis("off")
-# plt.tight_layout(pad = 0)
-
-# plt.show()

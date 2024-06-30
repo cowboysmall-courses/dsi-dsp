@@ -78,44 +78,55 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # %% 4 -
-def model_metrics(X_train, X_test, y_train, y_test, model, name = "MODEL", description = "Model"):
+def model_metrics(X_train, X_test, y_train, y_test, model, description):
     model.fit(X_train, y_train)
+
     y_train_pred_prob = model.predict_proba(X_train)
     train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob[:, 1])
 
     optimal_threshold = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
 
-    plt.roc_curve(train_fpr, train_tpr, f"PHASE_04_{name}_TRAIN", f"{description} (Train Data)", "phase_04")
-    train_auc_roc = roc_auc_score(y_train, y_train_pred_prob[:, 1])
-    print(f"Train Data - AUC ROC: {train_auc_roc}\n")
+    plt.roc_curve(train_fpr, train_tpr, f"{description} - Train Data")
+    train_auc_roc = round(roc_auc_score(y_train, y_train_pred_prob[:, 1]), 3)
+
     y_train_pred_class = np.where(y_train_pred_prob[:, 1] <= optimal_threshold,  0, 1)
     print(classification_report(y_train, y_train_pred_class))
+
     table = pd.crosstab(y_train_pred_class, y_train)
     print(f"\n{table}\n")
     train_sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
     train_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-    print(f"Train Data - Sensitivity for cut-off {optimal_threshold}: {train_sensitivity}%")
-    print(f"Train Data - Specificity for cut-off {optimal_threshold}: {train_specificity}%\n")
+
 
     y_test_pred_prob = model.predict_proba(X_test)
     test_fpr, test_tpr, _ = roc_curve(y_test, y_test_pred_prob[:, 1])
 
-    plt.roc_curve(test_fpr, test_tpr, f"PHASE_04_{name}_TEST", f"{description} (Test Data)", "phase_04")
-    test_auc_roc = roc_auc_score(y_test, y_test_pred_prob[:, 1])
-    print(f"Test Data - AUC ROC: {test_auc_roc}\n")
+    plt.roc_curve(test_fpr, test_tpr, f"{description} - Test Data")
+    test_auc_roc = round(roc_auc_score(y_test, y_test_pred_prob[:, 1]), 3)
+
     y_test_pred_class = np.where(y_test_pred_prob[:, 1] <= optimal_threshold,  0, 1)
     print(classification_report(y_test, y_test_pred_class))
+
     table = pd.crosstab(y_test_pred_class, y_test)
     print(f"\n{table}\n")
     test_sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
     test_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
-    print(f"Test Data - Sensitivity for cut-off {optimal_threshold}: {test_sensitivity}%")
-    print(f"Test Data - Specificity for cut-off {optimal_threshold}: {test_specificity}%\n")
+
+
+    print()
+    print(f"Train Data - Sensitivity for cut-off {optimal_threshold}: {train_sensitivity}%")
+    print(f" Test Data - Sensitivity for cut-off {optimal_threshold}: {test_sensitivity}%\n")
+
+    print(f"Train Data - Specificity for cut-off {optimal_threshold}: {train_specificity}%")
+    print(f" Test Data - Specificity for cut-off {optimal_threshold}: {test_specificity}%\n")
+
+    print(f"Train Data - AUC ROC: {train_auc_roc}")
+    print(f" Test Data - AUC ROC: {test_auc_roc}\n")
 
 
 # %% 4 -
 model = LogisticRegression(max_iter = 1000, random_state = 1337)
-model_metrics(X_train, X_test, y_train, y_test, model, name = "LOG", description = "Logistic Regression")
+model_metrics(X_train, X_test, y_train, y_test, model, "Logistic Regression")
 # Train Data - AUC ROC: 0.7530102826256637
 
 #               precision    recall  f1-score   support
@@ -160,7 +171,7 @@ model_metrics(X_train, X_test, y_train, y_test, model, name = "LOG", description
 
 # %% 4 -
 model = GaussianNB()
-model_metrics(X_train, X_test, y_train, y_test, model, name = "NB", description = "Naive Bayes")
+model_metrics(X_train, X_test, y_train, y_test, model, "Naive Bayes")
 # Train Data - AUC ROC: 0.7385751174650381
 
 #               precision    recall  f1-score   support
@@ -205,7 +216,7 @@ model_metrics(X_train, X_test, y_train, y_test, model, name = "NB", description 
 
 # %% 4 -
 model = DecisionTreeClassifier(max_depth = 10, min_samples_split = 0.4, splitter = "random", random_state = 1337)
-model_metrics(X_train, X_test, y_train, y_test, model, name = "DT", description = "Decision Tree")
+model_metrics(X_train, X_test, y_train, y_test, model, "Decision Tree")
 # Train Data - AUC ROC: 0.7150959927685345
 
 #               precision    recall  f1-score   support
@@ -250,7 +261,7 @@ model_metrics(X_train, X_test, y_train, y_test, model, name = "DT", description 
 
 # %% 4 -
 model = RandomForestClassifier(max_depth = 10, min_samples_split = 0.2, random_state = 1337)
-model_metrics(X_train, X_test, y_train, y_test, model, name = "RF", description = "Random Forest")
+model_metrics(X_train, X_test, y_train, y_test, model, "Random Forest")
 # Train Data - AUC ROC: 0.7830992259493613
 
 #               precision    recall  f1-score   support
@@ -295,7 +306,7 @@ model_metrics(X_train, X_test, y_train, y_test, model, name = "RF", description 
 
 # %% 4 -
 model = SVC(C = 1, kernel = "linear", probability = True, random_state = 1337)
-model_metrics(X_train, X_test, y_train, y_test, model, name = "SVC", description = "SVC")
+model_metrics(X_train, X_test, y_train, y_test, model, "SVC")
 # Train Data - AUC ROC: 0.7529794316635765
 
 #               precision    recall  f1-score   support
@@ -343,7 +354,7 @@ scaler = MinMaxScaler()
 scaler.fit(X_train)
 
 model = MLPClassifier(alpha = 0.001, max_iter = 1000, random_state = 1337)
-model_metrics(scaler.transform(X_train), scaler.transform(X_test), y_train, y_test, model, name = "MLP", description = "MLP")
+model_metrics(scaler.transform(X_train), scaler.transform(X_test), y_train, y_test, model, "MLP")
 # Train Data - AUC ROC: 0.7530133677218724
 
 #               precision    recall  f1-score   support

@@ -55,13 +55,16 @@ def performance_analytics(data, indices, columns, groupBy, groupByName):
     for index, column in zip(indices, columns):
         table = data.groupby(groupBy, observed = False)[column].agg(['count', 'mean', 'std', 'var'])
         print(f"\n{index}\n\n{table}\n\n")
-        sns.box_plot(data[groupBy], data[column], column, "Daily Returns", groupBy, groupByName, index, "phase_02")
+        sns.box_plot(data[groupBy], data[column], groupByName, "Daily Returns", index)
+
         table = data.groupby(groupBy, observed = False)[column].agg(['median'])
-        sns.bar_plot(table.index, table["median"], column, "Median Daily Return", groupBy, groupByName, index, "phase_02")
+        sns.bar_plot(table.index, table["median"], groupByName, "Median Daily Return", index)
+
         table = pd.pivot_table(data, values = column, index = [groupBy], columns = ["QUARTER"], aggfunc = "mean", observed = False)
-        sns.heat_map(table, column, "MEAN", groupBy, index, "phase_02")
+        sns.heat_map(table, index)
+
         table = pd.pivot_table(data, values = column, index = [groupBy], columns = ["QUARTER"], aggfunc = "median", observed = False)
-        sns.heat_map(table, column, "MEDIAN", groupBy, index, "phase_02")
+        sns.heat_map(table, index)
 
 
 
@@ -75,10 +78,10 @@ performance_analytics(master['2018-01-02':'2022-12-30'], INDICES[:-1], COLUMNS[:
 
 # %% 6 - global indices correlation analysis
 matrix = master[COLUMNS]['2018-01-02':'2022-12-30'].corr()
-sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2018-2022", "phase_02")
+sns.correlation_matrix(matrix, "Daily Returns - 2018-2022")
 
 matrix = master[COLUMNS]['2023-01-02':'2023-12-29'].corr()
-sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "phase_02")
+sns.correlation_matrix(matrix, "Daily Returns - 2023-2023")
 
 
 
@@ -87,6 +90,10 @@ sns.correlation_matrix(matrix, "DAILY_RETURNS", "Daily Returns", "2023-2023", "p
 print("\nPre-Post Covid Performance Analytics\n")
 performance_analytics(master, INDICES[:-1], COLUMNS[:-1], "PANDEMIC", "Pandemic")
 
+
+
+
+# %% 8 - 
 for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
     pre_covid  = master.loc[(master['PANDEMIC'] == 'PRE_COVID'),  [column]]
     post_covid = master.loc[(master['PANDEMIC'] == 'POST_COVID'), [column]]
@@ -100,7 +107,7 @@ for index, column in zip(INDICES[:-1], COLUMNS[:-1]):
 
 
 
-# %% 8 - nifty fifty daily movement - pre-modeling
+# %% 9 - nifty fifty daily movement - pre-modeling
 table1 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].sum()
 table2 = master.groupby("YEAR", observed = False)[["NSEI_OPEN_DIR"]].count()
 table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
@@ -108,5 +115,9 @@ table  = ((table1["NSEI_OPEN_DIR"] / table2["NSEI_OPEN_DIR"]) * 100).round(2)
 print("\nNifty Fifty Daily Movement\n")
 print(f"\n{table}\n")
 
+
+
+
+# %% 10 - 
 for index, column in zip(INDICES, COLUMNS):
-    sns.box_plot(master["NSEI_OPEN_DIR"], master[column].shift(), column, "Daily Returns", "NSEI_OPEN_DIR", "NSEI Open Direction", index, "phase_02")
+    sns.box_plot(master["NSEI_OPEN_DIR"], master[column].shift(), "NSEI Open Direction", "Daily Returns", index)

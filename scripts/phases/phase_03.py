@@ -86,8 +86,9 @@ model.summary()
 # %% 6 - ROC Curve for train data
 y_pred = model.predict(X_train.drop(dropped, axis = 1))
 fpr, tpr, thresholds = roc_curve(y_train, y_pred)
-plt.roc_curve(fpr, tpr, "PHASE_03_01", "01 - train data", "phase_03")
 auc_roc = roc_auc_score(y_train, y_pred)
+
+plt.roc_curve(fpr, tpr, "Logistic Model - Train Data")
 print(f'AUC ROC: {auc_roc}')
 
 
@@ -103,8 +104,10 @@ print(f'Optimal Threshold: {optimal_threshold}')
 # %% 8 - obtain sensitivity and specificity for train data
 y_pred_class = np.where(y_pred <= optimal_threshold, 0, 1)
 print(classification_report(y_train, y_pred_class))
+
 table = pd.crosstab(y_pred_class, y_train)
 print(f"\n{table}\n")
+
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Sensitivity: {sensitivity}%")
@@ -116,8 +119,9 @@ print(f"Specificity: {specificity}%")
 # %% 8 - ROC Curve for test data
 y_test_pred = model.predict(X_test.drop(dropped, axis = 1))
 fpr, tpr, thresholds = roc_curve(y_test, y_test_pred)
-plt.roc_curve(fpr, tpr, "PHASE_03_02", "02 - test data", "phase_03")
 auc_roc = roc_auc_score(y_test, y_test_pred)
+
+plt.roc_curve(fpr, tpr, "Logistic Model - Test data")
 print(f'AUC ROC: {auc_roc}')
 
 
@@ -126,8 +130,10 @@ print(f'AUC ROC: {auc_roc}')
 # %% 9 - obtain sensitivity and specificity for test data
 y_test_pred_class = np.where(y_test_pred <= optimal_threshold, 0, 1)
 print(classification_report(y_test, y_test_pred_class))
+
 table = pd.crosstab(y_test_pred_class, y_test)
 print(f"\n{table}\n")
+
 sensitivity = round((table.iloc[1, 1] / (table.iloc[0, 1] + table.iloc[1, 1])) * 100, 2)
 specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0])) * 100, 2)
 print(f"Sensitivity: {sensitivity}%")

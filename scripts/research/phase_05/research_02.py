@@ -17,11 +17,8 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
 
 import nltk
-# nltk.download('all', quiet = True)
 
 from string import punctuation, digits
 
@@ -29,6 +26,12 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from cowboysmall.plots import plt, sns
+
+
+
+# %% 1 - 
+plt.plot_setup()
+sns.sns_setup()
 
 
 
@@ -85,17 +88,4 @@ freq_dist_df = pd.DataFrame(freq_dist.most_common(30), columns=["Words", "Freque
 
 
 # %% 1 - 
-plt.plot_setup()
-sns.sns_setup()
-
 plt.horizontal_bar_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
-
-# plt.figure(figsize = (12, 9))
-
-# plt.barh(freq_dist_df["Words"], freq_dist_df["Frequency"], align = 'center')
-
-# plt.title('Words by Frequency')
-# plt.xlabel('Frequency')
-# plt.ylabel('Words')
-
-# plt.show()
