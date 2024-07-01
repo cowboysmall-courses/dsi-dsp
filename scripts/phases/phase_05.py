@@ -17,11 +17,8 @@ Global market indices of interest:
 
 # %% 1 - import required libraries
 import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
 
 import nltk
-# nltk.download('all', quiet = True)
 
 from string import punctuation, digits
 
@@ -38,8 +35,6 @@ from cowboysmall.plots import plt, sns
 # %% 1 -
 plt.plot_setup()
 sns.sns_setup()
-# sns.set_style("darkgrid")
-# sns.set_context("paper")
 
 
 
@@ -74,13 +69,20 @@ def preprocess_tweet(tweet):
 
 # %% 1 - 
 data["Cleaned_Tweets"] = data["Tweets"].apply(preprocess_tweet)
-data["Cleaned_Tweets"].head()
-# 0           banknifty ce looks good target nifty nifty
-# 1    market banknifty optionstrading optionbuying t...
-# 2    penny stock madhucon projects ltd cmp followht...
-# 3    nifty healthy uptrend since beginning year did...
-# 4    gravita livetrading stockstowatch stocksinfocu...
-# Name: Cleaned_Tweets, dtype: object
+data.head()
+#                                               Tweets  \
+# 0  #bankNifty 50100 ce looks good at 70+-2 for a ...   
+# 1  "#market #banknifty #OptionsTrading #optionbuy...   
+# 2  PENNY STOCK MADHUCON PROJECTS LTD cmp-11 FOLLO...   
+# 3  #Nifty50 has been in a healthy uptrend since t...   
+# 4  #Gravita #livetrading #stockstowatch #stocksin...   
+
+#                                       Cleaned_Tweets  
+# 0                               ce looks good target  
+# 1  market optionstrading optionbuying trading buy...  
+# 2  penny stock madhucon projects ltd cmp followht...  
+# 3  healthy uptrend since beginning year didnt bre...  
+# 4  gravita livetrading stockstowatch stocksinfocu...  
 
 
 
@@ -94,51 +96,41 @@ freq_dist    = nltk.FreqDist(tweet_words.split())
 freq_dist_df = pd.DataFrame(freq_dist.most_common(30), columns=["Words", "Frequency"])
 freq_dist_df.head(30)
 #               Words  Frequency
-# 0       stockmarket         71
-# 1            sensex         43
-# 2            stocks         38
-# 3    optionstrading         36
-# 4               bse         34
-# 5    breakoutstocks         31
-# 6           trading         30
-# 7            market         29
-# 8             india         26
-# 9               ipm         25
-# 10             good         24
-# 11              nse         24
-# 12           growth         24
-# 13         nseindia         23
-# 14              may         23
-# 15  pharmaceuticals         23
-# 16     indianpharma         23
-# 17      stockstobuy         22
-# 18      sharemarket         21
-# 19     stockmarkets         20
-# 20              amp         19
-# 21           points         19
-# 22    stocksinfocus         19
-# 23             time         19
-# 24             bank         18
-# 25            today         18
-# 26    stockstowatch         18
-# 27            index         17
-# 28     optionbuying         16
-# 29              buy         16
+# 0            sensex         43
+# 1            stocks         38
+# 2    optionstrading         36
+# 3               bse         34
+# 4    breakoutstocks         31
+# 5           trading         30
+# 6            market         29
+# 7             india         26
+# 8               ipm         25
+# 9              good         24
+# 10              nse         24
+# 11           growth         24
+# 12         nseindia         23
+# 13              may         23
+# 14  pharmaceuticals         23
+# 15     indianpharma         23
+# 16      stockstobuy         22
+# 17      sharemarket         21
+# 18     stockmarkets         20
+# 19              amp         19
+# 20           points         19
+# 21    stocksinfocus         19
+# 22             time         19
+# 23             bank         18
+# 24            today         18
+# 25    stockstowatch         18
+# 26            index         17
+# 27     optionbuying         16
+# 28              buy         16
+# 29         finnifty         16
 
 
 
 # %% 1 - 
 plt.barh_plot(freq_dist_df["Words"], freq_dist_df["Frequency"], "Frequency", "Words", "Words by Frequency")
-
-# plt.figure(figsize = (12, 9))
-
-# plt.barh(freq_dist_df["Words"], freq_dist_df["Frequency"], align = 'center')
-
-# plt.title('Words by Frequency')
-# plt.xlabel('Frequency')
-# plt.ylabel('Words')
-
-# plt.show()
 
 
 
@@ -149,15 +141,6 @@ wordcloud = WordCloud(background_color = "white", collocations = False).generate
 
 # %% 1 - 
 plt.image_plot(wordcloud)
-
-# plt.figure(figsize = (16, 10))
-
-# plt.imshow(wordcloud, interpolation = "bilinear")
-
-# plt.axis("off")
-# plt.tight_layout(pad = 0)
-
-# plt.show()
 
 
 
@@ -204,13 +187,3 @@ scores.describe()
 
 # %% 1 - 
 sns.box_plot_values(scores, "Type", "Score", "Scores")
-
-# plt.figure(figsize = (8, 6))
-
-# sns.boxplot(data = scores)
-
-# plt.title("Box Plot - Scores")
-# plt.xlabel("Type")
-# plt.ylabel("Score")
-
-# plt.show()
