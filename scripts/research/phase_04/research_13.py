@@ -23,11 +23,12 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, roc_curve, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from cowboysmall.data.file import read_master_file
 from cowboysmall.feature import COLUMNS, INDICATORS, RATIOS
@@ -73,7 +74,7 @@ data.head()
 
 
 # %% 3 -
-X = data[ALL_COLS]
+X = data[FEATURES]
 y = data["NSEI_OPEN_DIR"]
 
 
@@ -84,27 +85,33 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 
 # %% 1 -
-model_dt = DecisionTreeClassifier(random_state = 1337)
+model_knn = KNeighborsClassifier()
+scaler    = StandardScaler()
 
 params = {
-    "criterion": ["gini", "entropy", "log_loss"],
-    "max_features": ["sqrt", "log2", None],
-    "min_samples_split": [0.1, 0.2, 0.3, 0.4, 0.5],
-    "splitter": ["best", "random"],
-    "max_depth": [10, 20, None]
+    "n_neighbors": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    "weights": ["uniform", "distance"],
+    "algorithm": ["auto", "ball_tree", "kd_tree", "brute"],
+    "leaf_size": [10, 20, 30, 40, 50],
+    "p": [1, 2]
 }
-model = GridSearchCV(model_dt, params)
-model.fit(X_train, y_train)
+model = GridSearchCV(model_knn, params)
+model.fit(scaler.fit_transform(X_train), y_train)
 
 print(model.best_estimator_)
-# DecisionTreeClassifier(max_depth = 10, min_samples_split = 0.4, random_state = 1337, splitter = 'random')
+# KNeighborsClassifier(leaf_size = 10, n_neighbors = 30)
+
+
+
+
+
 
 
 
 
 
 # %% 6 - ROC Curve
-y_train_pred_prob = model.predict_proba(X_train)
+y_train_pred_prob = model.predict_proba(scaler.transform(X_train))
 
 
 
@@ -113,21 +120,21 @@ train_fpr, train_tpr, train_thresholds = roc_curve(y_train, y_train_pred_prob[:,
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(train_fpr, train_tpr, "Decision Tree - Best Params (Train Data)")
+plt.roc_curve(train_fpr, train_tpr, "MLP (Train Data)")
 
 
 
 # %% 7 - find optimal threshold
 optimal_threshold = round(train_thresholds[np.argmax(train_tpr - train_fpr)], 3)
 print(f"Optimal Threshold: {optimal_threshold}")
-# Optimal Threshold: 0.723
+# Optimal Threshold: 0.7
 
 
 
 # %% 8 - AUC Curve
 train_auc_roc = roc_auc_score(y_train, y_train_pred_prob[:, 1])
 print(f"AUC ROC (Train Data): {train_auc_roc}")
-# AUC ROC (Train Data): 0.7342235892626312
+# AUC ROC (Train Data): 0.7651023172157624
 
 
 
@@ -135,13 +142,13 @@ print(f"AUC ROC (Train Data): {train_auc_roc}")
 y_train_pred_class = np.where(y_train_pred_prob[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_train, y_train_pred_class))
 #               precision    recall  f1-score   support
-# 
-#          0.0       0.42      0.86      0.56       391
-#          1.0       0.87      0.43      0.57       829
-# 
-#     accuracy                           0.57      1220
-#    macro avg       0.64      0.65      0.57      1220
-# weighted avg       0.72      0.57      0.57      1220
+
+#          0.0       0.50      0.70      0.59       391
+#          1.0       0.83      0.68      0.74       829
+
+#     accuracy                           0.68      1220
+#    macro avg       0.67      0.69      0.67      1220
+# weighted avg       0.72      0.68      0.69      1220
 
 
 
@@ -150,8 +157,8 @@ table = pd.crosstab(y_train_pred_class, y_train)
 print(table)
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0              337  474
-# 1               54  355
+# 0              274  269
+# 1              117  560
 
 
 
@@ -161,8 +168,9 @@ train_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 
 
 print(f"Sensitivity for cut-off {optimal_threshold}: {train_sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold}: {train_specificity}%")
-# Sensitivity for cut-off 0.723: 42.82%
-# Specificity for cut-off 0.723: 86.19%
+# Sensitivity for cut-off 0.7: 67.55%
+# Specificity for cut-off 0.7: 70.08%
+
 
 
 
@@ -173,7 +181,7 @@ print(f"Specificity for cut-off {optimal_threshold}: {train_specificity}%")
 
 
 # %% 6 - ROC Curve
-y_test_pred_prob = model.predict_proba(X_test)
+y_test_pred_prob = model.predict_proba(scaler.transform(X_test))
 
 
 
@@ -182,14 +190,14 @@ test_fpr, test_tpr, test_thresholds = roc_curve(y_test, y_test_pred_prob[:, 1])
 
 plt.plot_setup()
 sns.sns_setup()
-plt.roc_curve(test_fpr, test_tpr, "Decision Tree - Best Params (Test Data)")
+plt.roc_curve(test_fpr, test_tpr, "MLP (Test Data)")
 
 
 
 # %% 8 - AUC Curve
 test_auc_roc = roc_auc_score(y_test, y_test_pred_prob[:, 1])
 print(f"AUC ROC (Test Data): {test_auc_roc}")
-# AUC ROC (Test Data): 0.7527260111022998
+# AUC ROC (Test Data): 0.733445678033307
 
 
 
@@ -198,12 +206,12 @@ y_test_pred_class = np.where(y_test_pred_prob[:, 1] <= optimal_threshold,  0, 1)
 print(classification_report(y_test, y_test_pred_class))
 #               precision    recall  f1-score   support
 # 
-#          0.0       0.42      0.84      0.56        97
-#          1.0       0.86      0.47      0.61       208
+#          0.0       0.51      0.67      0.58        97
+#          1.0       0.82      0.70      0.76       208
 # 
-#     accuracy                           0.59       305
-#    macro avg       0.64      0.65      0.59       305
-# weighted avg       0.72      0.59      0.59       305
+#     accuracy                           0.69       305
+#    macro avg       0.67      0.69      0.67       305
+# weighted avg       0.72      0.69      0.70       305
 
 
 
@@ -212,8 +220,8 @@ table = pd.crosstab(y_test_pred_class, y_test)
 print(table)
 # NSEI_OPEN_DIR  0.0  1.0
 # row_0                  
-# 0               81  110
-# 1               16   98
+# 0               65   62
+# 1               32  146
 
 
 
@@ -223,8 +231,9 @@ test_specificity = round((table.iloc[0, 0] / (table.iloc[0, 0] + table.iloc[1, 0
 
 print(f"Sensitivity for cut-off {optimal_threshold}: {test_sensitivity}%")
 print(f"Specificity for cut-off {optimal_threshold}: {test_specificity}%")
-# Sensitivity for cut-off 0.723: 47.12%
-# Specificity for cut-off 0.723: 83.51%
+# Sensitivity for cut-off 0.7: 70.19%
+# Specificity for cut-off 0.7: 67.01%
+
 
 
 
@@ -237,5 +246,5 @@ print(f"Specificity for cut-off {optimal_threshold}: {test_specificity}%")
 # %% 13 - 
 print(f"AUC ROC (Train Data): {train_auc_roc}")
 print(f"AUC ROC  (Test Data): {test_auc_roc}")
-# AUC ROC (Train Data): 0.7342235892626312
-# AUC ROC  (Test Data): 0.7527260111022998
+# AUC ROC (Train Data): 0.7651023172157624
+# AUC ROC  (Test Data): 0.733445678033307
