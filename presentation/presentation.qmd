@@ -1,0 +1,29 @@
+---
+title: "Global Stock Market Analytics"
+author: "Jerry Kiely"
+format: 
+  beamer:
+    slide-level: 2
+    theme: PaloAlto
+---
+
+## Slide 1
+
+### Alert block {.alert}
+
+Content
+
+### Example block {.example}
+
+Content
+
+
+## Slide 2
+
+### Alert block {.alert}
+
+Content
+
+### Example block {.example}
+
+Content
