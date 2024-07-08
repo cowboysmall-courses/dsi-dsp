@@ -174,6 +174,9 @@ plot.show()
 # %% 1 -
 y_train_pred_prob = model(X_train).detach().cpu().numpy()
 
+if torch.cuda.is_available():
+    y_train = y_train.cpu()
+
 
 
 # %% 6 - ROC Curve

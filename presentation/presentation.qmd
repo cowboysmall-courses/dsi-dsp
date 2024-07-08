@@ -3,27 +3,93 @@ title: "Global Stock Market Analytics"
 author: "Jerry Kiely"
 format: 
   beamer:
+    fontsize: 8pt
     slide-level: 2
     theme: PaloAlto
 ---
 
 ## Slide 1
 
-### Alert block {.alert}
-
-Content
-
 ### Example block {.example}
 
-Content
+Some comment or other...
 
 
 ## Slide 2
 
 ### Alert block {.alert}
 
-Content
+Some alert or other...
 
-### Example block {.example}
 
-Content
+## Slide 3
+
+{{< embed ../report/report.ipynb#model-metrics-plots-logistic >}}
+
+
+
+## Slide 4
+
+```
+Logistic Regression
+
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.58      0.61      0.59       391
+         1.0       0.81      0.79      0.80       829
+
+    accuracy                           0.73      1220
+   macro avg       0.70      0.70      0.70      1220
+weighted avg       0.74      0.73      0.73      1220
+
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.56      0.63      0.59        97
+         1.0       0.82      0.77      0.79       208
+
+    accuracy                           0.72       305
+   macro avg       0.69      0.70      0.69       305
+weighted avg       0.73      0.72      0.73       305
+```
+
+
+## Slide 5
+
+```
+Logistic Regression
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              239  174
+1              152  655
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               61   48
+1               36  160
+```
+
+
+## Slide 6
+
+```
+Logistic Regression
+
+Train Data - Sensitivity for cut-off 0.654: 79.01%
+ Test Data - Sensitivity for cut-off 0.654: 76.92%
+
+Train Data - Specificity for cut-off 0.654: 61.13%
+ Test Data - Specificity for cut-off 0.654: 62.89%
+
+Train Data - AUC ROC: 0.7584678178188988
+ Test Data - AUC ROC: 0.7672482157018239
+```
+
