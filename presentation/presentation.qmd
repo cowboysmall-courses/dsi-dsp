@@ -3,36 +3,797 @@ title: "Global Stock Market Analytics"
 author: "Jerry Kiely"
 format: 
   beamer:
+    aspectratio: 1610
     fontsize: 8pt
     slide-level: 2
     theme: PaloAlto
 ---
 
-## Slide 1
+## Introduction
 
-### Example block {.example}
+In this project we will look at predicting the open direction of the Nifty 50 
+index by looking at other indices and indicators. We will break the project up 
+into three parts:
 
-Some comment or other...
-
-
-## Slide 2
-
-### Alert block {.alert}
-
-Some alert or other...
-
-
-## Slide 3
-
-{{< embed ../report/report.ipynb#model-metrics-plots-logistic >}}
+1. preparing the master data from the global indices
+2. preliminary analysis of data
+3. predictive modelling of open direction of Nifty 50
+4. comparing different models at prediction
+5. sentiment analysis of X / Twitter data relating to Nifty 50
 
 
 
-## Slide 4
 
+
+## Phase 1 - Prepare the Master Data
+
+The indexes of interest are:
+
+ - NSEI:  Nifty 50
+ - DJI:   Dow Jones Index
+ - IXIC:  Nasdaq
+ - HSI:   Hang Seng
+ - N225:  Nikkei 225
+ - GDAXI: Dax
+ - VIX:   Volatility Index
+
+
+
+
+
+## Phase 1 - Prepare the Master Data
+
+
+Download and merge the required data, using LOCF to impute missing data, and 
+adding variables for MONTH, QUARTER, and YEAR.
+
+
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+
+# merge data with outer join
+merged = pd.concat(data, axis = 1)
+
+# impute missing data using LOCF (forward fill)
+merged.ffill(inplace = True)
+
+# add indicators for MONTH, QUARTER, and YEAR
+merged['MONTH']   = merged.index.month
+merged['QUARTER'] = merged.index.quarter
+merged['YEAR']    = merged.index.year
 ```
+
+
+
+
+
+
+## Phase 2 - Preliminary Analysis
+
+We perform some preliminary analysis on the master data hoping to answer the 
+following questions:
+
+1. Which index has given consistently good returns?
+2. Which index was highly volatile?
+3. How are global markets correlated during 6 years period and is the 
+   correlation structure similar in the recent year-2023?
+4. Assuming primary target variable as “Nifty Opening Price Direction”, 
+   what are preliminary insights?
+
+
+
+
+
+
+
+## Phase 2 - Preliminary Analysis
+
+:::: {.columns}
+
+::: {.column width="30%"}
+
+Looking at the Q-Q Plots, the daily returns do not appear to follow - or be 
+drawn from - a Normal Distribution - specifically at the tails. But that is 
+OK because we do not intend to model the daily returns.
+
+:::
+
+::: {.column width="70%"}
+
+![](presentation_plots/plot_01.png)
+
+:::
+
+::::
+
+
+
+
+
+
+
+
+## Phase 2 - Which index has given consistently good returns?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+All indexes seem pretty consistent - all years have similar spreads, and 
+consistent medians, with one or two exceptions. All indexes for 2020 have more 
+outliers than normal. But HSI seems to have more outliers in 2022 than in 2020.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_02.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+## Phase 2 - Which index has given consistently good returns?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Looking at the summary statistics, the clear winner here is NSEI - not one year 
+in the range has a negative mean return. And with the exception of 2020 and 
+2022, NSEI has low volatility (< 1) throughout all years.
+
+:::
+
+::: {.column width="60%"}
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+NSEI
+
+      count   mean    std    var
+YEAR                            
+2018    260  0.012  0.804  0.647
+2019    260  0.062  0.862  0.744
+2020    262  0.059  2.004  4.015
+2021    261  0.094  0.980  0.960
+2022    260  0.055  1.096  1.202
+2023    260  0.079  0.620  0.384
+```
+
+:::
+
+::::
+
+
+
+
+
+
+## Phase 2 - Which index was highly volatile?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+As for the most volatile indexes, it's a toss between IXIC and HSI, both of 
+whom have high volatility (> 1) when compared to the other indexes.
+
+:::
+
+::: {.column width="60%"}
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+IXIC
+
+      count   mean    std    var
+YEAR                            
+2018    260 -0.020  1.330  1.768
+2019    260  0.133  0.975  0.950
+2020    262  0.170  2.200  4.838
+2021    261  0.096  1.124  1.262
+2022    260 -0.124  2.000  4.001
+2023    260  0.157  1.085  1.177
+
+HSI
+
+      count   mean    std    var
+YEAR                            
+2018    260 -0.035  1.244  1.547
+2019    260  0.033  0.981  0.962
+2020    262  0.026  1.445  2.087
+2021    261 -0.028  1.262  1.593
+2022    260 -0.021  2.054  4.221
+2023    260 -0.053  1.409  1.984
+```
+
+:::
+
+::::
+
+
+
+
+
+
+
+
+
+
+## Phase 2 - Which index has given consistently good returns?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Looking at bar plots for median returns by year, again the clear winner here is 
+NSEI - at no time is the median daily returns for any of the years below 0. 
+IXIC has an unusually high 2020, but a bad 2022. HSI also has an unusually bad 
+2022.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_03.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+## Phase 2 - Which index has given consistently good returns?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Looking at heat maps of mean returns, with the exception of the 1st quarter in 
+2020, NSEI has pretty consistent daily returns - where most cells sre pretty 
+bright, denoting above 0. Most of the other indexes have a blend of light and 
+dark, which would indicate more volatile behaviour over the quarters.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_04.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+
+## Phase 2 - Which index has given consistently good returns?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+On the other hand, when looking at median returns across quarters NSEI seems 
+pretty average - there does not seem to be a clear winner here.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_05.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+
+
+
+## Phase 2 - How are global markets correlated during the 6 years period?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+It looks like strong correlation between daily returns of IXIC and DJI, and 
+some correlation between GDAXI and DJI. These indexes are likely to result in 
+multicolinearity at the regression stage.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_06.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+
+
+## Phase 2 - Is the correlation structure similar in the recent year - 2023?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+We can see similar - but slightly weaker - correlations exist between the same 
+indexes for 2023.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_07.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+## Phase 2 - Covid Period
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+We can see that the spreads of each index over the Pandemic are consistent, 
+with the Covid period itself having more outliers - which of course you might 
+expect.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_08.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+## Phase 2 - Covid Period
+
+All indexes had higher volatility over the Covid period. 
+
+- NSEI performed reasonably well over the Covid period, with an increase in 
+  volatility in the Covid period, and with a significant bump in the Post 
+  Covid period. 
+- DJI seemed consisten over the three periods, with an increase in volatility 
+  in the Covid period.
+- IXIC looked pretty good over the three period, but maybe slightly more 
+  volatile overall, and in particular in the Covid period. 
+- HSI has performed poorely in general, with negative returns in the pre and 
+  post Covid periods, and with consistently greater volatility than most.
+- N225 appears to perform not so well, and with relatively high volatility. 
+- GDAXI also appears to perform not so well in general, and with relatively 
+  high volatility. 
+
+
+
+
+
+## Phase 2 - Covid Period
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+With respect to returns, we can see that IXIC looks like the clear winner, with 
+NSEI in second place, and DJI and GSAXI in a fight for third place. HSI appears 
+to have had a terrible Post Covid period, and N225 appears to have had a pretty 
+bad Covid period.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_09.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+## Phase 2 - Covid Period
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Again, NSEI appears to be the most consistent of all indexes. All indexes have 
+bad first quarters during the Pandemic, but improve post Covid.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_10.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+## Phase 2 - Covid Period
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Median returns tells a similar story over the Pandemic period - HSI in 
+particular appears to have had the worst recovery.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_11.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+
+## Phase 2 - Covid Period
+
+We try to estimate the time taken for each of the indexes to return to the Pre 
+Covid levels - the approach is to find how many days it takes for each index to 
+reach a value greater than or equal to the Pre Covid mean returns value.
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ NSEI returned to pre-covid levels on 2022-05-16 after 7 trading day(s)
+  DJI returned to pre-covid levels on 2022-05-13 after 6 trading day(s)
+ IXIC returned to pre-covid levels on 2022-05-10 after 3 trading day(s)
+  HSI returned to pre-covid levels on 2022-05-11 after 4 trading day(s)
+ N225 returned to pre-covid levels on 2022-05-06 after 1 trading day(s)
+GDAXI returned to pre-covid levels on 2022-05-10 after 3 trading day(s)
+```
+
+Interestingly, N225 returned to it's Pre Covid level after just 1 day.
+
+
+
+## Phase 2 - Nifty Opening Price Direction: Preliminary Insights?
+
+We define NSEI_OPEN_DIR as 1 if NSEI Open at time t > NSEI Close at time t - 1, 
+and 0 otherwise. Lets look at the percentages of NSEI_OPEN_DIR = 1 by year:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Nifty Fifty Daily Movement
+
+YEAR
+2018    70.38%
+2019    69.23%
+2020    70.61%
+2021    71.65%
+2022    59.23%
+2023    67.31%
+```
+
+With the exception of 2022, every year has around 70% where NSEI_OPEN_DIR = 1.
+
+
+
+
+## Phase 2 - Nifty Opening Price Direction
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+All of the box plots look consistent across each category of NSEI_OPEN_DIR, with the exceptions of IXIC and VIX.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_12.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+## Phase 2 - Nifty Opening Price Direction
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+All of the box plots look consistent across each category of NSEI_OPEN_DIR, with the exceptions of IXIC and VIX.
+
+:::
+
+::: {.column width="60%"}
+
+![](presentation_plots/plot_13.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+## Phase 3 - Logistic Model
+
+Before proceeding with modelling NSEI_OPEN_DIR, lets define, and add, some indicators and ratios:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+master["NSEI_HL_RATIO"] = master["NSEI_HIGH"] / master["NSEI_LOW"]
+master["DJI_HL_RATIO"]  = master["DJI_HIGH"]  / master["DJI_LOW"]
+
+master["NSEI_RSI"]      = ta.momentum.rsi(master["NSEI_CLOSE"])
+master["DJI_RSI"]       = ta.momentum.rsi(master["DJI_CLOSE"])
+
+master["NSEI_TSI"]      = ta.momentum.tsi(master["NSEI_CLOSE"])
+master["DJI_TSI"]       = ta.momentum.tsi(master["DJI_CLOSE"])
+```
+
+
+
+
+## Phase 3 - Logistic Model
+
+We define a function that will prune any features that are either found to be 
+insignificant, or that are found to be collinear:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+dropping DJI_DAILY_RETURNS with p-value 0.7234766099770011
+dropping GDAXI_DAILY_RETURNS with p-value 0.6162105670376612
+dropping NSEI_HL_RATIO with p-value 0.4277618505298021
+dropping DJI_HL_RATIO with p-value 0.1563055988923202
+dropping NSEI_DAILY_RETURNS with p-value 0.13281329048460666
+dropping NSEI_TSI with vif 5.865700460659149
+dropping NSEI_RSI with p-value 0.7783762272653001
+```
+
+The function outputs a list of pruned features, together with the associated 
+p-value or vif value. The function returns the pruned model, together with a 
+list of pruned feature names.
+
+
+
+
+
+
+
+
+## Phase 3 - Logistic Model
+
+The Logistic Model Summary
+
+\begin{center}
+\begin{tabular}{lclc}
+\toprule
+\textbf{Dep. Variable:}       & NSEI\_OPEN\_DIR  & \textbf{  No. Observations:  } &     1220    \\
+\textbf{Model:}               &      Logit       & \textbf{  Df Residuals:      } &     1213    \\
+\textbf{Method:}              &       MLE        & \textbf{  Df Model:          } &        6    \\
+\textbf{Date:}                & Wed, 10 Jul 2024 & \textbf{  Pseudo R-squ.:     } &   0.1375    \\
+\textbf{Time:}                &     10:31:02     & \textbf{  Log-Likelihood:    } &   -660.02   \\
+\textbf{converged:}           &       True       & \textbf{  LL-Null:           } &   -765.23   \\
+\textbf{Covariance Type:}     &    nonrobust     & \textbf{  LLR p-value:       } & 1.141e-42   \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lcccccc}
+                              & \textbf{coef} & \textbf{std err} & \textbf{z} & \textbf{P$> |$z$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+\midrule
+\textbf{Intercept}            &      -1.4041  &        0.656     &    -2.139  &         0.032        &       -2.690    &       -0.118     \\
+\textbf{IXIC\_DAILY\_RETURNS} &       0.4552  &        0.075     &     6.093  &         0.000        &        0.309    &        0.602     \\
+\textbf{HSI\_DAILY\_RETURNS}  &      -0.1395  &        0.053     &    -2.632  &         0.008        &       -0.243    &       -0.036     \\
+\textbf{N225\_DAILY\_RETURNS} &      -0.1960  &        0.068     &    -2.897  &         0.004        &       -0.329    &       -0.063     \\
+\textbf{VIX\_DAILY\_RETURNS}  &      -0.0397  &        0.013     &    -3.054  &         0.002        &       -0.065    &       -0.014     \\
+\textbf{DJI\_RSI}             &       0.0447  &        0.013     &     3.415  &         0.001        &        0.019    &        0.070     \\
+\textbf{DJI\_TSI}             &      -0.0205  &        0.008     &    -2.660  &         0.008        &       -0.036    &       -0.005     \\
+\bottomrule
+\end{tabular}
+%\caption{Logit Regression Results}
+\end{center}
+
+
+
+
+
+
+
+## Phase 3 - Logistic Model
+
+We plot the ROC curve for the train and test data:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](presentation_plots/plot_14.png){fig-align="right"}
+
+:::
+
+::: {.column width="50%"}
+
+![](presentation_plots/plot_15.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+
+
+
+
+## Phase 3 - Logistic Model
+
+The confusion matrix and classification report for the train data:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.53      0.68      0.60       391
+         1.0       0.83      0.72      0.77       829
+
+    accuracy                           0.70      1220
+   macro avg       0.68      0.70      0.68      1220
+weighted avg       0.73      0.70      0.71      1220
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              265  234
+1              126  595
+```
+
+
+
+
+
+
+
+
+
+## Phase 3 - Logistic Model
+
+The classification report and confusion matrix for the test data:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.53      0.65      0.58        97
+         1.0       0.82      0.73      0.77       208
+
+    accuracy                           0.70       305
+   macro avg       0.67      0.69      0.67       305
+weighted avg       0.72      0.70      0.71       305
+
+Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               63   57
+1               34  151
+```
+
+
+
+## Phase 3 - Logistic Model
+
+We compare some statistics across train and test data:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - AUC ROC: 0.7529115595469844
+ Test Data - AUC ROC: 0.7520816812053925
+
+Train Data - Sensitivity: 71.77%
+ Test Data - Sensitivity: 72.6%
+
+Train Data - Specificity: 67.77%
+ Test Data - Specificity: 64.95%
+```
+
+While AUC is consistent across train and test data, sensitivity and specificity 
+values are very inconsistent. Moreover, the accuracy of the model is not great. 
+We could potentially obtain better results by selecting a different 
+classification model.
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+We compare the performance of a number of different models to see if we can 
+improve on the accuracy of our original model:
+
+- Logistic Regression
+- Naive Bayes
+- KNN
+- Decision Tree
+- Random Forest
+- SVM
+- MLP
+- Deep Learning (PyTorch)
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
 Logistic Regression
 
+![](presentation_plots/plot_16.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+Logistic Regression
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
 Train Data - Classification Report:
 
               precision    recall  f1-score   support
@@ -44,6 +805,24 @@ Train Data - Classification Report:
    macro avg       0.70      0.70      0.70      1220
 weighted avg       0.74      0.73      0.73      1220
 
+
+Train Data - Confusion Matrix:
+
+col_0  0.0  1.0
+row_0          
+0      239  174
+1      152  655
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+Logistic Regression
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
  Test Data - Classification Report:
 
               precision    recall  f1-score   support
@@ -54,42 +833,1005 @@ weighted avg       0.74      0.73      0.73      1220
     accuracy                           0.72       305
    macro avg       0.69      0.70      0.69       305
 weighted avg       0.73      0.72      0.73       305
-```
 
-
-## Slide 5
-
-```
-Logistic Regression
-
-Train Data - Confusion Matrix:
-
-NSEI_OPEN_DIR  0.0  1.0
-row_0                  
-0              239  174
-1              152  655
 
  Test Data - Confusion Matrix:
 
-NSEI_OPEN_DIR  0.0  1.0
-row_0                  
-0               61   48
-1               36  160
+col_0  0.0  1.0
+row_0          
+0       61   48
+1       36  160
 ```
 
 
-## Slide 6
 
-```
+
+
+## Phase 4 - Compare Models
+
 Logistic Regression
 
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
 Train Data - Sensitivity for cut-off 0.654: 79.01%
  Test Data - Sensitivity for cut-off 0.654: 76.92%
 
 Train Data - Specificity for cut-off 0.654: 61.13%
  Test Data - Specificity for cut-off 0.654: 62.89%
 
-Train Data - AUC ROC: 0.7584678178188988
- Test Data - AUC ROC: 0.7672482157018239
+Train Data - AUC ROC: 0.7584554774340638
+ Test Data - AUC ROC: 0.767248215701824
 ```
+
+
+
+
+## Phase 4 - Compare Models
+
+Logistic Regression
+
+We notice that the scikit-learn Logistic Regression model slightly outperforms 
+the Statsmodels Logit model. 
+
+We use the Statsmodels Logit model when we need to perform analysis of 
+features, moving to scikit-learn's LogisticRegression model after the model has 
+been finalised is acceptable.
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Naive Bayes
+
+![](presentation_plots/plot_17.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+Naive Bayes
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.50      0.68      0.57       391
+         1.0       0.82      0.68      0.74       829
+
+    accuracy                           0.68      1220
+   macro avg       0.66      0.68      0.66      1220
+weighted avg       0.71      0.68      0.69      1220
+
+
+Train Data - Confusion Matrix:
+
+col_0  0.0  1.0
+row_0          
+0      264  266
+1      127  563
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+Naive Bayes
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.47      0.70      0.56        97
+         1.0       0.82      0.62      0.71       208
+
+    accuracy                           0.65       305
+   macro avg       0.64      0.66      0.63       305
+weighted avg       0.71      0.65      0.66       305
+
+
+ Test Data - Confusion Matrix:
+
+col_0  0.0  1.0
+row_0          
+0       68   78
+1       29  130
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Naive Bayes
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.916: 67.91%
+ Test Data - Sensitivity for cut-off 0.916: 62.5%
+
+Train Data - Specificity for cut-off 0.916: 67.52%
+ Test Data - Specificity for cut-off 0.916: 70.1%
+
+Train Data - AUC ROC: 0.7282400451658085
+ Test Data - AUC ROC: 0.7022204599524188
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+KNN
+
+![](presentation_plots/plot_18.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+KNN
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.47      0.74      0.57       391
+         1.0       0.83      0.60      0.70       829
+
+    accuracy                           0.65      1220
+   macro avg       0.65      0.67      0.64      1220
+weighted avg       0.71      0.65      0.66      1220
+
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              288  328
+1              103  501
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+KNN
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.47      0.69      0.56        97
+         1.0       0.81      0.63      0.71       208
+
+    accuracy                           0.65       305
+   macro avg       0.64      0.66      0.63       305
+weighted avg       0.70      0.65      0.66       305
+
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               67   77
+1               30  131
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+KNN
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.7: 60.43%
+ Test Data - Sensitivity for cut-off 0.7: 62.98%
+
+Train Data - Specificity for cut-off 0.7: 73.66%
+ Test Data - Specificity for cut-off 0.7: 69.07%
+
+Train Data - AUC ROC: 0.7450939257540746
+ Test Data - AUC ROC: 0.7160735527359239
+```
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Decision Tree
+
+![](presentation_plots/plot_19.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+Decision Tree
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.41      0.86      0.56       391
+         1.0       0.87      0.41      0.56       829
+
+    accuracy                           0.56      1220
+   macro avg       0.64      0.64      0.56      1220
+weighted avg       0.72      0.56      0.56      1220
+
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              338  488
+1               53  341
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+Decision Tree
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.40      0.84      0.54        97
+         1.0       0.84      0.42      0.56       208
+
+    accuracy                           0.55       305
+   macro avg       0.62      0.63      0.55       305
+weighted avg       0.70      0.55      0.55       305
+
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               81  121
+1               16   87
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Decision Tree
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.766: 41.13%
+ Test Data - Sensitivity for cut-off 0.766: 41.83%
+
+Train Data - Specificity for cut-off 0.766: 86.45%
+ Test Data - Specificity for cut-off 0.766: 83.51%
+
+Train Data - AUC ROC: 0.7186808745630733
+ Test Data - AUC ROC: 0.7119597541633624
+```
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Random Forest
+
+![](presentation_plots/plot_20.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+Random Forest
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.54      0.76      0.63       391
+         1.0       0.86      0.69      0.77       829
+
+    accuracy                           0.71      1220
+   macro avg       0.70      0.73      0.70      1220
+weighted avg       0.76      0.71      0.72      1220
+
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              297  254
+1               94  575
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+Random Forest
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.51      0.72      0.60        97
+         1.0       0.84      0.68      0.75       208
+
+    accuracy                           0.69       305
+   macro avg       0.68      0.70      0.67       305
+weighted avg       0.73      0.69      0.70       305
+
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               70   67
+1               27  141
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Random Forest
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.71: 69.36%
+ Test Data - Sensitivity for cut-off 0.71: 67.79%
+
+Train Data - Specificity for cut-off 0.71: 75.96%
+ Test Data - Specificity for cut-off 0.71: 72.16%
+
+Train Data - AUC ROC: 0.7957851415596395
+ Test Data - AUC ROC: 0.7562450436161777
+```
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+SVM
+
+![](presentation_plots/plot_21.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+SVM
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.62      0.57      0.59       391
+         1.0       0.80      0.84      0.82       829
+
+    accuracy                           0.75      1220
+   macro avg       0.71      0.70      0.71      1220
+weighted avg       0.75      0.75      0.75      1220
+
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              222  136
+1              169  693
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+SVM
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.61      0.59      0.60        97
+         1.0       0.81      0.82      0.82       208
+
+    accuracy                           0.75       305
+   macro avg       0.71      0.70      0.71       305
+weighted avg       0.75      0.75      0.75       305
+
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               57   37
+1               40  171
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+SVM
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.643: 83.59%
+ Test Data - Sensitivity for cut-off 0.643: 82.21%
+
+Train Data - Specificity for cut-off 0.643: 56.78%
+ Test Data - Specificity for cut-off 0.643: 58.76%
+
+Train Data - AUC ROC: 0.7597172817834325
+ Test Data - AUC ROC: 0.763332672482157
+```
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+MLP
+
+![](presentation_plots/plot_22.png){fig-align="right"}
+
+
+
+
+## Phase 4 - Compare Models
+
+MLP
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.57      0.68      0.62       391
+         1.0       0.83      0.76      0.80       829
+
+    accuracy                           0.73      1220
+   macro avg       0.70      0.72      0.71      1220
+weighted avg       0.75      0.73      0.74      1220
+
+
+Train Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0              264  198
+1              127  631
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+MLP
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.55      0.67      0.60        97
+         1.0       0.83      0.75      0.78       208
+
+    accuracy                           0.72       305
+   macro avg       0.69      0.71      0.69       305
+weighted avg       0.74      0.72      0.73       305
+
+
+ Test Data - Confusion Matrix:
+
+NSEI_OPEN_DIR  0.0  1.0
+row_0                  
+0               65   53
+1               32  155
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+MLP
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Sensitivity for cut-off 0.71: 76.12%
+ Test Data - Sensitivity for cut-off 0.71: 74.52%
+
+Train Data - Specificity for cut-off 0.71: 67.52%
+ Test Data - Specificity for cut-off 0.71: 67.01%
+
+Train Data - AUC ROC: 0.773263939235945
+ Test Data - AUC ROC: 0.7568893735130848
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Deep Learning (PyTorch)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](presentation_plots/plot_23.png){fig-align="right"}
+
+:::
+
+::: {.column width="50%"}
+
+![](presentation_plots/plot_24.png){fig-align="right"}
+
+:::
+
+::::
+
+
+
+
+## Phase 4 - Compare Models
+
+Deep Learning (PyTorch)
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.71      0.56      0.62       391
+         1.0       0.81      0.89      0.85       829
+
+    accuracy                           0.79      1220
+   macro avg       0.76      0.73      0.74      1220
+weighted avg       0.78      0.79      0.78      1220
+
+
+Train Data - Confusion Matrix:
+
+col_0  0.0  1.0
+row_0          
+0      218   89
+1      173  740
+```
+
+
+
+
+## Phase 4 - Compare Models
+
+Deep Learning (PyTorch)
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+ Test Data - Classification Report:
+
+              precision    recall  f1-score   support
+
+         0.0       0.66      0.55      0.60        97
+         1.0       0.80      0.87      0.84       208
+
+    accuracy                           0.77       305
+   macro avg       0.73      0.71      0.72       305
+weighted avg       0.76      0.77      0.76       305
+
+
+ Test Data - Confusion Matrix:
+
+col_0  0.0  1.0
+row_0          
+0       53   27
+1       44  181
+```
+
+
+
+
+
+## Phase 4 - Compare Models
+
+Deep Learning (PyTorch)
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+Train Data - Deep Learning - Sensitivity for cut-off 0.36000001430511475 is : 87.02%
+ Test Data - Deep Learning - Sensitivity for cut-off 0.36000001430511475 is : 89.26%
+
+Train Data - Deep Learning - Specificity for cut-off 0.36000001430511475 is : 54.64%
+ Test Data - Deep Learning - Specificity for cut-off 0.36000001430511475 is : 55.75%
+
+Train Data - Deep Learning - AUC ROC: 0.7720391560410812
+ Test Data - Deep Learning - AUC ROC: 0.7385507533703409
+```
+
+
+
+
+
+
+
+## Phase 4 - Compare Models
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+        Naive Bayes - Test Data - AUC ROC: 0.7022204599524188
+      Decision Tree - Test Data - AUC ROC: 0.7119597541633624
+                KNN - Test Data - AUC ROC: 0.7160735527359239
+      Deep Learning - Test Data - AUC ROC: 0.7385507533703409
+                MLP - Test Data - AUC ROC: 0.7568893735130848
+      Random Forest - Test Data - AUC ROC: 0.7562450436161777
+                SVM - Test Data - AUC ROC: 0.763332672482157
+Logistic Regression - Test Data - AUC ROC: 0.767248215701824
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We now turn to Twitter / X data relating to the Nifty 50 index to see if we can 
+mine some sentiment. 
+
+We load the tweets, create a data frame, and then do some basic pre-processing 
+of the data to:
+
+1. transform all words to lowercase
+2. remove all punctuation
+3. remove all digits
+4. remove stopwords
+
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We load the tweets:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+with open(os.path.join(os.getcwd(), "Tweets.txt")) as file:
+    tweets = [line.rstrip() for line in file]
+
+data = pd.DataFrame(
+     [line for line in tweets if len(line) > 0], 
+     columns= ["Tweets"]
+)
+data.head()
+```
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+                                              Tweets
+0  #bankNifty 50100 ce looks good at 70+-2 for a ...
+1  "#market #banknifty #OptionsTrading #optionbuy...
+2  PENNY STOCK MADHUCON PROJECTS LTD cmp-11 FOLLO...
+3  #Nifty50 has been in a healthy uptrend since t...
+4  #Gravita #livetrading #stockstowatch #stocksin...
+```
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We perform the basic transformation:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+stop_words    = set(stopwords.words('english'))
+remove_punc   = str.maketrans('', '', punctuation)
+remove_digits = str.maketrans('', '', digits)
+
+def preprocess_tweet(tweet):
+    tokens = word_tokenize(
+     tweet.lower().translate(remove_punc).translate(remove_digits)
+    )
+    return " ".join([word for word in tokens if word not in stop_words])
+
+cleaned = data["Tweets"].apply(preprocess_tweet)
+cleaned.head()
+```
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+0           banknifty ce looks good target nifty nifty
+1    market banknifty optionstrading optionbuying t...
+2    penny stock madhucon projects ltd cmp followht...
+3    nifty healthy uptrend since beginning year did...
+4    gravita livetrading stockstowatch stocksinfocu...
+```
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We look at the top 10 words by frequency:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+                Word  Freq
+0              nifty   399
+1          banknifty   104
+2        stockmarket    71
+3          niftybank    45
+4   stockmarketindia    44
+5             sensex    43
+6             stocks    38
+7     optionstrading    36
+8                bse    34
+9     breakoutstocks    31
+...
+```
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We remove the word "nifty" from the tweets:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+stop_words = set(stopwords.words('english')) | set(["nifty"])
+
+data["Cleaned_Tweets"] = data["Tweets"].apply(preprocess_tweet)
+data.head()
+```
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+                                              Tweets  \
+0  #bankNifty 50100 ce looks good at 70+-2 for a ...   
+1  "#market #banknifty #OptionsTrading #optionbuy...   
+2  PENNY STOCK MADHUCON PROJECTS LTD cmp-11 FOLLO...   
+3  #Nifty50 has been in a healthy uptrend since t...   
+4  #Gravita #livetrading #stockstowatch #stocksin...   
+
+                                      Cleaned_Tweets  
+0                     banknifty ce looks good target  
+1  market banknifty optionstrading optionbuying t...  
+2  penny stock madhucon projects ltd cmp followht...  
+3  healthy uptrend since beginning year didnt bre...  
+4  gravita livetrading stockstowatch stocksinfocu...  
+```
+
+
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We visualise these top 20 words by frequency:
+
+![](presentation_plots/plot_25.png){fig-align="right"}
+
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We create a word cloud:
+
+![](presentation_plots/plot_26.png){fig-align="right"}
+
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We extract sentiment scores for the tweets:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+sia = SentimentIntensityAnalyzer()
+
+scores = data["Cleaned_Tweets"].apply(lambda x: sia.polarity_scores(x))
+
+data["Positive_Score"] = scores.apply(lambda x: x["pos"])
+data["Negative_Score"] = scores.apply(lambda x: x["neg"])
+data["Neutral_Score"]  = scores.apply(lambda x: x["neu"])
+data["Compound_Score"] = scores.apply(lambda x: x["compound"])
+```
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We look at the summary statistics for the sentiment scores:
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```
+       Positive_Score  Negative_Score  Neutral_Score  Compound_Score
+count      245.000000      245.000000     245.000000      245.000000
+mean         0.116216        0.028490       0.855314        0.172913
+std          0.146029        0.071052       0.156892        0.343955
+min          0.000000        0.000000       0.213000       -0.807400
+25%          0.000000        0.000000       0.742000        0.000000
+50%          0.053000        0.000000       0.868000        0.000000
+75%          0.194000        0.000000       1.000000        0.440400
+max          0.787000        0.405000       1.000000        0.928700
+```
+
+The compound score has a reasonable spread with a median of 0.
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+We plot the sentiment scores below:
+
+![](presentation_plots/plot_27.png){fig-align="right"}
+
+
+
+
+## Phase 5 - Sentiment Analysis
+
+It looks like the compound sentiment scores could be useful as an extra feature
+- but without access to historical tweets, it would be impossible to tell 
+conclusively, Nevertheless it should be investigated further.
+
+
+
+## Conclusion
+
+Predicting NSEI open direction is a very interesting problem. We have shown the 
+ability to train models with accuracy of around 75% in the case of the SVM 
+model, and 77% - 79% in the case of the Deep Learning (PyTorch) model - I am 
+confident that with enhanced model tuning, and by adding extra features such as 
+compound sentiment score , we can improve the accuracy significantly. 
+
 
