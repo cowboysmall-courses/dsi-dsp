@@ -3,6 +3,7 @@ title: "Global Stock Market Analytics"
 author: "Jerry Kiely"
 format: 
   beamer:
+    center: true
     aspectratio: 1610
     fontsize: 8pt
     slide-level: 2
@@ -17,12 +18,12 @@ format:
 
 In this project we will look at predicting the open direction of the Nifty 50 
 index by looking at other indices and indicators. We will break the project up 
-into three parts:
+into five parts:
 
 1. preparing the master data from the global indices
-2. preliminary analysis of data
+2. preliminary analysis of the data
 3. predictive modelling of open direction of Nifty 50
-4. comparing different models at prediction
+4. comparing different models at predicting open direction
 5. sentiment analysis of X / Twitter data relating to Nifty 50
 
 
@@ -47,8 +48,16 @@ The indexes of interest are:
 
 ## Phase 1 - Prepare the Master Data
 
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
+
 Download and merge the required data, using LOCF to impute missing data, and 
 adding variables for MONTH, QUARTER, and YEAR.
+
+:::
+
+::: {.column width="60%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -66,6 +75,10 @@ merged['MONTH']   = merged.index.month
 merged['QUARTER'] = merged.index.quarter
 merged['YEAR']    = merged.index.year
 ```
+
+:::
+
+::::
 
 
 
@@ -87,21 +100,19 @@ following questions:
 
 
 
-
-
 ## Phase 2 - Preliminary Analysis
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="30%"}
+::: {.column width="30%" align=center}
 
 Looking at the Q-Q Plots, the daily returns do not appear to follow - or be 
 drawn from - a Normal Distribution - specifically at the tails. But that is 
-OK because we do not intend to model the daily returns.
+OK because normality is not a requisite or assumption of Logistic Regression.
 
 :::
 
-::: {.column width="70%"}
+::: {.column width="70%" align=center}
 
 ![](presentation_plots/plot_01.png)
 
@@ -113,14 +124,11 @@ OK because we do not intend to model the daily returns.
 
 
 
-
-
-
 ## Phase 2 - Which index has given consistently good returns?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 All indexes seem pretty consistent - all years have similar spreads, and 
 consistent medians, with one or two exceptions. All indexes for 2020 have more 
@@ -128,7 +136,7 @@ outliers than normal. But HSI seems to have more outliers in 2022 than in 2020.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_02.png){fig-align="right"}
 
@@ -140,12 +148,11 @@ outliers than normal. But HSI seems to have more outliers in 2022 than in 2020.
 
 
 
-
 ## Phase 2 - Which index has given consistently good returns?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 Looking at the summary statistics, the clear winner here is NSEI - not one year 
 in the range has a negative mean return. And with the exception of 2020 and 
@@ -153,7 +160,7 @@ in the range has a negative mean return. And with the exception of 2020 and
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
@@ -177,19 +184,18 @@ YEAR
 
 
 
-
 ## Phase 2 - Which index was highly volatile?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 As for the most volatile indexes, it's a toss between IXIC and HSI, both of 
 whom have high volatility (> 1) when compared to the other indexes.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
@@ -224,16 +230,11 @@ YEAR
 
 
 
-
-
-
-
-
 ## Phase 2 - Which index has given consistently good returns?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 Looking at bar plots for median returns by year, again the clear winner here is 
 NSEI - at no time is the median daily returns for any of the years below 0. 
@@ -242,7 +243,7 @@ IXIC has an unusually high 2020, but a bad 2022. HSI also has an unusually bad
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_03.png){fig-align="right"}
 
@@ -256,9 +257,9 @@ IXIC has an unusually high 2020, but a bad 2022. HSI also has an unusually bad
 
 ## Phase 2 - Which index has given consistently good returns?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 Looking at heat maps of mean returns, with the exception of the 1st quarter in 
 2020, NSEI has pretty consistent daily returns - where most cells sre pretty 
@@ -267,7 +268,7 @@ dark, which would indicate more volatile behaviour over the quarters.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_04.png){fig-align="right"}
 
@@ -283,16 +284,16 @@ dark, which would indicate more volatile behaviour over the quarters.
 
 ## Phase 2 - Which index has given consistently good returns?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 On the other hand, when looking at median returns across quarters NSEI seems 
 pretty average - there does not seem to be a clear winner here.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_05.png){fig-align="right"}
 
@@ -310,9 +311,9 @@ pretty average - there does not seem to be a clear winner here.
 
 ## Phase 2 - How are global markets correlated during the 6 years period?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 It looks like strong correlation between daily returns of IXIC and DJI, and 
 some correlation between GDAXI and DJI. These indexes are likely to result in 
@@ -320,7 +321,7 @@ multicolinearity at the regression stage.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_06.png){fig-align="right"}
 
@@ -337,16 +338,16 @@ multicolinearity at the regression stage.
 
 ## Phase 2 - Is the correlation structure similar in the recent year - 2023?
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 We can see similar - but slightly weaker - correlations exist between the same 
 indexes for 2023.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_07.png){fig-align="right"}
 
@@ -360,9 +361,9 @@ indexes for 2023.
 
 ## Phase 2 - Covid Period
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 We can see that the spreads of each index over the Pandemic are consistent, 
 with the Covid period itself having more outliers - which of course you might 
@@ -370,7 +371,7 @@ expect.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_08.png){fig-align="right"}
 
@@ -404,9 +405,9 @@ All indexes had higher volatility over the Covid period.
 
 ## Phase 2 - Covid Period
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 With respect to returns, we can see that IXIC looks like the clear winner, with 
 NSEI in second place, and DJI and GSAXI in a fight for third place. HSI appears 
@@ -415,7 +416,7 @@ bad Covid period.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_09.png){fig-align="right"}
 
@@ -430,16 +431,16 @@ bad Covid period.
 
 ## Phase 2 - Covid Period
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 Again, NSEI appears to be the most consistent of all indexes. All indexes have 
 bad first quarters during the Pandemic, but improve post Covid.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_10.png){fig-align="right"}
 
@@ -453,16 +454,16 @@ bad first quarters during the Pandemic, but improve post Covid.
 
 ## Phase 2 - Covid Period
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 Median returns tells a similar story over the Pandemic period - HSI in 
 particular appears to have had the worst recovery.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_11.png){fig-align="right"}
 
@@ -521,15 +522,15 @@ With the exception of 2022, every year has around 70% where NSEI_OPEN_DIR = 1.
 
 ## Phase 2 - Nifty Opening Price Direction
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
 All of the box plots look consistent across each category of NSEI_OPEN_DIR, with the exceptions of IXIC and VIX.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_12.png){fig-align="right"}
 
@@ -541,15 +542,15 @@ All of the box plots look consistent across each category of NSEI_OPEN_DIR, with
 
 ## Phase 2 - Nifty Opening Price Direction
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="40%"}
+::: {.column width="40%" align=center}
 
-All of the box plots look consistent across each category of NSEI_OPEN_DIR, with the exceptions of IXIC and VIX.
+We look at VIX separately - as it requires a different scale.
 
 :::
 
-::: {.column width="60%"}
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_13.png){fig-align="right"}
 
@@ -559,9 +560,20 @@ All of the box plots look consistent across each category of NSEI_OPEN_DIR, with
 
 
 
+
+
 ## Phase 3 - Logistic Model
 
-Before proceeding with modelling NSEI_OPEN_DIR, lets define, and add, some indicators and ratios:
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
+
+Before proceeding with modelling NSEI_OPEN_DIR, lets define, and add, some
+indicators and ratios:
+
+:::
+
+::: {.column width="60%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -577,6 +589,11 @@ master["NSEI_TSI"]      = ta.momentum.tsi(master["NSEI_CLOSE"])
 master["DJI_TSI"]       = ta.momentum.tsi(master["DJI_CLOSE"])
 ```
 
+:::
+
+::::
+
+
 
 
 
@@ -587,13 +604,13 @@ insignificant, or that are found to be collinear:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-dropping DJI_DAILY_RETURNS with p-value 0.7234766099770011
+dropping   DJI_DAILY_RETURNS with p-value 0.7234766099770011
 dropping GDAXI_DAILY_RETURNS with p-value 0.6162105670376612
-dropping NSEI_HL_RATIO with p-value 0.4277618505298021
-dropping DJI_HL_RATIO with p-value 0.1563055988923202
-dropping NSEI_DAILY_RETURNS with p-value 0.13281329048460666
-dropping NSEI_TSI with vif 5.865700460659149
-dropping NSEI_RSI with p-value 0.7783762272653001
+dropping       NSEI_HL_RATIO with p-value 0.4277618505298021
+dropping        DJI_HL_RATIO with p-value 0.1563055988923202
+dropping  NSEI_DAILY_RETURNS with p-value 0.13281329048460666
+dropping            NSEI_TSI with vif 5.865700460659149
+dropping            NSEI_RSI with p-value 0.7783762272653001
 ```
 
 The function outputs a list of pruned features, together with the associated 
@@ -670,15 +687,15 @@ where:
 
 We plot the ROC curve for the train and test data:
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="50%"}
+::: {.column width="50%" align=center}
 
 ![](presentation_plots/plot_14.png){fig-align="right"}
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="50%" align=center}
 
 ![](presentation_plots/plot_15.png){fig-align="right"}
 
@@ -695,7 +712,7 @@ We plot the ROC curve for the train and test data:
 
 ## Phase 3 - Logistic Model
 
-The confusion matrix and classification report for the train data:
+The classification report and confusion matrix for the train data:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
@@ -709,6 +726,7 @@ Train Data - Classification Report:
     accuracy                           0.70      1220
    macro avg       0.68      0.70      0.68      1220
 weighted avg       0.73      0.70      0.71      1220
+
 
 Train Data - Confusion Matrix:
 
@@ -742,6 +760,7 @@ Test Data - Classification Report:
     accuracy                           0.70       305
    macro avg       0.67      0.69      0.67       305
 weighted avg       0.72      0.70      0.71       305
+
 
 Test Data - Confusion Matrix:
 
@@ -893,8 +912,6 @@ Train Data - AUC ROC: 0.7584554774340638
 
 
 ## Phase 4 - Compare Models
-
-Logistic Regression
 
 We notice that the scikit-learn Logistic Regression model slightly outperforms 
 the Statsmodels Logit model. 
@@ -1493,15 +1510,15 @@ Train Data - AUC ROC: 0.773263939235945
 
 Deep Learning (PyTorch)
 
-:::: {.columns}
+:::: {.columns align=center}
 
-::: {.column width="50%"}
+::: {.column width="50%" align=center}
 
 ![](presentation_plots/plot_23.png){fig-align="right"}
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="50%" align=center}
 
 ![](presentation_plots/plot_24.png){fig-align="right"}
 
@@ -1774,19 +1791,43 @@ data.head()
 
 ## Phase 5 - Sentiment Analysis
 
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
+
 We visualise these top 20 words by frequency:
+
+:::
+
+::: {.column width="60%" align=center}
 
 ![](presentation_plots/plot_25.png){fig-align="right"}
 
+:::
+
+::::
+
 
 
 
 
 ## Phase 5 - Sentiment Analysis
+
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
 
 We create a word cloud:
 
+:::
+
+::: {.column width="60%" align=center}
+
 ![](presentation_plots/plot_26.png){fig-align="right"}
+
+:::
+
+::::
 
 
 
@@ -1794,7 +1835,15 @@ We create a word cloud:
 
 ## Phase 5 - Sentiment Analysis
 
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
+
 We extract sentiment scores for the tweets:
+
+:::
+
+::: {.column width="60%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -1809,6 +1858,14 @@ data["Negative_Score"] = scores.apply(lambda x: x["neg"])
 data["Neutral_Score"]  = scores.apply(lambda x: x["neu"])
 data["Compound_Score"] = scores.apply(lambda x: x["compound"])
 ```
+
+:::
+
+::::
+
+
+
+
 
 
 
@@ -1837,9 +1894,22 @@ The compound score has a reasonable spread with a median of 0.
 
 ## Phase 5 - Sentiment Analysis
 
+:::: {.columns align=center}
+
+::: {.column width="40%" align=center}
+
 We plot the sentiment scores below:
 
+:::
+
+::: {.column width="60%" align=center}
+
 ![](presentation_plots/plot_27.png){fig-align="right"}
+
+:::
+
+::::
+
 
 
 
@@ -1858,6 +1928,6 @@ Predicting NSEI open direction is a very interesting problem. We have shown the
 ability to train models with accuracy of around 75% in the case of the SVM 
 model, and 77% - 79% in the case of the Deep Learning (PyTorch) model - I am 
 confident that with enhanced model tuning, and by adding extra features such as 
-compound sentiment score , we can improve the accuracy significantly. 
+sentiment compound score, we could improve the model accuracy significantly. 
 
 
