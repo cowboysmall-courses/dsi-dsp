@@ -9,6 +9,10 @@ format:
     theme: PaloAlto
 ---
 
+
+
+
+
 ## Introduction
 
 In this project we will look at predicting the open direction of the Nifty 50 
@@ -43,11 +47,8 @@ The indexes of interest are:
 
 ## Phase 1 - Prepare the Master Data
 
-
 Download and merge the required data, using LOCF to impute missing data, and 
 adding variables for MONTH, QUARTER, and YEAR.
-
-
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -65,7 +66,6 @@ merged['MONTH']   = merged.index.month
 merged['QUARTER'] = merged.index.quarter
 merged['YEAR']    = merged.index.year
 ```
-
 
 
 
@@ -641,6 +641,28 @@ The Logistic Model Summary
 
 
 
+## Phase 3 - Logistic Model
+
+The final model is:
+
+$$
+ln \left(\frac{p}{1 - p} \right) = -1.4041 + 0.4552 x_1 - 0.1395 x_2 - 0.1960 x_3 - 0.0397 x_4 + 0.0447 x_5 - 0.0205 x_6
+$$
+
+where:
+
+|variable |              value|
+|:--------|------------------:|
+|$$x_1$$  | IXIC_DAILY_RETURNS|
+|$$x_2$$  |  HSI_DAILY_RETURNS|
+|$$x_3$$  | N225_DAILY_RETURNS|
+|$$x_4$$  |  VIX_DAILY_RETURNS|
+|$$x_5$$  |            DJI_RSI|
+|$$x_6$$  |            DJI_TSI|
+
+
+
+
 
 
 
@@ -737,15 +759,19 @@ We compare some statistics across train and test data:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - AUC ROC: 0.7529115595469844
- Test Data - AUC ROC: 0.7520816812053925
-
 Train Data - Sensitivity: 71.77%
  Test Data - Sensitivity: 72.6%
 
 Train Data - Specificity: 67.77%
  Test Data - Specificity: 64.95%
+
+Train Data - AUC ROC: 0.7529115595469844
+ Test Data - AUC ROC: 0.7520816812053925
 ```
+
+
+
+## Phase 3 - Logistic Model
 
 While AUC is consistent across train and test data, sensitivity and specificity 
 values are very inconsistent. Moreover, the accuracy of the model is not great. 
