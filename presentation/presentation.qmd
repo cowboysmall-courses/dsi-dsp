@@ -52,7 +52,7 @@ The indexes of interest are:
 
 ::: {.column width="30%" align=center}
 
-Download and merge the required data, using LOCF to impute missing data, and 
+We download and merge the required data, using LOCF to impute missing data, and 
 adding variables for MONTH, QUARTER, and YEAR.
 
 :::
@@ -578,14 +578,14 @@ We look at VIX separately - as it requires a different scale.
 
 :::: {.columns align=center}
 
-::: {.column width="40%" align=center}
+::: {.column width="30%" align=center}
 
 Before proceeding with modelling NSEI_OPEN_DIR, lets define, and add, some
 ratios and indicators, making use of the Python technical analysis library:
 
 :::
 
-::: {.column width="60%" align=center}
+::: {.column width="70%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -611,8 +611,71 @@ master["DJI_TSI"]       = ta.momentum.tsi(master["DJI_CLOSE"])
 
 ## Phase 3 - Logistic Model
 
+:::: {.columns align=center}
+
+::: {.column width="30%" align=center}
+
 We define a function that will prune any features that are either found to be 
 insignificant, or that are found to be collinear:
+
+:::
+
+::: {.column width="70%" align=center}
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+def prune(X, y, verbose = True):
+    dropped = []
+    while True:
+        model = Logit(y, X).fit(disp = 0)
+        exog  = model.model.exog
+        names = model.model.exog_names
+
+        insignificant = [p for p in zip(model.pvalues.index[1:], model.pvalues[1:]) if p[1] > 0.05]
+
+        values   = [variance_inflation_factor(exog, i) for i in range(1, exog.shape[1])]
+        colinear = [val for val in zip(names[1:], values) if val[1] > 5]
+
+        if insignificant:
+            insignificant.sort(key = lambda p: -p[1])
+
+            if verbose:
+                print(f"dropping {insignificant[0][0]} with p-value {insignificant[0][1]}")
+
+            X = X.drop([insignificant[0][0]], axis = 1)
+            dropped.append(insignificant[0][0])
+
+        elif colinear:
+            colinear.sort(key = lambda c: -c[1])
+
+            if verbose:
+                print(f"dropping {colinear[0][0]} with vif {colinear[0][1]}")
+
+            X = X.drop([colinear[0][0]], axis = 1)
+            dropped.append(colinear[0][0])
+
+        else:
+            return model, dropped
+
+
+model, dropped = prune(X_train, y_train)
+```
+
+:::
+
+::::
+
+
+
+
+
+## Phase 3 - Logistic Model
+
+The function outputs a list of pruned features, together with the associated 
+p-value or vif value. The function returns the pruned model, together with a 
+list of pruned feature names.
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
@@ -624,10 +687,6 @@ dropping  NSEI_DAILY_RETURNS with p-value 0.13281329048460666
 dropping            NSEI_TSI with     vif 5.865700460659149
 dropping            NSEI_RSI with p-value 0.7783762272653001
 ```
-
-The function outputs a list of pruned features, together with the associated 
-p-value or vif value. The function returns the pruned model, together with a 
-list of pruned feature names.
 
 
 
@@ -797,10 +856,11 @@ Train Data - AUC ROC: 0.753
 
 ## Phase 3 - Logistic Model
 
-While AUC is consistent across train and test data, sensitivity and specificity 
-values are very inconsistent. Moreover, the accuracy of the model is not great. 
-We could potentially obtain better results by selecting a different 
-classification model.
+The AUC is consistent across the train and test data, and the sensitivity and 
+specificity values are reasonably good, and somewhat consistent across the 
+train and test data. However, the accuracy of the model is not great. We could 
+potentially obtain better results by selecting a different approach to 
+classification.
 
 
 
@@ -1682,6 +1742,17 @@ cleaned.head()
 We look at the top 10 words by frequency:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
+```{python}
+#| echo: true
+#| eval: false
+tweet_words = cleaned.str.cat(sep = " ")
+
+freq_dist = nltk.FreqDist(tweet_words.split())
+word_freq = pd.DataFrame(freq_dist.most_common(10), columns=["Word", "Freq"])
+word_freq.head(10)
+```
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
                 Word  Freq
 0              nifty   399
@@ -1731,6 +1802,8 @@ data.head()
 3  healthy uptrend since beginning year didnt bre...  
 4  gravita livetrading stockstowatch stocksinfocu...  
 ```
+
+We should review more of the words as candidates to include for removal.
 
 
 
@@ -1861,10 +1934,13 @@ We plot the sentiment scores:
 
 ## Phase 5 - Sentiment Analysis
 
-It looks like the compound sentiment scores, if slightly skewed, could be 
-useful as an extra feature - but without access to historical tweets, it would 
-be impossible to tell conclusively, Nevertheless it should be investigated 
-further.
+It looks like the compound sentiment scores, if slightly positively skewed, 
+could be useful as an extra feature. This positive skewing could be understood 
+in terms of the distribution of open directions in the data. 
+
+But in the end, without access to historical tweets, it would be impossible to 
+judge the efficacy of the sentiment scores conclusively. Nevertheless it would 
+appear promissing, and it should be investigated further.
 
 
 
