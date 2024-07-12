@@ -50,19 +50,33 @@ The indexes of interest are:
 
 :::: {.columns align=center}
 
-::: {.column width="40%" align=center}
+::: {.column width="30%" align=center}
 
 Download and merge the required data, using LOCF to impute missing data, and 
 adding variables for MONTH, QUARTER, and YEAR.
 
 :::
 
-::: {.column width="60%" align=center}
+::: {.column width="70%" align=center}
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
 #| echo: true
 #| eval: false
+
+def retrieve_data(index, start_date = '2017-12-1', end_date = '2024-1-31', progress = False):
+    data = yf.download(f'^{index}', start_date, end_date, progress = progress)
+
+    # create daily returns for each index
+    data['Daily Returns'] = data.Close.pct_change() * 100
+
+    # rename columns - prefix with index name
+    data.columns = ["_".join(c.upper() for c in column.split()) for column in data.columns]
+    data.columns = [f"{index}_{column}" for column in data.columns]
+
+    return data
+
+data   = [retrieve_data(index) for index in INDICES]
 
 # merge data with outer join
 merged = pd.concat(data, axis = 1)
@@ -92,8 +106,8 @@ following questions:
 1. Which index has given consistently good returns?
 2. Which index was highly volatile?
 3. How are global markets correlated during 6 years period and is the 
-   correlation structure similar in the recent year-2023?
-4. Assuming primary target variable as “Nifty Opening Price Direction”, 
+   correlation structure similar in the most recent year - i.e. 2023?
+4. Assuming a primary target variable of “Nifty Opening Price Direction”, 
    what are preliminary insights?
 
 
@@ -107,8 +121,9 @@ following questions:
 ::: {.column width="30%" align=center}
 
 Looking at the Q-Q Plots, the daily returns do not appear to follow - or be 
-drawn from - a Normal Distribution - specifically at the tails. But that is 
-OK because normality is not a requisite or assumption of Logistic Regression.
+drawn from - a Normal Distribution - specifically at the tails. But normality 
+is not a requisite or assumption of Logistic Regression with respect to 
+independent variables.
 
 :::
 
@@ -280,8 +295,6 @@ dark, which would indicate more volatile behaviour over the quarters.
 
 
 
-
-
 ## Phase 2 - Which index has given consistently good returns?
 
 :::: {.columns align=center}
@@ -300,10 +313,6 @@ pretty average - there does not seem to be a clear winner here.
 :::
 
 ::::
-
-
-
-
 
 
 
@@ -328,9 +337,6 @@ multicolinearity at the regression stage.
 :::
 
 ::::
-
-
-
 
 
 
@@ -387,9 +393,9 @@ expect.
 All indexes had higher volatility over the Covid period. 
 
 - NSEI performed reasonably well over the Covid period, with an increase in 
-  volatility in the Covid period, and with a significant bump in the Post 
-  Covid period. 
-- DJI seemed consisten over the three periods, with an increase in volatility 
+  volatility in the period, and with a significant bump in the Post Covid 
+  period. 
+- DJI seemed consistent over the three periods, with an increase in volatility 
   in the Covid period.
 - IXIC looked pretty good over the three period, but maybe slightly more 
   volatile overall, and in particular in the Covid period. 
@@ -423,7 +429,6 @@ bad Covid period.
 :::
 
 ::::
-
 
 
 
@@ -475,8 +480,6 @@ particular appears to have had the worst recovery.
 
 
 
-
-
 ## Phase 2 - Covid Period
 
 We try to estimate the time taken for each of the indexes to return to the Pre 
@@ -497,10 +500,14 @@ Interestingly, N225 returned to it's Pre Covid level after just 1 day.
 
 
 
+
+
 ## Phase 2 - Nifty Opening Price Direction: Preliminary Insights?
 
-We define NSEI_OPEN_DIR as 1 if NSEI Open at time t > NSEI Close at time t - 1, 
-and 0 otherwise. Lets look at the percentages of NSEI_OPEN_DIR = 1 by year:
+We define the Nifty Opening Price Direction - NSEI_OPEN_DIR - as $1$ if the 
+value of the NSEI Opening price at time $t$ is greater than the value of the 
+NSEI Closing price at time $t - 1$, and $0$ otherwise. Lets look at the 
+percentages of NSEI_OPEN_DIR = $1$ by year:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
@@ -515,7 +522,9 @@ YEAR
 2023    67.31%
 ```
 
-With the exception of 2022, every year has around 70% where NSEI_OPEN_DIR = 1.
+With the exception of 2022, every year has between 67% and 72% where 
+NSEI_OPEN_DIR = 1.
+
 
 
 
@@ -526,7 +535,8 @@ With the exception of 2022, every year has around 70% where NSEI_OPEN_DIR = 1.
 
 ::: {.column width="40%" align=center}
 
-All of the box plots look consistent across each category of NSEI_OPEN_DIR, with the exceptions of IXIC and VIX.
+Looking at the the box plots, the data looks fairly consistent across each 
+category of NSEI_OPEN_DIR, with the exceptions of DJI, IXIC and VIX.
 
 :::
 
@@ -537,6 +547,8 @@ All of the box plots look consistent across each category of NSEI_OPEN_DIR, with
 :::
 
 ::::
+
+
 
 
 
@@ -569,7 +581,7 @@ We look at VIX separately - as it requires a different scale.
 ::: {.column width="40%" align=center}
 
 Before proceeding with modelling NSEI_OPEN_DIR, lets define, and add, some
-indicators and ratios:
+ratios and indicators, making use of the Python technical analysis library:
 
 :::
 
@@ -609,16 +621,13 @@ dropping GDAXI_DAILY_RETURNS with p-value 0.6162105670376612
 dropping       NSEI_HL_RATIO with p-value 0.4277618505298021
 dropping        DJI_HL_RATIO with p-value 0.1563055988923202
 dropping  NSEI_DAILY_RETURNS with p-value 0.13281329048460666
-dropping            NSEI_TSI with vif 5.865700460659149
+dropping            NSEI_TSI with     vif 5.865700460659149
 dropping            NSEI_RSI with p-value 0.7783762272653001
 ```
 
 The function outputs a list of pruned features, together with the associated 
 p-value or vif value. The function returns the pruned model, together with a 
 list of pruned feature names.
-
-
-
 
 
 
@@ -658,6 +667,7 @@ The Logistic Model Summary
 
 
 
+
 ## Phase 3 - Logistic Model
 
 The final model is:
@@ -676,8 +686,6 @@ where:
 |$$x_4$$  |  VIX_DAILY_RETURNS|
 |$$x_5$$  |            DJI_RSI|
 |$$x_6$$  |            DJI_TSI|
-
-
 
 
 
@@ -702,9 +710,6 @@ We plot the ROC curve for the train and test data:
 :::
 
 ::::
-
-
-
 
 
 
@@ -740,10 +745,6 @@ row_0
 
 
 
-
-
-
-
 ## Phase 3 - Logistic Model
 
 The classification report and confusion matrix for the test data:
@@ -772,6 +773,8 @@ row_0
 
 
 
+
+
 ## Phase 3 - Logistic Model
 
 We compare some statistics across train and test data:
@@ -784,9 +787,11 @@ Train Data - Sensitivity: 71.77%
 Train Data - Specificity: 67.77%
  Test Data - Specificity: 64.95%
 
-Train Data - AUC ROC: 0.7529115595469844
- Test Data - AUC ROC: 0.7520816812053925
+Train Data - AUC ROC: 0.753
+ Test Data - AUC ROC: 0.752
 ```
+
+
 
 
 
@@ -796,9 +801,6 @@ While AUC is consistent across train and test data, sensitivity and specificity
 values are very inconsistent. Moreover, the accuracy of the model is not great. 
 We could potentially obtain better results by selecting a different 
 classification model.
-
-
-
 
 
 
@@ -822,13 +824,12 @@ improve on the accuracy of our original model:
 
 
 
-
-
 ## Phase 4 - Compare Models
 
 Logistic Regression
 
 ![](presentation_plots/plot_16.png){fig-align="right"}
+
 
 
 
@@ -858,6 +859,7 @@ row_0
 0      239  174
 1      152  655
 ```
+
 
 
 
@@ -898,15 +900,16 @@ Logistic Regression
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.654: 79.01%
- Test Data - Sensitivity for cut-off 0.654: 76.92%
+Train Data - Sensitivity: 79.01%
+ Test Data - Sensitivity: 76.92%
 
-Train Data - Specificity for cut-off 0.654: 61.13%
- Test Data - Specificity for cut-off 0.654: 62.89%
+Train Data - Specificity: 61.13%
+ Test Data - Specificity: 62.89%
 
-Train Data - AUC ROC: 0.7584554774340638
- Test Data - AUC ROC: 0.767248215701824
+Train Data - AUC ROC: 0.758
+ Test Data - AUC ROC: 0.767
 ```
+
 
 
 
@@ -916,16 +919,9 @@ Train Data - AUC ROC: 0.7584554774340638
 We notice that the scikit-learn Logistic Regression model slightly outperforms 
 the Statsmodels Logit model. 
 
-We use the Statsmodels Logit model when we need to perform analysis of 
-features, moving to scikit-learn's LogisticRegression model after the model has 
-been finalised is acceptable.
-
-
-
-
-
-
-
+We use the Statsmodels Logit model when we need to perform analysis of the 
+model and features, then move to scikit-learn's LogisticRegression model after 
+the model has been finalised.
 
 
 
@@ -936,6 +932,7 @@ been finalised is acceptable.
 Naive Bayes
 
 ![](presentation_plots/plot_17.png){fig-align="right"}
+
 
 
 
@@ -965,6 +962,7 @@ row_0
 0      264  266
 1      127  563
 ```
+
 
 
 
@@ -1005,25 +1003,15 @@ Naive Bayes
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.916: 67.91%
- Test Data - Sensitivity for cut-off 0.916: 62.5%
+Train Data - Sensitivity: 67.91%
+ Test Data - Sensitivity: 62.5%
 
-Train Data - Specificity for cut-off 0.916: 67.52%
- Test Data - Specificity for cut-off 0.916: 70.1%
+Train Data - Specificity: 67.52%
+ Test Data - Specificity: 70.1%
 
-Train Data - AUC ROC: 0.7282400451658085
- Test Data - AUC ROC: 0.7022204599524188
+Train Data - AUC ROC: 0.728
+ Test Data - AUC ROC: 0.702
 ```
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1034,6 +1022,7 @@ Train Data - AUC ROC: 0.7282400451658085
 KNN
 
 ![](presentation_plots/plot_18.png){fig-align="right"}
+
 
 
 
@@ -1063,6 +1052,7 @@ row_0
 0              288  328
 1              103  501
 ```
+
 
 
 
@@ -1103,20 +1093,15 @@ KNN
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.7: 60.43%
- Test Data - Sensitivity for cut-off 0.7: 62.98%
+Train Data - Sensitivity: 60.43%
+ Test Data - Sensitivity: 62.98%
 
-Train Data - Specificity for cut-off 0.7: 73.66%
- Test Data - Specificity for cut-off 0.7: 69.07%
+Train Data - Specificity: 73.66%
+ Test Data - Specificity: 69.07%
 
-Train Data - AUC ROC: 0.7450939257540746
- Test Data - AUC ROC: 0.7160735527359239
+Train Data - AUC ROC: 0.745
+ Test Data - AUC ROC: 0.716
 ```
-
-
-
-
-
 
 
 
@@ -1127,6 +1112,7 @@ Train Data - AUC ROC: 0.7450939257540746
 Decision Tree
 
 ![](presentation_plots/plot_19.png){fig-align="right"}
+
 
 
 
@@ -1156,6 +1142,7 @@ row_0
 0              338  488
 1               53  341
 ```
+
 
 
 
@@ -1196,22 +1183,15 @@ Decision Tree
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.766: 41.13%
- Test Data - Sensitivity for cut-off 0.766: 41.83%
+Train Data - Sensitivity: 41.13%
+ Test Data - Sensitivity: 41.83%
 
-Train Data - Specificity for cut-off 0.766: 86.45%
- Test Data - Specificity for cut-off 0.766: 83.51%
+Train Data - Specificity: 86.45%
+ Test Data - Specificity: 83.51%
 
-Train Data - AUC ROC: 0.7186808745630733
- Test Data - AUC ROC: 0.7119597541633624
+Train Data - AUC ROC: 0.719
+ Test Data - AUC ROC: 0.712
 ```
-
-
-
-
-
-
-
 
 
 
@@ -1222,6 +1202,7 @@ Train Data - AUC ROC: 0.7186808745630733
 Random Forest
 
 ![](presentation_plots/plot_20.png){fig-align="right"}
+
 
 
 
@@ -1251,6 +1232,7 @@ row_0
 0              297  254
 1               94  575
 ```
+
 
 
 
@@ -1291,20 +1273,15 @@ Random Forest
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.71: 69.36%
- Test Data - Sensitivity for cut-off 0.71: 67.79%
+Train Data - Sensitivity: 69.36%
+ Test Data - Sensitivity: 67.79%
 
-Train Data - Specificity for cut-off 0.71: 75.96%
- Test Data - Specificity for cut-off 0.71: 72.16%
+Train Data - Specificity: 75.96%
+ Test Data - Specificity: 72.16%
 
-Train Data - AUC ROC: 0.7957851415596395
- Test Data - AUC ROC: 0.7562450436161777
+Train Data - AUC ROC: 0.796
+ Test Data - AUC ROC: 0.756
 ```
-
-
-
-
-
 
 
 
@@ -1315,6 +1292,7 @@ Train Data - AUC ROC: 0.7957851415596395
 SVM
 
 ![](presentation_plots/plot_21.png){fig-align="right"}
+
 
 
 
@@ -1344,6 +1322,7 @@ row_0
 0              222  136
 1              169  693
 ```
+
 
 
 
@@ -1384,22 +1363,15 @@ SVM
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.643: 83.59%
- Test Data - Sensitivity for cut-off 0.643: 82.21%
+Train Data - Sensitivity: 83.59%
+ Test Data - Sensitivity: 82.21%
 
-Train Data - Specificity for cut-off 0.643: 56.78%
- Test Data - Specificity for cut-off 0.643: 58.76%
+Train Data - Specificity: 56.78%
+ Test Data - Specificity: 58.76%
 
-Train Data - AUC ROC: 0.7597172817834325
- Test Data - AUC ROC: 0.763332672482157
+Train Data - AUC ROC: 0.760
+ Test Data - AUC ROC: 0.763
 ```
-
-
-
-
-
-
-
 
 
 
@@ -1410,6 +1382,7 @@ Train Data - AUC ROC: 0.7597172817834325
 MLP
 
 ![](presentation_plots/plot_22.png){fig-align="right"}
+
 
 
 
@@ -1439,6 +1412,7 @@ row_0
 0              264  198
 1              127  631
 ```
+
 
 
 
@@ -1479,28 +1453,15 @@ MLP
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Sensitivity for cut-off 0.71: 76.12%
- Test Data - Sensitivity for cut-off 0.71: 74.52%
+Train Data - Sensitivity: 76.12%
+ Test Data - Sensitivity: 74.52%
 
-Train Data - Specificity for cut-off 0.71: 67.52%
- Test Data - Specificity for cut-off 0.71: 67.01%
+Train Data - Specificity: 67.52%
+ Test Data - Specificity: 67.01%
 
-Train Data - AUC ROC: 0.773263939235945
- Test Data - AUC ROC: 0.7568893735130848
+Train Data - AUC ROC: 0.773
+ Test Data - AUC ROC: 0.757
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1525,6 +1486,7 @@ Deep Learning (PyTorch)
 :::
 
 ::::
+
 
 
 
@@ -1554,6 +1516,7 @@ row_0
 0      218   89
 1      173  740
 ```
+
 
 
 
@@ -1594,17 +1557,15 @@ Deep Learning (PyTorch)
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-Train Data - Deep Learning - Sensitivity for cut-off 0.36000001430511475 is : 87.02%
- Test Data - Deep Learning - Sensitivity for cut-off 0.36000001430511475 is : 89.26%
+Train Data - Sensitivity: 87.02%
+ Test Data - Sensitivity: 89.26%
 
-Train Data - Deep Learning - Specificity for cut-off 0.36000001430511475 is : 54.64%
- Test Data - Deep Learning - Specificity for cut-off 0.36000001430511475 is : 55.75%
+Train Data - Specificity: 54.64%
+ Test Data - Specificity: 55.75%
 
-Train Data - Deep Learning - AUC ROC: 0.7720391560410812
- Test Data - Deep Learning - AUC ROC: 0.7385507533703409
+Train Data - AUC ROC: 0.772
+ Test Data - AUC ROC: 0.738
 ```
-
-
 
 
 
@@ -1614,38 +1575,20 @@ Train Data - Deep Learning - AUC ROC: 0.7720391560410812
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```
-        Naive Bayes - Test Data - AUC ROC: 0.7022204599524188
-      Decision Tree - Test Data - AUC ROC: 0.7119597541633624
-                KNN - Test Data - AUC ROC: 0.7160735527359239
-      Deep Learning - Test Data - AUC ROC: 0.7385507533703409
-                MLP - Test Data - AUC ROC: 0.7568893735130848
-      Random Forest - Test Data - AUC ROC: 0.7562450436161777
-                SVM - Test Data - AUC ROC: 0.763332672482157
-Logistic Regression - Test Data - AUC ROC: 0.767248215701824
+        Naive Bayes - Test Data - AUC ROC: 0.702
+      Decision Tree - Test Data - AUC ROC: 0.712
+                KNN - Test Data - AUC ROC: 0.716
+      Deep Learning - Test Data - AUC ROC: 0.738
+      Random Forest - Test Data - AUC ROC: 0.756
+                MLP - Test Data - AUC ROC: 0.757
+                SVM - Test Data - AUC ROC: 0.763
+Logistic Regression - Test Data - AUC ROC: 0.767
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Interestingly, the values of AUC for each model are not indicative of the 
+accuracy of the models - the Logistic Regression model, which had a very 
+average accuracy, has the highest AUC, while the Deep Learning model, the 
+model with the highest accuracy, has an average AUC.
 
 
 
@@ -1698,6 +1641,7 @@ data.head()
 
 
 
+
 ## Phase 5 - Sentiment Analysis
 
 We perform the basic transformation:
@@ -1712,7 +1656,7 @@ remove_digits = str.maketrans('', '', digits)
 
 def preprocess_tweet(tweet):
     tokens = word_tokenize(
-     tweet.lower().translate(remove_punc).translate(remove_digits)
+        tweet.lower().translate(remove_punc).translate(remove_digits)
     )
     return " ".join([word for word in tokens if word not in stop_words])
 
@@ -1728,6 +1672,8 @@ cleaned.head()
 3    nifty healthy uptrend since beginning year did...
 4    gravita livetrading stockstowatch stocksinfocu...
 ```
+
+
 
 
 
@@ -1753,9 +1699,11 @@ We look at the top 10 words by frequency:
 
 
 
+
+
 ## Phase 5 - Sentiment Analysis
 
-We remove the word "nifty" from the tweets:
+We include the word "nifty" to list of woords to remove from the tweets:
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```{python}
@@ -1783,7 +1731,6 @@ data.head()
 3  healthy uptrend since beginning year didnt bre...  
 4  gravita livetrading stockstowatch stocksinfocu...  
 ```
-
 
 
 
@@ -1867,9 +1814,6 @@ data["Compound_Score"] = scores.apply(lambda x: x["compound"])
 
 
 
-
-
-
 ## Phase 5 - Sentiment Analysis
 
 We look at the summary statistics for the sentiment scores:
@@ -1892,13 +1836,14 @@ The compound score has a reasonable spread with a median of 0.
 
 
 
+
 ## Phase 5 - Sentiment Analysis
 
 :::: {.columns align=center}
 
 ::: {.column width="40%" align=center}
 
-We plot the sentiment scores below:
+We plot the sentiment scores:
 
 :::
 
@@ -1916,9 +1861,12 @@ We plot the sentiment scores below:
 
 ## Phase 5 - Sentiment Analysis
 
-It looks like the compound sentiment scores could be useful as an extra feature
-- but without access to historical tweets, it would be impossible to tell 
-conclusively, Nevertheless it should be investigated further.
+It looks like the compound sentiment scores, if slightly skewed, could be 
+useful as an extra feature - but without access to historical tweets, it would 
+be impossible to tell conclusively, Nevertheless it should be investigated 
+further.
+
+
 
 
 
@@ -1929,5 +1877,3 @@ ability to train models with accuracy of around 75% in the case of the SVM
 model, and 77% - 79% in the case of the Deep Learning (PyTorch) model - I am 
 confident that with enhanced model tuning, and by adding extra features such as 
 sentiment compound score, we could improve the model accuracy significantly. 
-
-
