@@ -1,6 +1,6 @@
-# Global Stock Market Analytics
+# Data Science in Practice
 
-Data Science in Practice module
+Coursework for the Data Science Institute's Data Science in Practice module
 
 
 
@@ -23,7 +23,7 @@ The best way to play with this code is to launch a hatch shell:
 once the shell is up and running you can execute some code:
 
 ```console
-> python -m gsma.get_data 
+> python -m cowboysmall.some_tool
 ```
 
 ## License
